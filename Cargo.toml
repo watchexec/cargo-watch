@@ -1,0 +1,9 @@
+[package]
+
+name = "cargo-watch"
+version = "1.0.0"
+authors = ["Félix Saparelli <felix@passcod.name>"]
+
+[dependencies.inotify]
+git = "https://github.com/passcod/inotify-rs.git"
+branch = "cargoify"
