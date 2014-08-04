@@ -1,8 +1,10 @@
 #![unstable]
 //! Utilities for working with cargo,
 
-use std::io::fs;
+use std::io::{Command, fs};
 use std::os;
+
+macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())))
 
 /// Returns the closest ancestor Path containing a Cargo.toml.
 ///
@@ -39,4 +41,14 @@ pub fn root() -> Option<Path> {
   }
 
   Some(wd)
+}
+
+/// Runs a cargo command and displays the output.
+#[unstable]
+pub fn run(cmd: &str) {
+  println!("\n\n$ cargo {}", cmd);
+  match Command::new("cargo").arg(cmd).output() {
+    Ok(o) => println!("{}\n{}\nExited with: {}", Sl!(o.output), Sl!(o.error), o.status),
+    Err(e) => println!("Failed to execute 'cargo {}': {}", cmd, e)
+  };
 }

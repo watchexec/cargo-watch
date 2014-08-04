@@ -8,14 +8,12 @@ extern crate inotify;
 #[phase(plugin, link)] extern crate log;
 
 use inotify::wrapper::{INotify, Watch};
-use std::io::{Command, fs};
-use std::sync::Arc;
-use std::sync::atomics::{AtomicBool, SeqCst};
+use std::io::fs;
 
 mod cargo;
+mod compile;
 mod ignore;
-
-macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())))
+mod timelock;
 
 fn watch_recursive(ino: &INotify, path: &Path, mask: u32) -> Vec<(Path, Watch)> {
   let mut v: Vec<(Path, Watch)> = Vec::new();
@@ -42,33 +40,6 @@ fn watch_recursive(ino: &INotify, path: &Path, mask: u32) -> Vec<(Path, Watch)> 
   v
 }
 
-fn cargo_run(cmd: &str) {
-  println!("\n\n$ cargo {}", cmd);
-  match Command::new("cargo").arg(cmd).output() {
-    Ok(o) => println!("{}\n{}\nExited with: {}", Sl!(o.output), Sl!(o.error), o.status),
-    Err(e) => println!("Failed to execute 'cargo {}': {}", cmd, e)
-  };
-}
-
-fn compile(lock: Arc<AtomicBool>) {
-  debug!("Starting a compile");
-  cargo_run("build");
-  cargo_run("doc");
-  lock.store(false, SeqCst);
-  debug!("Compile done");
-}
-
-fn spawn_compile(lock: &Arc<AtomicBool>) {
-  info!("Request to spawn a compile");
-  if lock.load(SeqCst) {
-    info!("Request denied");
-  } else {
-    lock.store(true, SeqCst);
-    let lock_clone = lock.clone();
-    spawn(proc() { compile(lock_clone); });
-  }
-}
-
 fn main() {
   let mut ino = match INotify::init() {
     Ok(i) => i,
@@ -85,31 +56,26 @@ fn main() {
     | inotify::ffi::IN_MOVE
     | inotify::ffi::IN_EXCL_UNLINK;
 
-  let compile_lock = Arc::new(AtomicBool::new(false));
-  spawn_compile(&compile_lock);
+  let t = timelock::new();
   
   match cargo::root() {
     Some(p) => {
-      //let r = watch_recursive(&ino, &p.join("src"), events);
+      let _ = watch_recursive(&ino, &p.join("src"), events);
       
       loop {
         match ino.event() {
-          Ok(e) => {
-            debug!("name: {}", e.name);
-            if ignore::filename(&e.name) {
-              info!("Ignoring change on '{}'", e.name);
-            } else {
-              spawn_compile(&compile_lock)
-            }
-          },
+          Ok(e) => compile::handle_event(&t, e),
           Err(_) => ()
         }
       }
 
-      //for &(_, w) in r.iter() {
-      //  let _ = ino.rm_watch(w);
-      //}
-      //let _ = ino.close();
+      // FIXME: Should really clean these up.
+      /* `r` was the result of `watch_recursive()` above
+      for &(_, w) in r.iter() {
+        let _ = ino.rm_watch(w);
+      }
+      let _ = ino.close();
+      */
     },
     None => {
       error!("Not a Cargo project, aborting.");
