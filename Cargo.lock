@@ -1,0 +1,12 @@
+[root]
+name = "cargo-watch"
+version = "1.0.0"
+dependencies = [
+ "inotify 1.0.0 (git+https://github.com/hannobraun/inotify-rs.git#76198401fc1369cbbedec0d365b14c8a7ff69703)",
+]
+
+[[package]]
+name = "inotify"
+version = "1.0.0"
+source = "git+https://github.com/hannobraun/inotify-rs.git#76198401fc1369cbbedec0d365b14c8a7ff69703"
+
