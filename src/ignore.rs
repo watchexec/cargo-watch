@@ -4,7 +4,7 @@ extern crate regex;
 macro_rules! rt_regex(($r:expr) => ({
   match regex::Regex::new($r) {
     Ok(r) => r,
-    Err(e) => fail!("Couldn't parse regex: {}", e)
+    Err(e) => panic!("Couldn't parse regex: {}", e)
   }
 }))
 

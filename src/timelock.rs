@@ -1,7 +1,7 @@
 extern crate time;
 
 use std::sync::Arc;
-use std::sync::atomics::{AtomicInt, SeqCst};
+use std::sync::atomic::{AtomicInt, SeqCst};
 
 pub fn current() -> int { time::get_time().sec as int }
 pub fn get(t: &Arc<AtomicInt>) -> int { t.load(SeqCst) }

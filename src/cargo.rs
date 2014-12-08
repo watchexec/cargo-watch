@@ -2,7 +2,9 @@
 //! Utilities for working with cargo,
 
 use std::io::{Command, fs};
+use std::io::fs::PathExtensions;
 use std::os;
+use std::path::GenericPath;
 
 macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())))
 
@@ -12,7 +14,11 @@ macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())))
 /// the limit of 10 ancestors has been run through.
 #[stable]
 pub fn root() -> Option<Path> {
-  let mut wd = os::getcwd();
+  let mut wd = match os::getcwd() {
+    Err(_) => { return None; },
+    Ok(w) => w
+  };
+
   if !wd.is_dir() {
     wd = wd.dir_path();
   }

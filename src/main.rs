@@ -1,14 +1,13 @@
 #![feature(macro_rules)]
 #![feature(phase)]
-#![warn(missing_doc)]
+#![warn(missing_docs)]
 //! Watch files in a Cargo project and compile it when they change
 
-extern crate debug;
 extern crate inotify;
 #[phase(plugin, link)] extern crate log;
 
 use inotify::wrapper::{INotify, Watch};
-use std::io::fs;
+use std::io::fs::{mod, PathExtensions};
 
 mod cargo;
 mod compile;

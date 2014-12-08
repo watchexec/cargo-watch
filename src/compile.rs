@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use std::sync::atomics::AtomicInt;
+use std::sync::atomic::AtomicInt;
 use super::{cargo, ignore, inotify, timelock};
 
 fn compile(t: Arc<AtomicInt>) {
