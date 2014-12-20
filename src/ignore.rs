@@ -6,7 +6,7 @@ macro_rules! rt_regex(($r:expr) => ({
     Ok(r) => r,
     Err(e) => panic!("Couldn't parse regex: {}", e)
   }
-}))
+}));
 
 fn filenames() -> Vec<regex::Regex> {
   vec![

@@ -1,11 +1,10 @@
 [package]
-
 name = "cargo-watch"
-version = "1.0.2"
+version = "1.0.3"
 authors = ["Félix Saparelli <felix@passcod.name>"]
 
 [dependencies]
 time = "*"
 
-[dependencies.inotify]
-git = "https://github.com/hannobraun/inotify-rs.git"
+[dependencies.notify]
+git = "https://github.com/passcod/rsnotify.git"

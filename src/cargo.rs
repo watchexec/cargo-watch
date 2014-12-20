@@ -6,7 +6,7 @@ use std::io::fs::PathExtensions;
 use std::os;
 use std::path::GenericPath;
 
-macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())))
+macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 
 /// Returns the closest ancestor Path containing a Cargo.toml.
 ///

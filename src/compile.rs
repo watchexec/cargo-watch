@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use std::sync::atomic::AtomicInt;
-use super::{cargo, ignore, inotify, timelock};
+use super::{cargo, ignore, notify, timelock};
 
 fn compile(t: Arc<AtomicInt>) {
   debug!("Starting a compile");
@@ -20,15 +20,21 @@ fn spawn_compile(t: &Arc<AtomicInt>) {
   } else {
     timelock::update(t);
     let t2 = t.clone();
-    spawn(proc() { compile(t2); });
+    spawn(move || { compile(t2); });
   }
 }
 
-pub fn handle_event(t: &Arc<AtomicInt>, e: inotify::wrapper::Event) {
-  debug!("name: {}", e.name);
-  if ignore::filename(&e.name) {
-    info!("Ignoring change on '{}'", e.name);
-  } else {
-    spawn_compile(t);
+pub fn handle_event(t: &Arc<AtomicInt>, e: notify::Event) {
+  match e.path {
+    None => return,
+    Some(p) => {
+      let name: String = format!("{}", p.display());
+      debug!("path: {}", name);
+      if ignore::filename(&name) {
+        info!("Ignoring change on '{}'", name);
+      } else {
+        spawn_compile(t);
+      }
+    }
   }
 }
