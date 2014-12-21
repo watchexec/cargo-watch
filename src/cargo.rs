@@ -1,10 +1,12 @@
-#![unstable]
+#![stable]
 //! Utilities for working with cargo,
+
+extern crate libc;
 
 use std::io::{Command, fs};
 use std::io::fs::PathExtensions;
+use std::io::process::StdioContainer;
 use std::os;
-use std::path::GenericPath;
 
 macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 
@@ -52,9 +54,13 @@ pub fn root() -> Option<Path> {
 /// Runs a cargo command and displays the output.
 #[unstable]
 pub fn run(cmd: &str) {
-  println!("\n\n$ cargo {}", cmd);
-  match Command::new("cargo").arg(cmd).output() {
-    Ok(o) => println!("{}\n{}\nExited with: {}", Sl!(o.output), Sl!(o.error), o.status),
+  println!("\n$ cargo {}", cmd);
+  match Command::new("cargo")
+    .stderr(StdioContainer::InheritFd(libc::STDERR_FILENO))
+    .stdout(StdioContainer::InheritFd(libc::STDOUT_FILENO))
+    .arg(cmd)
+    .output() {
+    Ok(o) => println!("-> {}", o.status),
     Err(e) => println!("Failed to execute 'cargo {}': {}", cmd, e)
   };
 }
