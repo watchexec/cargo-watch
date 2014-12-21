@@ -6,6 +6,8 @@
 2. Place in your $PATH.
 3. Invoke using `$ cargo watch`.
 
+![screenshot from 2014-12-21 15 09 10](https://cloud.githubusercontent.com/assets/155787/5516943/89478468-8923-11e4-89af-d0963542623d.png)
+
 ## What?
 
 It will watch your `src` folder and any subdirectories for file changes,
