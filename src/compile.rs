@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use std::sync::atomic::AtomicInt;
+use std::thread::Thread;
 use super::{cargo, ignore, notify, timelock};
 
 fn compile(t: Arc<AtomicInt>) {
@@ -20,7 +21,7 @@ fn spawn_compile(t: &Arc<AtomicInt>) {
   } else {
     timelock::update(t);
     let t2 = t.clone();
-    spawn(move || { compile(t2); });
+    let _ = Thread::spawn(move || { compile(t2); });
   }
 }
 
