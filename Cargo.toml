@@ -5,6 +5,9 @@ authors = ["Félix Saparelli <felix@passcod.name>"]
 
 [dependencies]
 time = "*"
+docopt = "0.6.20"
+docopt_macros = "0.6.20"
+rustc-serialize = "0.1.5"
 
 [dependencies.notify]
 git = "https://github.com/passcod/rsnotify.git"
