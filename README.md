@@ -11,8 +11,10 @@
 ## What?
 
 It will watch your `src` folder and any subdirectories for file changes,
-additions, removals, and moves (in or out), and run both `$ cargo build`
-and `$ cargo doc` on your project.
+additions, removals, and moves (in or out), and run both `$ cargo build` and
+`$ cargo test` on your project.  You can also specify other things to be run,
+e.g. `$ cargo doc` and `$ cargo bench`, by passing flags.
+See `$ cargo watch --help` for more.
 
 Just like any Cargo command, you can run it from any subdirectory in your
 project tree and it will find its way.

@@ -1,5 +1,4 @@
-#![feature(macro_rules)]
-#![feature(phase)]
+#![feature(macro_rules, phase, old_orphan_check)]
 #![warn(missing_docs)]
 //! Watch files in a Cargo project and compile it when they change
 
@@ -11,13 +10,14 @@ extern crate notify;
 #[phase(plugin, link)] extern crate log;
 
 use notify::{Error, RecommendedWatcher, Watcher};
+use std::sync::mpsc::channel;
 
 mod cargo;
 mod compile;
 mod ignore;
 mod timelock;
 
-docopt!(Args deriving Show, "
+docopt!(Args derive Show, "
 Usage: cargo-watch [options]
        cargo watch [options]
 
@@ -49,7 +49,7 @@ fn main() {
       let _ = watcher.watch(&p.join("src"));
 
       loop {
-        match rx.recv_opt() {
+        match rx.recv() {
           Ok(e) => compile::handle_event(&t, e),
           Err(_) => ()
         }
