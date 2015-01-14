@@ -1,13 +1,14 @@
-#![feature(macro_rules, phase, old_orphan_check)]
+#![feature(plugin)]
+#![allow(unstable)]
 #![warn(missing_docs)]
 //! Watch files in a Cargo project and compile it when they change
 
 extern crate "rustc-serialize" as rustc_serialize;
 extern crate docopt;
-#[phase(plugin)] extern crate docopt_macros;
+#[plugin] #[no_link] extern crate docopt_macros;
 
 extern crate notify;
-#[phase(plugin, link)] extern crate log;
+#[plugin] #[macro_use] extern crate log;
 
 use notify::{Error, RecommendedWatcher, Watcher};
 use std::sync::mpsc::channel;
