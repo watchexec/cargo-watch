@@ -3,9 +3,9 @@
 
 extern crate libc;
 
-use std::io::{Command, fs};
-use std::io::fs::PathExtensions;
-use std::io::process::StdioContainer;
+use std::old_io::{Command, fs};
+use std::old_io::fs::PathExtensions;
+use std::old_io::process::StdioContainer;
 use std::os;
 
 macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));

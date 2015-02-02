@@ -18,7 +18,7 @@ mod compile;
 mod ignore;
 mod timelock;
 
-docopt!(Args derive Show, "
+docopt!(Args derive Debug, "
 Usage: cargo-watch [options]
        cargo watch [options]
 
