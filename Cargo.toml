@@ -1,9 +1,10 @@
 [package]
 name = "cargo-watch"
-version = "2.0.1"
+version = "2.1.0"
 authors = [
   "Félix Saparelli <felix@passcod.name>",
-  "Antti Keränen <detegr@gmail.com>"
+  "Antti Keränen <detegr@gmail.com>",
+  "Konstantin Stepanov <me@kstep.me>"
 ]
 
 description = "Utility for cargo to compile projects when sources change"
