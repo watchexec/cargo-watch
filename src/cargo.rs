@@ -3,10 +3,12 @@
 
 extern crate libc;
 
-use std::old_io::{Command, fs};
-use std::old_io::fs::PathExtensions;
+use std::ffi::AsOsStr;
+use std::fs::{self, PathExt};
+use std::old_io::Command;
 use std::old_io::process::StdioContainer;
 use std::os;
+use std::path::{Path, PathBuf};
 
 macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 
@@ -15,22 +17,22 @@ macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 /// Returns None if no ancestor Path contains a Cargo.toml, or if
 /// the limit of 10 ancestors has been run through.
 #[stable]
-pub fn root() -> Option<Path> {
-  let mut wd = match os::getcwd() {
+pub fn root() -> Option<PathBuf> {
+  let mut wd = PathBuf::new(match os::getcwd() {
     Err(_) => { return None; },
     Ok(w) => w
-  };
+  }.as_os_str());
 
   if !wd.is_dir() {
-    wd = wd.dir_path();
+    let _ = wd.pop();
   }
   
-  fn contains_manifest(path: &Path) -> bool {
-    match fs::readdir(path) {
-      Ok(dirs) => match dirs.iter().find(|path| {
-        match path.filename_str() {
-          Some(f) => f == "Cargo.toml",
-          None => false
+  fn contains_manifest(path: &mut PathBuf) -> bool {
+    match fs::read_dir(path) {
+      Ok(mut dirs) => match dirs.find(|p| {
+        match *p {
+          Err(_) => false,
+          Ok(ref d) => { d.path().as_os_str() == "Cargo.toml" }
         }
       }) {
         Some(_) => true,
@@ -41,7 +43,7 @@ pub fn root() -> Option<Path> {
   }
 
   let mut count = 0u8;
-  while !contains_manifest(&wd) {
+  while !contains_manifest(&mut wd) {
     count += 1;
     if count > 10 || !wd.pop() {
       return None;
