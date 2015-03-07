@@ -29,15 +29,13 @@ pub fn root() -> Option<PathBuf> {
   
   fn contains_manifest(path: &mut PathBuf) -> bool {
     match fs::read_dir(path) {
-      Ok(mut dirs) => match dirs.find(|p| {
-        match *p {
+      Ok(mut entries) =>
+        entries.any(|ent| match ent {
           Err(_) => false,
-          Ok(ref d) => { d.path().as_os_str() == "Cargo.toml" }
-        }
-      }) {
-        Some(_) => true,
-        None => false
-      },
+          Ok(ref ent) => {
+            ent.path().file_name() == Some("Cargo.toml".as_os_str())
+          }
+        }),
       Err(_) => false
     }
   }
