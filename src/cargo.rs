@@ -38,15 +38,14 @@ pub fn root() -> Option<PathBuf> {
     }
   }
 
-  let mut count = 0u8;
-  while !contains_manifest(&mut wd) {
-    count += 1;
-    if count > 10 || !wd.pop() {
-      return None;
+  for _ in 0..11 {
+    if contains_manifest(&mut wd) {
+      return Some(wd)
     }
+    if !wd.pop() { break }
   }
 
-  Some(wd)
+  None
 }
 
 /// Runs a cargo command and displays the output.
