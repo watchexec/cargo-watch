@@ -1,14 +1,12 @@
 #![stable]
 //! Utilities for working with cargo,
 
-extern crate libc;
-
 use std::ffi::AsOsStr;
 use std::fs::{self, PathExt};
-use std::old_io::Command;
-use std::old_io::process::StdioContainer;
+use std::process::Command;
+use std::process::Stdio;
 use std::os;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 
@@ -56,8 +54,8 @@ pub fn root() -> Option<PathBuf> {
 pub fn run(cmd: &str) {
   println!("\n$ cargo {}", cmd);
   match Command::new("cargo")
-    .stderr(StdioContainer::InheritFd(libc::STDERR_FILENO))
-    .stdout(StdioContainer::InheritFd(libc::STDOUT_FILENO))
+    .stderr(Stdio::inherit())
+    .stdout(Stdio::inherit())
     .arg(cmd)
     .output() {
     Ok(o) => println!("-> {}", o.status),

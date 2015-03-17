@@ -1,5 +1,5 @@
-#![feature(plugin)]
-#![allow(unstable)]
+#![feature(plugin, path, fs, exit_status, process, std_misc, os)]
+#![feature(rustc_private)]
 #![warn(missing_docs)]
 #![plugin(docopt_macros)]
 #![plugin(log)]
@@ -13,7 +13,6 @@ extern crate notify;
 #[macro_use] extern crate log;
 
 use notify::{Error, RecommendedWatcher, Watcher};
-use std::path::Path;
 use std::sync::mpsc::channel;
 use std::sync::Arc;
 
@@ -80,7 +79,7 @@ fn main() {
     Ok(i) => i,
     Err(_) => {
       error!("Failed to init notify");
-      std::os::set_exit_status(1);
+      std::env::set_exit_status(1);
       return;
     }
   };
@@ -100,7 +99,7 @@ fn main() {
     },
     None => {
       error!("Not a Cargo project, aborting.");
-      std::os::set_exit_status(64);
+      std::env::set_exit_status(64);
     }
   }
 }
