@@ -1,4 +1,4 @@
-# $ cargo watch
+# $ cargo watch [![(build status)](https://travis-ci.org/passcod/cargo-watch.svg)](https://travis-ci.org/passcod/cargo-watch)
 
 ## Usage
 
