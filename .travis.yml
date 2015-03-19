@@ -5,3 +5,6 @@ env:
 after_script:
   - cargo doc
   - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
+
+# http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+sudo: false

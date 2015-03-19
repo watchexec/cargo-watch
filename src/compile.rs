@@ -1,6 +1,6 @@
 use std::sync::Arc;
-use std::sync::atomic::AtomicInt;
-use std::thread::Thread;
+use std::sync::atomic::AtomicIsize;
+use std::thread;
 use super::{Config, cargo, ignore, notify, timelock};
 
 macro_rules! run_if_set(
@@ -9,7 +9,7 @@ macro_rules! run_if_set(
   }
 );
 
-fn compile(t: Arc<AtomicInt>, c: Arc<Config>) {
+fn compile(t: Arc<AtomicIsize>, c: Arc<Config>) {
   let Config {
     build, doc, test, bench
   } = *c;
@@ -22,7 +22,7 @@ fn compile(t: Arc<AtomicInt>, c: Arc<Config>) {
   debug!("Compile done");
 }
 
-fn spawn_compile(t: &Arc<AtomicInt>, c: Arc<Config>) {
+fn spawn_compile(t: &Arc<AtomicIsize>, c: Arc<Config>) {
   info!("Request to spawn a compile");
   // Don't run compiles within less than 2s of each other
   let justnow = timelock::current() - 2;
@@ -32,11 +32,11 @@ fn spawn_compile(t: &Arc<AtomicInt>, c: Arc<Config>) {
   } else {
     timelock::update(t);
     let t2 = t.clone();
-    let _ = Thread::spawn(move || { compile(t2, c); });
+    let _ = thread::spawn(move || { compile(t2, c); });
   }
 }
 
-pub fn handle_event(t: &Arc<AtomicInt>, e: notify::Event, c: Arc<Config>) {
+pub fn handle_event(t: &Arc<AtomicIsize>, e: notify::Event, c: Arc<Config>) {
   match e.path {
     None => return,
     Some(p) => {

@@ -17,12 +17,6 @@ fn filenames() -> Vec<regex::Regex> {
   ]
 }
 
-pub fn filename(f: &String) -> bool {
-  for fr in filenames().iter() {
-    if fr.is_match(f.as_slice()) {
-      return true;
-    }
-  }
-
-  false
+pub fn filename(f: &str) -> bool {
+  filenames().iter().any(|fr| fr.is_match(f))
 }

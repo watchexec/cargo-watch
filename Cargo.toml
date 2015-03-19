@@ -4,7 +4,8 @@ version = "2.1.1"
 authors = [
   "Félix Saparelli <felix@passcod.name>",
   "Antti Keränen <detegr@gmail.com>",
-  "Konstantin Stepanov <me@kstep.me>"
+  "Konstantin Stepanov <me@kstep.me>",
+  "Jonathan Neuschäfer <j.neuschaefer@gmx.net>",
 ]
 
 description = "Utility for cargo to compile projects when sources change"
