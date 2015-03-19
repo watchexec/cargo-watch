@@ -43,3 +43,7 @@ I can see compile errors and warnings with a save and fix them immediately.
 
 My name is Félix Saparelli a.k.a. [passcod](https://passcod.name). You can
 find more about me on the internet.
+
+Also a bunch of [awesome contributors][contributors] participated.
+
+[contributors]: https://github.com/passcod/cargo-watch/network/members

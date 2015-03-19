@@ -1,6 +1,6 @@
 [root]
 name = "cargo-watch"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "docopt 0.6.52 (registry+https://github.com/rust-lang/crates.io-index)",
  "docopt_macros 0.6.52 (registry+https://github.com/rust-lang/crates.io-index)",
