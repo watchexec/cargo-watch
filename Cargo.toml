@@ -1,11 +1,12 @@
 [package]
 name = "cargo-watch"
-version = "2.1.2"
+version = "2.1.3"
 authors = [
-  "Félix Saparelli <felix@passcod.name>",
+  "Félix Saparelli <me@passcod.name>",
   "Antti Keränen <detegr@gmail.com>",
   "Konstantin Stepanov <me@kstep.me>",
   "Jonathan Neuschäfer <j.neuschaefer@gmx.net>",
+  "Gabor Nagy <mail@aigeruth.hu>",
 ]
 
 description = "Utility for cargo to compile projects when sources change"
@@ -25,9 +26,6 @@ keywords = [
 rustc-serialize = "*"
 docopt = "0.6"
 docopt_macros = "0.6"
+notify = "^1.2.1"
 regex = "*"
 time = "*"
-
-[dependencies.notify]
-git = "https://github.com/passcod/rsnotify.git"
-rev = "4a422a381cbc701998033898cc787c30943e929c"
