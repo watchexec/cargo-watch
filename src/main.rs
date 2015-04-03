@@ -1,11 +1,11 @@
-#![feature(plugin, path, fs, exit_status, process, std_misc, os)]
+#![feature(plugin, exit_status, std_misc, path_ext)]
 #![feature(rustc_private)]
 #![warn(missing_docs)]
 #![plugin(docopt_macros)]
 #![plugin(log)]
 //! Watch files in a Cargo project and compile it when they change
 
-extern crate "rustc-serialize" as rustc_serialize;
+extern crate rustc_serialize;
 extern crate docopt;
 #[no_link] extern crate docopt_macros;
 
@@ -36,7 +36,7 @@ Default options are `build` and `test`
 ");
 
 #[derive(Copy)]
-struct Config {
+pub struct Config {
     build: bool,
     doc: bool,
     test: bool,

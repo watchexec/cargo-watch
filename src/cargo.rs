@@ -5,7 +5,7 @@ use std::ffi::AsOsStr;
 use std::fs::{self, PathExt};
 use std::process::Command;
 use std::process::Stdio;
-use std::os;
+use std::env;
 use std::path::PathBuf;
 
 macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
@@ -16,15 +16,15 @@ macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 /// the limit of 10 ancestors has been run through.
 #[stable]
 pub fn root() -> Option<PathBuf> {
-  let mut wd = PathBuf::new(match os::getcwd() {
+  let mut wd = match env::current_dir() {
     Err(_) => { return None; },
     Ok(w) => w
-  }.as_os_str());
+  };
 
   if !wd.is_dir() {
     let _ = wd.pop();
   }
-  
+
   fn contains_manifest(path: &mut PathBuf) -> bool {
     match fs::read_dir(path) {
       Ok(mut entries) =>
