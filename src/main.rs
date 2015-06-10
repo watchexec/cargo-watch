@@ -1,4 +1,4 @@
-#![feature(plugin, exit_status, std_misc, path_ext)]
+#![feature(plugin, exit_status, path_ext)]
 #![feature(rustc_private)]
 #![warn(missing_docs)]
 #![plugin(docopt_macros)]
@@ -35,7 +35,7 @@ Options:
 Default options are `build` and `test`
 ");
 
-#[derive(Copy)]
+#[derive(Clone,Copy)]
 pub struct Config {
     build: bool,
     doc: bool,
