@@ -26,6 +26,6 @@ keywords = [
 rustc-serialize = "*"
 docopt = "0.6"
 docopt_macros = "0.6"
-notify = "^1.2.1"
+notify = "^2.0.0"
 regex = "*"
 time = "*"
