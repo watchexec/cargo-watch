@@ -1,4 +1,3 @@
-//#![stable]
 //! Utilities for working with cargo,
 
 use std::ffi::OsStr;
@@ -14,18 +13,11 @@ macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 ///
 /// Returns None if no ancestor Path contains a Cargo.toml, or if
 /// the limit of 10 ancestors has been run through.
-//#[stable]
 pub fn root() -> Option<PathBuf> {
   let mut wd = match env::current_dir() {
     Err(_) => { return None; },
     Ok(w) => w
   };
-
-    /* Why was this even here?
-  if !wd.is_dir() {
-    let _ = wd.pop();
-  }
-     */
 
   fn contains_manifest(path: &mut PathBuf) -> bool {
     match fs::read_dir(path) {
@@ -51,7 +43,6 @@ pub fn root() -> Option<PathBuf> {
 }
 
 /// Runs a cargo command and displays the output.
-//#[unstable]
 pub fn run(cmd: &str) {
   println!("\n$ cargo {}", cmd);
   match Command::new("cargo")
