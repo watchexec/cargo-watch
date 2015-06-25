@@ -7,6 +7,7 @@ extern crate docopt;
 
 extern crate notify;
 #[macro_use] extern crate log;
+extern crate env_logger;
 
 use docopt::Docopt;
 use notify::{Error, RecommendedWatcher, Watcher};
@@ -75,6 +76,7 @@ impl Config {
 }
 
 fn main() {
+  env_logger::init().unwrap();
   let config = Config::new();
   let (tx, rx) = channel();
   let w: Result<RecommendedWatcher, Error> = Watcher::new(tx);
