@@ -40,12 +40,17 @@ pub fn handle_event(t: &Arc<AtomicIsize>, e: notify::Event, c: Arc<Config>) {
   match e.path {
     None => return,
     Some(p) => {
-      let name: String = format!("{}", p.display());
-      debug!("path: {}", name);
-      if ignore::filename(&name) {
-        info!("Ignoring change on '{}'", name);
-      } else {
-        spawn_compile(t, c);
+      debug!("path: {}", p.display());
+      match p.file_name() {
+        None => return,
+        Some(f) => {
+            let name = f.to_string_lossy();
+            if ignore::filename(&name) {
+                info!("Ignoring change on '{}' ({})", name, p.display());
+            } else {
+                spawn_compile(t, c);
+            }
+        }
       }
     }
   }
