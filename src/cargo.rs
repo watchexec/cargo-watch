@@ -1,11 +1,11 @@
 //! Utilities for working with cargo,
 
+use std::env;
 use std::ffi::OsStr;
-use std::fs::{self, PathExt};
+use std::fs;
+use std::path::PathBuf;
 use std::process::Command;
 use std::process::Stdio;
-use std::env;
-use std::path::PathBuf;
 
 macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 

@@ -1,4 +1,3 @@
-#![warn(missing_docs)]
 //! Watch files in a Cargo project and compile it when they change
 
 extern crate rustc_serialize;

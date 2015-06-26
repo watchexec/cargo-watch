@@ -1,4 +1,6 @@
-# $ cargo watch [![(build status)](https://travis-ci.org/passcod/cargo-watch.svg)](https://travis-ci.org/passcod/cargo-watch)
+# $ cargo watch
+
+[![Releases](https://img.shields.io/github/release/passcod/cargo-watch.svg?style=flat-square)](https://github.com/passcod/cargo-watch/releases)[![License](https://img.shields.io/crates/l/cargo-watch.svg?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)[![Travis](https://img.shields.io/travis/passcod/cargo-watch.svg?style=flat-square)](https://travis-ci.org/passcod/cargo-watch)[![Code of Conduct](https://img.shields.io/badge/contributor-covenant-123456.svg?style=flat-square)](http://contributor-covenant.org/version/1/1/0/)
 
 ## Usage
 
@@ -25,8 +27,8 @@ file, everything that's a dot-file, and cache/backup files (`.filename.swo`
 and `~filename.rs`).
 
 It uses the [notify](https://github.com/passcod/rsnotify) crate for file
-events, so it supports Linux through inotify, and (untested) all other
-platforms through polling (and native solutions once they get there).
+events, so it supports Linux, OS X, and soon Windows through native APIs,
+and has a polling implementation to fall back on for all other platforms.
 
 ## How?
 
