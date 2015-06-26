@@ -7,6 +7,7 @@ authors = [
   "Konstantin Stepanov <me@kstep.me>",
   "Jonathan Neuschäfer <j.neuschaefer@gmx.net>",
   "Gabor Nagy <mail@aigeruth.hu>",
+  "Ivan Jager <aij+git@mrph.org>",
 ]
 
 description = "Utility for cargo to compile projects when sources change"
@@ -25,7 +26,8 @@ keywords = [
 [dependencies]
 rustc-serialize = "*"
 docopt = "0.6"
-docopt_macros = "0.6"
-notify = "^1.2.1"
+notify = "^2.0.0"
 regex = "*"
 time = "*"
+log = "^0.3.1"
+env_logger = "^0.3.1"
