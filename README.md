@@ -1,6 +1,6 @@
 # $ cargo watch
 
-[![Releases](https://img.shields.io/github/release/passcod/cargo-watch.svg?style=flat-square)](https://github.com/passcod/cargo-watch/releases)[![License](https://img.shields.io/crates/l/cargo-watch.svg?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)[![Travis](https://img.shields.io/travis/passcod/cargo-watch.svg?style=flat-square)](https://travis-ci.org/passcod/cargo-watch)[![Code of Conduct](https://img.shields.io/badge/contributor-covenant-123456.svg?style=flat-square)](http://contributor-covenant.org/version/1/1/0/)
+[![Release](https://img.shields.io/github/tag/passcod/cargo-watch.svg?style=flat-square)](https://github.com/passcod/cargo-watch/releases)[![License](https://img.shields.io/crates/l/cargo-watch.svg?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)[![Travis](https://img.shields.io/travis/passcod/cargo-watch.svg?style=flat-square)](https://travis-ci.org/passcod/cargo-watch)[![Code of Conduct](https://img.shields.io/badge/contributor-covenant-123456.svg?style=flat-square)](http://contributor-covenant.org/version/1/1/0/)
 
 ## Usage
 
