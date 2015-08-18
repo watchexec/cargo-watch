@@ -1,6 +1,6 @@
 [package]
 name = "cargo-watch"
-version = "2.1.5"
+version = "3.0.0"
 authors = [
   "Félix Saparelli <me@passcod.name>",
   "Antti Keränen <detegr@gmail.com>",
@@ -8,6 +8,7 @@ authors = [
   "Jonathan Neuschäfer <j.neuschaefer@gmx.net>",
   "Gabor Nagy <mail@aigeruth.hu>",
   "Ivan Jager <aij+git@mrph.org>",
+  "Christopher Brickley <brickley@gmail.com>",
 ]
 
 description = "Utility for cargo to compile projects when sources change"

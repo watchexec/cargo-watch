@@ -21,55 +21,37 @@ mod timelock;
 static USAGE: &'static str = "
 Usage: cargo-watch [watch] [options]
        cargo watch [options]
+       cargo-watch [watch] [<args>...]
+       cargo watch [<args>...]
 
 Options:
   -h, --help      Display this message
-  -b, --build     Run `cargo build` when a file is modified
-  -d, --doc       Run `cargo doc` when a file is modified
-  -t, --test      Run `cargo test` when a file is modified
-  -n, --bench     Run `cargo bench` when a file is modified
 
-Default options are `build` and `test`
+`cargo watch` can take one or more arguments to pass to cargo. For example,
+`cargo watch \"test ex_ --release\"` will run `cargo test ex_ --release`
+
+If no arguments are provided, then cargo will run `build` and `test`
 ";
 
 #[derive(RustcDecodable, Debug)]
 struct Args {
-    flag_build: bool,
-    flag_doc: bool,
-    flag_test: bool,
-    flag_bench: bool,
+    arg_args: Vec<String>,
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone)]
 pub struct Config {
-    build: bool,
-    doc: bool,
-    test: bool,
-    bench: bool
+    args: Vec<String>,
 }
 
 impl Config {
   fn new() -> Config {
     #![allow(unused_variables)]
     let Args {
-      flag_build: mut build,
-      flag_doc: doc,
-      flag_test: mut test,
-      flag_bench: bench,
+      arg_args: args,
     } = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
 
-    if !build && !doc &&
-      !test && !bench {
-        // Default to build & doc
-        build = true;
-        test = true;
-      }
-
     Config {
-      build: build,
-      doc: doc,
-      test: test,
-      bench: bench
+      args: args,
     }
   }
 }

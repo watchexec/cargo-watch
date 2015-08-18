@@ -42,15 +42,16 @@ pub fn root() -> Option<PathBuf> {
   None
 }
 
-/// Runs a cargo command and displays the output.
-pub fn run(cmd: &str) {
-  println!("\n$ cargo {}", cmd);
+/// Runs one or more cargo commands and displays the output.
+pub fn run(cmds: &str) {
+  let cmds_vec: Vec<&str> = cmds.split_whitespace().collect();
+  println!("\n$ cargo {}", cmds);
   match Command::new("cargo")
     .stderr(Stdio::inherit())
     .stdout(Stdio::inherit())
-    .arg(cmd)
+    .args(&cmds_vec)
     .output() {
     Ok(o) => println!("-> {}", o.status),
-    Err(e) => println!("Failed to execute 'cargo {}': {}", cmd, e)
+    Err(e) => println!("Failed to execute 'cargo {}': {}", cmds, e)
   };
 }
