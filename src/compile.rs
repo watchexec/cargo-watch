@@ -3,21 +3,17 @@ use std::sync::atomic::AtomicIsize;
 use std::thread;
 use super::{Config, cargo, ignore, notify, timelock};
 
-macro_rules! run_if_set(
-  ($flag:ident) => {
-    if $flag { cargo::run(stringify!($flag)) }
-  }
-);
-
 fn compile(t: Arc<AtomicIsize>, c: Arc<Config>) {
   let Config {
-    build, doc, test, bench
+    ref args
   } = *c;
   debug!("Starting a compile");
-  run_if_set!(build);
-  run_if_set!(doc);
-  run_if_set!(test);
-  run_if_set!(bench);
+  if args.len() > 0 {
+      args.iter().map(|v| cargo::run(v)).last();
+  }
+  else {
+      vec![String::from("build"), String::from("test")].iter().map(|v| cargo::run(v)).last();
+  }
   timelock::update(&t);
   debug!("Compile done");
 }
