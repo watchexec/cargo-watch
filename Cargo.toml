@@ -32,3 +32,10 @@ notify = "^2.4.1"
 regex = "*"
 rustc-serialize = "*"
 time = "*"
+
+[features]
+notifications = ["notify-rust"]
+
+[dependencies.notify-rust]
+version = "~3.0"
+optional = true
