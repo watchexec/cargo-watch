@@ -1,11 +1,15 @@
 //! Utilities for working with cargo,
 
+#[cfg(all(feature = "notifications", target_os="linux"))]
+extern crate notify_rust;
+
 use std::env;
 use std::ffi::OsStr;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 use std::process::Stdio;
+use std::process::Output;
 
 macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 
@@ -51,7 +55,41 @@ pub fn run(cmds: &str) {
     .stdout(Stdio::inherit())
     .args(&cmds_vec)
     .output() {
-    Ok(o) => println!("-> {}", o.status),
+    Ok(o)  => notify(&o, &cmds),
     Err(e) => println!("Failed to execute 'cargo {}': {}", cmds, e)
   };
 }
+
+#[cfg(not(feature = "notifications"))]
+fn notify(output:&Output, cmds:&str){
+    if output.status.success() {
+        println!("{} successfull", cmds );
+    } else {
+        println!("{} not successfull", cmds );
+    }
+}
+
+
+/// Sends notification after command has been completed.
+#[cfg(all(feature = "notifications", target_os="linux"))]
+fn notify(output:&Output, cmds:&str){
+
+    if output.status.success() {
+        println!("{} successfull", cmds );
+
+        notify_rust::Notification::new()
+            .summary(&format!("Cargo Watch Ok: \"{}\"", cmds))
+            //.body("crate would probably compile")
+            .icon("dialog-ok")
+            .show().unwrap();
+    } else {
+        println!("{} not successfull", cmds );
+        notify_rust::Notification::new()
+            .summary(&format!("Cargo Watch Failed: \"{}\"", cmds))
+            //.body("crate would not compile")
+            .icon("dialog-cancel")
+            .show().unwrap();
+    }
+
+}
+
