@@ -1,6 +1,17 @@
 # $ cargo watch
 
-[![Release](https://img.shields.io/github/tag/passcod/cargo-watch.svg?style=flat-square)](https://github.com/passcod/cargo-watch/releases)[![License](https://img.shields.io/crates/l/cargo-watch.svg?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)[![Travis](https://img.shields.io/travis/passcod/cargo-watch.svg?style=flat-square)](https://travis-ci.org/passcod/cargo-watch)[![Code of Conduct](https://img.shields.io/badge/contributor-covenant-123456.svg?style=flat-square)](http://contributor-covenant.org/version/1/1/0/)
+[![ Release](https://img.shields.io/github/tag/passcod/cargo-watch.svg?style=flat-square)](https://github.com/passcod/cargo-watch/releases)[![ License](https://img.shields.io/crates/l/cargo-watch.svg?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)[![ Travis](https://img.shields.io/travis/passcod/cargo-watch.svg?style=flat-square)](https://travis-ci.org/passcod/cargo-watch)[![ Code of Conduct](https://img.shields.io/badge/contributor-covenant-123456.svg?style=flat-square)](http://contributor-covenant.org/version/1/1/0/)
+
+Cargo Watch watches over your project's source for changes, and runs Cargo
+commands when they occur.
+
+If you've used [nodemon], [gulp], [guard], [watchman], or similar others,
+it will probably feel familiar.
+
+[nodemon]: http://nodemon.io/
+[gulp]: http://gulpjs.com/
+[guard]: http://guardgem.org/
+[watchman]: https://facebook.github.io/watchman/
 
 ## Usage
 
@@ -8,46 +19,45 @@
 2. Place in your $PATH.
 3. Invoke using `$ cargo watch`.
 
-![screenshot from 2014-12-21 15 09 10](https://cloud.githubusercontent.com/assets/155787/5516943/89478468-8923-11e4-89af-d0963542623d.png)
+You may also be able to use `cargo install`.
 
-## What?
+## Details
 
-It will watch your `src` folder and any subdirectories for file changes,
-additions, removals, and moves (in or out), and run both `$ cargo build` and
-`$ cargo test` on your project.  You can also specify other things to be run,
-e.g. `$ cargo doc` and `$ cargo bench`, by passing `$ cargo watch doc bench`
-or more sophisticated cargo commands such as `$ cargo watch "build --release"
-"test test_"` which will send those two commands to cargo.
-See `$ cargo watch --help` for more.
+By default, it runs `build` then `test`. You can easily override this, though:
 
-Just like any Cargo command, you can run it from any subdirectory in your
-project tree and it will find its way.
+    $ cargo watch [command...]
 
-It's hard-coded to not compile things more than once per 2 seconds, to avoid
-overloading your computer. It will also ignore everything that's not a Rust
-file, everything that's a dot-file, and cache/backup files (`.filename.swo`
-and `~filename.rs`).
+A few examples:
 
-It uses the [notify](https://github.com/passcod/rsnotify) crate for file
-events, so it supports Linux, OS X, and soon Windows through native APIs,
-and has a polling implementation to fall back on for all other platforms.
+```
+$ cargo watch doc
+$ cargo watch test bench
+$ cargo watch "build --release"
+$ cargo watch "build --release" "test test_"
+```
 
-## How?
+It pairs well with [dybuk], the compiler output prettifier:
 
-It uses [notify](https://github.com/passcod/rsnotify) to watch files, and
-simply runs `$ cargo <whatever>` as child processes.
+    $ cargo watch check |& dybuk
 
-## Why?
+Just like any Cargo command, it will run from any project subdirectory.
 
-I was getting tired of having to switch windows / tmux panes to compile my
-code. This is much faster, and because it shows the output of the command,
-I can see compile errors and warnings with a save and fix them immediately.
+Cargo Watch is currently hard-coded to not compile things more often than every
+two seconds, to avoid overusage. If you wish to help implementing a better
+solution, see [#2](https://github.com/passcod/cargo-watch/issues/2).
 
-## Who?
+It will ignore everything that's not a Rust file, and files that start with
+either a dot (`.foo.rs`) or a tilde (`~foo.rs`).
 
-My name is Félix Saparelli a.k.a. [passcod](https://passcod.name). You can
-find more about me on the internet.
+It uses the [notify] crate for file events, so it supports all platforms, some
+more efficiently than others (if you use the big three — Linux, Mac, Windows —
+you will be fine).
 
-Also a bunch of [awesome contributors][contributors] participated.
+## Etc
+
+Created by [Félix Saparelli][passcod] and [awesome contributors][contributors].
 
 [contributors]: https://github.com/passcod/cargo-watch/network/members
+[dybuk]: https://github.com/Ticki/dybuk
+[notify]: https://github.com/passcod/rsnotify
+[passcod]: https://passcod.name
