@@ -53,6 +53,12 @@ It uses the [notify] crate for file events, so it supports all platforms, some
 more efficiently than others (if you use the big three — Linux, Mac, Windows —
 you will be fine).
 
+If your cargo-watch fails to watch some deep directories but not others, and you
+are on Linux, you may have hit [the inotify watch limit](http://blog.sorah.jp/2012/01/24/inotify-limitation).
+You can either increase the limit (instructions are on the previous link and at
+[this Guard wiki page](https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers)),
+or you can stop whatever it is that's consuming so many inotify watches.
+
 ## Etc
 
 Created by [Félix Saparelli][passcod] and [awesome contributors][contributors].
