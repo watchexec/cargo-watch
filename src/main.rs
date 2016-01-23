@@ -77,6 +77,8 @@ fn main() {
       let _ = watcher.watch(&p.join("tests"));
       let _ = watcher.watch(&p.join("benches"));
 
+      println!("Waiting for changes... Hit Ctrl-C to stop.");
+
       loop {
         match rx.recv() {
           Ok(e) => compile::handle_event(&t, e, c.clone()),
