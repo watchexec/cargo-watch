@@ -1,6 +1,6 @@
 [package]
 name = "cargo-watch"
-version = "3.0.2"
+version = "3.0.3"
 authors = [
   "Félix Saparelli <me@passcod.name>",
   "Antti Keränen <detegr@gmail.com>",
@@ -25,10 +25,10 @@ keywords = [
 ]
 
 [dependencies]
-docopt = "^0.6"
-env_logger = "^0.3"
-log = "^0.3"
-notify = "^2.5"
-regex = "*"
-rustc-serialize = "*"
-time = "*"
+docopt = "^0.6.78"
+env_logger = "^0.3.2"
+log = "^0.3.4"
+notify = "^2.5.4"
+regex = "^0.1.44"
+rustc-serialize = "^0.3.16"
+time = "^0.1.34"
