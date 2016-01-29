@@ -53,8 +53,13 @@ impl Config {
 }
 
 fn main() {
+    // Initialize logger functionality
     env_logger::init().unwrap();
+
+    // Read and save CLI parameters
     let config = Config::new();
+
+    // Creates `Watcher` instance to watch some folders
     let (tx, rx) = channel();
     let mut watcher: RecommendedWatcher = match Watcher::new(tx) {
         Ok(i) => i,
@@ -66,19 +71,21 @@ fn main() {
 
     let t = timelock::new();
     let c = Arc::new(config);
+
+    // Check if we are (somewhere) in a cargo project directory
     match cargo::root() {
         Some(p) => {
+            // We want to watch these subfolders
             let _ = watcher.watch(&p.join("src"));
             let _ = watcher.watch(&p.join("tests"));
             let _ = watcher.watch(&p.join("benches"));
 
             println!("Waiting for changes... Hit Ctrl-C to stop.");
 
-            loop {
-                match rx.recv() {
-                    Ok(e) => compile::handle_event(&t, e, c.clone()),
-                    Err(_) => (),
-                }
+            // Handle events as long as the watcher still sends events
+            // through the channel
+            while let Ok(event) = rx.recv() {
+                compile::handle_event(&t, event, c.clone());
             }
         }
         None => {

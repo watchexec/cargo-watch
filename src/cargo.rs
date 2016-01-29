@@ -20,25 +20,20 @@ pub fn root() -> Option<PathBuf> {
         }).unwrap_or(false)
     }
 
-    let mut wd = match env::current_dir() {
-        Err(_) => {
-            return None;
+    // From the current directory we work our way up, looking for `Cargo.toml`
+    env::current_dir().ok().and_then(|mut wd| {
+        // TODO: put constant somewhere else
+        for _ in 0..11 {
+            if contains_manifest(&mut wd) {
+                return Some(wd);
+            }
+            if !wd.pop() {
+                break;
+            }
         }
-        Ok(w) => w,
-    };
 
-
-    // TODO: put constant somewhere else
-    for _ in 0..11 {
-        if contains_manifest(&mut wd) {
-            return Some(wd);
-        }
-        if !wd.pop() {
-            break;
-        }
-    }
-
-    None
+        None
+    })
 }
 
 /// Runs one or more cargo commands and displays the output.
