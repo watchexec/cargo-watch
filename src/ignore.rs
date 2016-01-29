@@ -9,14 +9,12 @@ macro_rules! rt_regex(($r:expr) => ({
 }));
 
 fn filenames() -> Vec<regex::Regex> {
-  vec![
-    rt_regex!(r"[^.][^r][^s]$"), // FIXME: It should be possible to trigger on non-.rs changes
-    rt_regex!(r"^\."),
-    rt_regex!(r"~$"),
-    rt_regex!(r"^~")
-  ]
+    vec![rt_regex!(r"[^.][^r][^s]$"), // FIXME: It should be possible to trigger on non-.rs changes
+         rt_regex!(r"^\."),
+         rt_regex!(r"~$"),
+         rt_regex!(r"^~")]
 }
 
 pub fn filename(f: &str) -> bool {
-  filenames().iter().any(|fr| fr.is_match(f))
+    filenames().iter().any(|fr| fr.is_match(f))
 }
