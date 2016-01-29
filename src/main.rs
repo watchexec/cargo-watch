@@ -20,26 +20,20 @@ mod compile;
 mod ignore;
 mod timelock;
 
-static USAGE: &'static str = "
+static USAGE: &'static str = r#"
 Usage: cargo-watch [watch] [options]
        cargo watch [options]
-       \
-                              cargo-watch [watch] [<args>...]
+       cargo-watch [watch] [<args>...]
        cargo watch [<args>...]
 
-\
-                              Options:
+Options:
   -h, --help      Display this message
 
-`cargo watch` can \
-                              take one or more arguments to pass to cargo. For example,
-`cargo \
-                              watch \"test ex_ --release\"` will run `cargo test ex_ --release`
+`cargo watch` can take one or more arguments to pass to cargo. For example,
+`cargo watch "test ex_ --release"` will run `cargo test ex_ --release`
 
-\
-                              If no arguments are provided, then cargo will run `build` and \
-                              `test`
-";
+If no arguments are provided, then cargo will run `build` and `test`
+"#;
 
 #[derive(RustcDecodable, Debug)]
 struct Args {
@@ -53,10 +47,9 @@ pub struct Config {
 
 impl Config {
     fn new() -> Config {
-    #![allow(unused_variables)]
-        let Args {
-      arg_args: args,
-    } = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+        let Args { arg_args: args } = Docopt::new(USAGE)
+                                             .and_then(|d| d.decode())
+                                             .unwrap_or_else(|e| e.exit());
 
         Config { args: args }
     }
