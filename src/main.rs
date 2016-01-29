@@ -2,9 +2,6 @@
 
 extern crate rustc_serialize;
 extern crate docopt;
-#[no_link]
-extern crate docopt_macros;
-
 extern crate notify;
 #[macro_use]
 extern crate log;
@@ -59,8 +56,7 @@ fn main() {
     env_logger::init().unwrap();
     let config = Config::new();
     let (tx, rx) = channel();
-    let w: Result<RecommendedWatcher, Error> = Watcher::new(tx);
-    let mut watcher = match w {
+    let mut watcher: RecommendedWatcher = match Watcher::new(tx) {
         Ok(i) => i,
         Err(_) => {
             error!("Failed to init notify");
