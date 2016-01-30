@@ -69,10 +69,8 @@ fn main() {
 
     // Configure watcher: we want to watch these subfolders
     for subdir in &config::WATCH_DIRS {
-        if let Err(e) = watcher.watch(&cargo_dir.join(subdir)) {
-            error!("Failed to watch some folders with `notify`: {:?}", e);
-            std::process::exit(2);
-        }
+        // We ignore any errors (e.g. if the directory doesn't exist)
+        let _ = watcher.watch(&cargo_dir.join(subdir));
     }
 
     // Tell the user that we are ready

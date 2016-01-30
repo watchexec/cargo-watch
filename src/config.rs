@@ -5,7 +5,12 @@ pub const DEFAULT_COMMANDS: [&'static str; 1] = ["test"];
 pub const MAX_ANCESTORS: u32 = 10;
 
 /// Which subdirectories are being watched for changes
-pub const WATCH_DIRS: [&'static str; 3] = ["src", "tests", "benches"];
+pub const WATCH_DIRS: [&'static str; 4] = [
+    "src",
+    "tests",
+    "benches",
+    "examples",
+];
 
 /// Changes on files whose names match one of these regexes are ignored
 pub const IGNORED_FILES: [&'static str; 3] = [
