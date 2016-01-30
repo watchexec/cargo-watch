@@ -9,6 +9,7 @@ authors = [
   "Gabor Nagy <mail@aigeruth.hu>",
   "Ivan Jager <aij+git@mrph.org>",
   "Christopher Brickley <brickley@gmail.com>",
+  "Lukas Kalbertodt <lukas.kalbertodt@gmail.com>",
 ]
 
 description = "Utility for cargo to compile projects when sources change"
@@ -32,4 +33,3 @@ log = "^0.3.4"
 notify = "^2.5.4"
 regex = "^0.1.44"
 rustc-serialize = "^0.3.16"
-time = "^0.1.34"
