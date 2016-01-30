@@ -4,8 +4,8 @@ use notify;
 use std::io;
 use std::process::Command;
 use std::sync::{Arc, Mutex};
-use std::sync::mpsc::Receiver;
-use std::thread;
+use std::sync::mpsc::{channel, Receiver, Sender};
+use std::thread::{self, JoinHandle};
 use wait_timeout::ChildExt;
 
 /// Information about the currently executed job
@@ -34,6 +34,10 @@ pub fn handle(rx: Receiver<notify::Event>, mut commands: Vec<String>) {
     // Both threads need to know what kind of job is being executed, if any
     let job_info = Arc::new(Mutex::new(JobInfo::Idle));
 
+    // The sender that can send kill signals to the processing thread
+    let mut kill: Option<Sender<()>> = None;
+    let mut thread: Option<JoinHandle<()>> = None;
+
     // Handle events as long as the watcher still sends events
     // through the channel
     while let Ok(event) = rx.recv() {
@@ -59,25 +63,53 @@ pub fn handle(rx: Receiver<notify::Event>, mut commands: Vec<String>) {
 
         // Check if another job is already in execution
         let mut job = job_info.lock().unwrap();
-        if *job != JobInfo::Idle {
+        if *job == JobInfo::Rustc {
             info!("Another command is currently in execution: request denied");
             continue;
+        } else if *job == JobInfo::User {
+            // Send kill signal. We can unwrap here, because `*job` is `Idle`
+            // until the channel is created. The result can be ignored: an
+            // error means that the other end has hung up. Since we hold the
+            // lock of `job`, this means that the other thread has panicked.
+            // The other end is deallocated when `job` is reset to `Idle`. The
+            // panicking case is handled below.
+            let _ = kill.unwrap().send(());
+
+            // After the kill signal was send, we have to wait for the thread
+            // to receive it and terminate itself. About unwrap: see above.
+            // We have to reset the job info ourselves, because the other
+            // thread is unable to, because we are holding the lock.
+            let res = thread.unwrap().join();
+            *job = JobInfo::Idle;
+            if res.is_err() {
+                info!("child thread panicked...")
+            }
         }
 
         // No other job is in execution: start new one.
         *job = JobInfo::Rustc;
 
+        // Create channel to send kill signals
+        let (tx, rx) = channel();
+        kill = Some(tx);
+
         let thread_commands = commands.clone();
         let thread_job_info = job_info.clone();
 
-        let _ = thread::spawn(move || {
-            execute_commands(&thread_commands, thread_job_info)
-        });
+        thread = Some(
+            thread::spawn(move || {
+                execute_commands(&thread_commands, thread_job_info, rx)
+            })
+        );
     }
 }
 
 /// Executes given commands in order (runs on extra thread)
-fn execute_commands(commands: &[String], job_info: Arc<Mutex<JobInfo>>) {
+fn execute_commands(
+    commands: &[String],
+    job_info: Arc<Mutex<JobInfo>>,
+    kill: Receiver<()>,
+) {
     // helper to update the "global" job information
     let update_info = |new_info: JobInfo| {
         // We can unwrap here: the only way `lock` returns an `Err` value is
@@ -89,8 +121,15 @@ fn execute_commands(commands: &[String], job_info: Arc<Mutex<JobInfo>>) {
 
     debug!("Starting a command run!");
 
+    // Says if we received a kill signal
+    let mut abort = false;
+
     // Iterate through all given commands and execute them in order
     for command in commands {
+        if abort {
+            debug!("Aborting command run");
+            break;
+        }
         let args: Vec<&str> = command.split_whitespace().collect();
 
         println!("");
@@ -103,7 +142,7 @@ fn execute_commands(commands: &[String], job_info: Arc<Mutex<JobInfo>>) {
             update_info(JobInfo::Rustc);
         }
 
-        let status = || -> Result<_, io::Error> {
+        let mut status = || -> Result<_, io::Error> {
             // Start the process
             let mut child = try!(Command::new("cargo").args(&args).spawn());
 
@@ -111,18 +150,25 @@ fn execute_commands(commands: &[String], job_info: Arc<Mutex<JobInfo>>) {
                 // Wait some time for it to finish
                 let res = child.wait_timeout_ms(config::PROCESS_WAIT_TIMEOUT);
 
-                // TODO: check if kill signal was received
+                // Check if kill signal was received
+                if let Ok(_) = kill.try_recv() {
+                    // We got the order to kill the child and terminate
+                    debug!("Killing spawned process");
+                    let _ = child.kill();
+                    abort = true;
+                }
 
-                // If the wait finished with an error or returned successfully,
-                // we return from this function.
-                if let Some(s) = try!(res) {
-                    return Ok(Some(s));
+                // If the wait finished with an error or returned because the
+                // process ended or if we need to abort, we return the wait
+                // result directly.
+                if res.is_err() || res.as_ref().unwrap().is_some() || abort {
+                    return res;
                 }
             }
         };
 
         match status() {
-            Ok(None) => {},
+            Ok(None) => info!("Process did not end normally, was killed"),
             Ok(Some(status)) => println!("-> {}", status),
             Err(e) => {
                 println!(
@@ -133,8 +179,12 @@ fn execute_commands(commands: &[String], job_info: Arc<Mutex<JobInfo>>) {
             },
         }
     }
-    // Reset job info
-    update_info(JobInfo::Idle);
+    // Reset job info, if it wasn't caused by a kill signal. If it was, the
+    // main thread still holds the lock and is trying to join this thread,
+    // which results in a deadlock.
+    if !abort {
+        update_info(JobInfo::Idle);
+    }
 
     debug!("Command run done");
 }
