@@ -10,12 +10,12 @@ extern crate notify;
 extern crate regex;
 extern crate rustc_serialize;
 
-
 use docopt::Docopt;
 use notify::{Error, RecommendedWatcher, Watcher};
 use std::sync::mpsc::channel;
 
 mod cargo;
+mod config;
 mod schedule;
 
 static USAGE: &'static str = r#"
@@ -68,16 +68,8 @@ fn main() {
     };
 
     // Configure watcher: we want to watch these subfolders
-    {
-        // FIXME: using a closure here to be able to use `try!` here. Using
-        // `and_then` is even uglier IMO. Waiting for the "try-catch" RFC.
-        let mut add_dirs = || -> Result<(), notify::Error> {
-            try!(watcher.watch(&cargo_dir.join("src")));
-            try!(watcher.watch(&cargo_dir.join("tests")));
-            try!(watcher.watch(&cargo_dir.join("benches")));
-            Ok(())
-        };
-        if let Err(e) = add_dirs() {
+    for subdir in &config::WATCH_DIRS {
+        if let Err(e) = watcher.watch(&cargo_dir.join(subdir)) {
             error!("Failed to watch some folders with `notify`: {:?}", e);
             std::process::exit(2);
         }

@@ -1,15 +1,15 @@
-use std::sync::mpsc::Receiver;
-use std::sync::Arc;
-use std::thread;
-use std::process::Command;
-use notify;
 use cargo;
-
+use config;
+use notify;
+use std::process::Command;
+use std::sync::Arc;
+use std::sync::mpsc::Receiver;
+use std::thread;
 
 pub fn handle(rx: Receiver<notify::Event>, mut commands: Vec<String>) {
     // If no commands were specified we use the default commands
     if commands.is_empty() {
-        commands.extend_from_slice(&["build".into(), "test".into()]);
+        commands.extend(config::DEFAULT_COMMANDS.iter().map(|&s| s.into()));
     }
 
     // We need to wrap it into an Arc to safely share it with other threads.

@@ -1,16 +1,15 @@
 //! Utilities for working with cargo and rust files
 
+use config;
+use regex::Regex;
 use std::env;
 use std::fs;
 use std::path::PathBuf;
-use regex::Regex;
-
-macro_rules! Sl(($v:expr) => (String::from_utf8_lossy($v.as_slice())));
 
 /// Returns the closest ancestor path containing a `Cargo.toml`.
 ///
 /// Returns `None` if no ancestor path contains a `Cargo.toml`, or if
-/// the limit of 10 ancestors has been reached.
+/// the limit of MAX_ANCESTORS ancestors has been reached.
 pub fn root() -> Option<PathBuf> {
     /// Checks if the directory contains `Cargo.toml`
     fn contains_manifest(path: &PathBuf) -> bool {
@@ -22,8 +21,7 @@ pub fn root() -> Option<PathBuf> {
 
     // From the current directory we work our way up, looking for `Cargo.toml`
     env::current_dir().ok().and_then(|mut wd| {
-        // TODO: put constant somewhere else
-        for _ in 0..11 {
+        for _ in 0..config::MAX_ANCESTORS {
             if contains_manifest(&mut wd) {
                 return Some(wd);
             }
@@ -36,28 +34,17 @@ pub fn root() -> Option<PathBuf> {
     })
 }
 
-// FIXME: This should use the compile-time `regex!` macros, when syntax
-// extensions become stabilized.
-macro_rules! unwrap_regex {
-    ($r:expr) => {
-        Regex::new($r).expect("Couldn't parse regex")
-    }
-}
-
 lazy_static! {
     static ref IGNORED_FILES: Vec<Regex> = {
-        // FIXME: It should be possible to trigger on non-.rs changes.
-        // Currently the first regex prevents that.
-        vec![
-            unwrap_regex!(r"[^.][^r][^s]$"),
-            unwrap_regex!(r"^\."),
-            unwrap_regex!(r"~$"),
-            unwrap_regex!(r"^~"),
-        ]
+        config::IGNORED_FILES.iter().map(|s| {
+            // FIXME: This should use the compile-time `regex!` macros, when
+            // syntax extensions become stabilized.
+            Regex::new(s).expect("Couldn't parse regex")
+        }).collect()
     };
 }
 
-
+/// Checks if the given filename should be ignored
 pub fn is_ignored_file(f: &str) -> bool {
     IGNORED_FILES.iter().any(|fr| fr.is_match(f))
 }
