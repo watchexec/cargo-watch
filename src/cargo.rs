@@ -38,7 +38,7 @@ lazy_static! {
     static ref IGNORED_FILES: Vec<Regex> = {
         config::IGNORED_FILES.iter().map(|s| {
             // FIXME: This should use the compile-time `regex!` macros, when
-            // syntax extensions become stabilized.
+            // syntax extensions become stabilized (see #32)
             Regex::new(s).expect("Couldn't parse regex")
         }).collect()
     };

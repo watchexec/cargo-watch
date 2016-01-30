@@ -9,7 +9,7 @@ pub const WATCH_DIRS: [&'static str; 3] = ["src", "tests", "benches"];
 
 /// Changes on files whose names match one of these regexes are ignored
 pub const IGNORED_FILES: [&'static str; 3] = [
-    // FIXME: It should be possible to trigger on non-.rs changes.
+    // FIXME: It should be possible to trigger on non-.rs changes (see #31)
     r"[^.][^r][^s]$",
     r"^\.",
     r"^~",
