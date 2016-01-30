@@ -1,10 +1,12 @@
 use cargo;
 use config;
 use notify;
+use std::io;
 use std::process::Command;
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc::Receiver;
 use std::thread;
+use wait_timeout::ChildExt;
 
 /// Information about the currently executed job
 #[derive(PartialEq, Debug, Clone, Copy)]
@@ -94,7 +96,6 @@ fn execute_commands(commands: &[String], job_info: Arc<Mutex<JobInfo>>) {
         println!("");
         println!("$ cargo {}", command);
 
-
         // Update global information about the running job
         if args.get(0) == Some(&"run") {
             update_info(JobInfo::User);
@@ -102,14 +103,27 @@ fn execute_commands(commands: &[String], job_info: Arc<Mutex<JobInfo>>) {
             update_info(JobInfo::Rustc);
         }
 
-        // Start the process, wait for it, reset global job info and print
-        // the command's result
-        let status = Command::new("cargo")
-                             .args(&args)
-                             .status();
+        let status = || -> Result<_, io::Error> {
+            // Start the process
+            let mut child = try!(Command::new("cargo").args(&args).spawn());
 
-        match status {
-            Ok(status) => println!("-> {}", status),
+            loop {
+                // Wait some time for it to finish
+                let res = child.wait_timeout_ms(config::PROCESS_WAIT_TIMEOUT);
+
+                // TODO: check if kill signal was received
+
+                // If the wait finished with an error or returned successfully,
+                // we return from this function.
+                if let Some(s) = try!(res) {
+                    return Ok(Some(s));
+                }
+            }
+        };
+
+        match status() {
+            Ok(None) => {},
+            Ok(Some(status)) => println!("-> {}", status),
             Err(e) => {
                 println!(
                     "Failed to execute 'cargo {}': {}",

@@ -19,3 +19,7 @@ pub const IGNORED_FILES: [&'static str; 3] = [
     r"^\.",
     r"^~",
 ];
+
+/// The timeout for waiting for another process. Shorter means more CPU usage,
+/// longer means slower response to file changes. Value in ms.
+pub const PROCESS_WAIT_TIMEOUT: u32 = 100;
