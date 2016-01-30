@@ -43,7 +43,7 @@ pub fn handle(rx: Receiver<notify::Event>, mut commands: Vec<String>) {
 
         // TODO: check if another command is still running!
         let _ = thread::spawn(move || {
-            debug!("Starting a compile");
+            debug!("Starting a command run!");
 
             // Iterate through all given commands and execute them in order
             for command in &*thread_commands {
@@ -68,7 +68,7 @@ pub fn handle(rx: Receiver<notify::Event>, mut commands: Vec<String>) {
                 };
             }
 
-            debug!("Compile done");
+            debug!("Command run done");
         });
     }
 }
