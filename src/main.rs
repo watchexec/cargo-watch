@@ -9,6 +9,7 @@ extern crate log;
 extern crate notify;
 extern crate regex;
 extern crate rustc_serialize;
+extern crate wait_timeout;
 
 use docopt::Docopt;
 use notify::{Error, RecommendedWatcher, Watcher};
