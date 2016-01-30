@@ -8,10 +8,9 @@ pub const MAX_ANCESTORS: u32 = 10;
 pub const WATCH_DIRS: [&'static str; 3] = ["src", "tests", "benches"];
 
 /// Changes on files whose names match one of these regexes are ignored
-pub const IGNORED_FILES: [&'static str; 4] = [
+pub const IGNORED_FILES: [&'static str; 3] = [
     // FIXME: It should be possible to trigger on non-.rs changes.
     r"[^.][^r][^s]$",
     r"^\.",
-    r"~$",
     r"^~",
 ];
