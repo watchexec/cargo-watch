@@ -20,27 +20,36 @@ it will probably feel familiar.
 
 ## Install
 
-```
-$ cargo install cargo-watch
-```
+    $ cargo install cargo-watch
 
 Or clone and build with `$ cargo build` then place in your $PATH.
 
+## Upgrade
+
+Cargo has no easy upgrade mechanism at the moment, so you'll need to:
+
+    $ cargo uninstall cargo-watch
+    $ cargo install cargo-watch
 
 ## Usage
 
-By default, it runs `build` then `test`. You can easily override this, though:
+By default, it runs `test` (which implies `build`).
+You can easily override this, though:
 
     $ cargo watch [command...]
 
 A few examples:
 
-```
-$ cargo watch doc
-$ cargo watch test bench
-$ cargo watch "build --release"
-$ cargo watch "build --release" "test test_"
-```
+    $ cargo watch doc
+    $ cargo watch test bench
+    $ cargo watch "build --release"
+    $ cargo watch "build --release" "test test_"
+
+### Cargo run
+
+Cargo Watch has special behaviour with `run` commands: it will restart the
+process on file change. This works especially well when developing servers
+or other applications that never return on normal operation.
 
 ## Details and tips
 
@@ -50,18 +59,14 @@ It pairs well with [dybuk], the compiler output prettifier:
 
 Just like any Cargo command, it will run from any project subdirectory.
 
-Cargo Watch is currently hard-coded to not compile things more often than every
-two seconds, to avoid overusage. If you wish to help implementing a better
-solution, see [#2](https://github.com/passcod/cargo-watch/issues/2).
-
-It will ignore everything that's not a Rust file, and files that start with
-either a dot (`.foo.rs`) or a tilde (`~foo.rs`).
+Cargo Watch will ignore everything that's not a Rust file, and files that start
+with either a dot (`.foo.rs`) or a tilde (`~foo.rs`).
 
 It uses the [notify] crate for file events, so it supports all platforms, some
 more efficiently than others (if you use the big three — Linux, Mac, Windows —
 you will be fine).
 
-If your cargo-watch fails to watch some deep directories but not others, and you
+If your Cargo Watch fails to watch some deep directories but not others, and you
 are on Linux, you may have hit [the inotify watch limit](http://blog.sorah.jp/2012/01/24/inotify-limitation).
 You can either increase the limit (instructions are on the previous link and at
 [this Guard wiki page](https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers)),
