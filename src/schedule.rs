@@ -1,8 +1,10 @@
 use cargo;
 use config;
+#[cfg(not(windows))]
+use libc;
 use notify;
 use std::io;
-use std::process::Command;
+use std::process::{Child, Command};
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread::{self, JoinHandle};
@@ -154,7 +156,7 @@ fn execute_commands(
                 if let Ok(_) = kill.try_recv() {
                     // We got the order to kill the child and terminate
                     debug!("Killing spawned process");
-                    let _ = child.kill();
+                    kill_child(&mut child);
                     abort = true;
                 }
 
@@ -188,3 +190,14 @@ fn execute_commands(
 
     debug!("Command run done");
 }
+
+#[cfg(windows)]
+fn kill_child(child: &mut Child) -> () {
+    let _ = child.kill();
+}
+
+#[cfg(not(windows))]
+fn kill_child(child: &mut Child) -> () {
+    let _ = unsafe { libc::kill(child.id() as i32, libc::SIGTERM) };
+}
+

@@ -28,9 +28,10 @@ keywords = [
 [dependencies]
 docopt = "^0.6.78"
 env_logger = "^0.3.2"
-lazy_static = "0.1.15"
+lazy_static = "^0.1.15"
+libc = "^0.2.4"
 log = "^0.3.4"
 notify = "^2.5.4"
 regex = "^0.1.44"
 rustc-serialize = "^0.3.16"
-wait-timeout = "0.1"
+wait-timeout = "^0.1.0"

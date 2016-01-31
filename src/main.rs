@@ -4,6 +4,8 @@ extern crate docopt;
 extern crate env_logger;
 #[macro_use]
 extern crate lazy_static;
+#[cfg(not(windows))]
+extern crate libc;
 #[macro_use]
 extern crate log;
 extern crate notify;
