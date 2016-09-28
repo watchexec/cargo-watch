@@ -14,7 +14,7 @@ extern crate rustc_serialize;
 extern crate wait_timeout;
 
 use docopt::Docopt;
-use notify::{Error, RecommendedWatcher, Watcher};
+use notify::{RecommendedWatcher, Watcher};
 use std::sync::mpsc::channel;
 
 mod cargo;
