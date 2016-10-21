@@ -21,6 +21,7 @@ mod cargo;
 mod config;
 mod schedule;
 
+static VERSION: &'static str = env!("CARGO_PKG_VERSION");
 static USAGE: &'static str = r#"
 Usage: cargo-watch [watch] [options]
        cargo watch [options]
@@ -29,6 +30,7 @@ Usage: cargo-watch [watch] [options]
 
 Options:
   -h, --help      Display this message
+  --version       Show version
 
 `cargo watch` can take one or more arguments to pass to cargo. For example,
 `cargo watch "test ex_ --release"` will run `cargo test ex_ --release`
@@ -39,6 +41,7 @@ If no arguments are provided, then cargo will run `build` and `test`
 #[derive(RustcDecodable, Debug)]
 struct Args {
     arg_args: Vec<String>,
+    flag_version: bool,
 }
 
 fn main() {
@@ -49,6 +52,12 @@ fn main() {
     let args: Args = Docopt::new(USAGE)
                             .and_then(|d| d.decode())
                             .unwrap_or_else(|e| e.exit());
+
+    if args.flag_version {
+        println!("cargo-watch {}", VERSION);
+        std::process::exit(0);
+    }
+
     let commands = args.arg_args;
 
     // Check if we are (somewhere) in a cargo project directory
