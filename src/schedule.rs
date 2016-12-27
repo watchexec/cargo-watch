@@ -2,7 +2,7 @@ use cargo;
 use config;
 #[cfg(not(windows))]
 use libc;
-use notify;
+use notify::DebouncedEvent;
 use std::io;
 use std::process::{Child, Command};
 use std::sync::{Arc, Mutex};
@@ -22,7 +22,7 @@ enum JobInfo {
 }
 
 /// Waits for changes in the directory and handles them (runs in main thread)
-pub fn handle(rx: Receiver<notify::Event>, mut commands: Vec<String>) {
+pub fn handle(rx: Receiver<DebouncedEvent>, mut commands: Vec<String>) {
     // If no commands were specified we use the default commands
     if commands.is_empty() {
         commands.extend(config::DEFAULT_COMMANDS.iter().map(|&s| s.into()));
@@ -44,9 +44,12 @@ pub fn handle(rx: Receiver<notify::Event>, mut commands: Vec<String>) {
     // through the channel
     while let Ok(event) = rx.recv() {
         // Check if the event refers to a valid file
-        let path = match event.path {
-            Some(ref p) => p,
-            None => continue,
+        let path = match event {
+            DebouncedEvent::Create(ref p) => p,
+            DebouncedEvent::Write(ref p) => p,
+            DebouncedEvent::Remove(ref p) => p,
+            DebouncedEvent::Rename(_, ref p) => p,
+            _ => continue,
         };
         debug!("path changed: {}", path.display());
         let filename = match path.file_name() {

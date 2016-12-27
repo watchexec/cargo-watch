@@ -14,8 +14,9 @@ extern crate rustc_serialize;
 extern crate wait_timeout;
 
 use docopt::Docopt;
-use notify::{RecommendedWatcher, Watcher};
+use notify::{RecommendedWatcher, Watcher, RecursiveMode};
 use std::sync::mpsc::channel;
+use std::time::Duration;
 
 mod cargo;
 mod config;
@@ -71,7 +72,7 @@ fn main() {
 
     // Creates `Watcher` instance and a channel to communicate with it
     let (tx, rx) = channel();
-    let mut watcher: RecommendedWatcher = match Watcher::new(tx) {
+    let mut watcher: RecommendedWatcher = match Watcher::new(tx, Duration::from_secs(1)) {
         Ok(i) => i,
         Err(e) => {
             error!("Failed to init notify ({:?})", e);
@@ -82,7 +83,7 @@ fn main() {
     // Configure watcher: we want to watch these subfolders
     for subdir in &config::WATCH_DIRS {
         // We ignore any errors (e.g. if the directory doesn't exist)
-        let _ = watcher.watch(&cargo_dir.join(subdir));
+        let _ = watcher.watch(&cargo_dir.join(subdir), RecursiveMode::Recursive);
     }
 
     // Tell the user that we are ready
