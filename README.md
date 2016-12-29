@@ -22,14 +22,11 @@ it will probably feel familiar.
 
     $ cargo install cargo-watch
 
+To upgrade:
+
+    $ cargo install --force cargo-watch
+
 Or clone and build with `$ cargo build` then place in your $PATH.
-
-## Upgrade
-
-Cargo has no easy upgrade mechanism at the moment, so you'll need to:
-
-    $ cargo uninstall cargo-watch
-    $ cargo install cargo-watch
 
 ## Usage
 
@@ -40,6 +37,7 @@ You can easily override this, though:
 
 A few examples:
 
+    $ cargo watch run
     $ cargo watch doc
     $ cargo watch test bench
     $ cargo watch "build --release"
@@ -50,6 +48,8 @@ A few examples:
 Cargo Watch has special behaviour with `run` commands: it will restart the
 process on file change. This works especially well when developing servers
 or other applications that never return on normal operation.
+
+⚠ This currently doesn't work properly, see [#25](https://github.com/passcod/cargo-watch/issues/25). ⚠
 
 ## Details and tips
 
