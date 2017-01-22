@@ -1,10 +1,4 @@
 language: rust
-env:
-  global:
-    - secure: SonPAqnHhVUS/R8qQaTJApV+SMiL9Q+iC4G+pLpxBepH/XyNcrCJMXa1/BTYnoxHSsSym1T+tKoENCpF9TOBtjqoZSrxoRmyv+8XReob05edXxWxw2hKJSNFdFanFFIYTYDBNofnIxLGQrnRW/gzFtfuuP/U3AKTdQAQGBUfdvM=
-after_script:
-  - cargo doc
-  - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
 
 # http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
