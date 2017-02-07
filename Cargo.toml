@@ -1,6 +1,6 @@
 [package]
 name = "cargo-watch"
-version = "3.1.1"
+version = "3.1.2"
 
 authors = [
   "Félix Saparelli <me@passcod.name>",
@@ -19,6 +19,7 @@ repository = "https://github.com/passcod/cargo-watch"
 
 readme = "README.md"
 license = "CC0-1.0"
+categories = ["command-line-utilities", "development-tools"]
 keywords = [
   "cargo",
   "watch",
@@ -32,7 +33,7 @@ env_logger = "0.3.5"
 lazy_static = "0.2.2"
 libc = "0.2.18"
 log = "0.3.6"
-notify = "3.0.1"
+notify = "4.0.0"
 regex = "0.1.80"
 rustc-serialize = "0.3.22"
 wait-timeout = "0.1.3"
