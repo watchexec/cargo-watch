@@ -40,6 +40,21 @@ pub fn handle(rx: Receiver<DebouncedEvent>, mut commands: Vec<String>) {
     let mut kill: Option<Sender<()>> = None;
     let mut thread: Option<JoinHandle<()>> = None;
 
+    // At the start, run the command. cf. issue #37
+    info!("First run, so starting a command run");
+    // Create channel to send kill signals
+    let (tx2, rx2) = channel();
+    kill = Some(tx2);
+
+    let thread_commands = commands.clone();
+    let thread_job_info = job_info.clone();
+
+    thread = Some(
+        thread::spawn(move || {
+            execute_commands(&thread_commands, thread_job_info, rx2)
+        })
+    );
+
     // Handle events as long as the watcher still sends events
     // through the channel
     while let Ok(event) = rx.recv() {
