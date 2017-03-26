@@ -36,7 +36,7 @@ Options:
 `cargo watch` can take one or more arguments to pass to cargo. For example,
 `cargo watch "test ex_ --release"` will run `cargo test ex_ --release`
 
-If no arguments are provided, then cargo will run `build` and `test`
+If no arguments are provided, then cargo will run `check`.
 "#;
 
 #[derive(RustcDecodable, Debug)]

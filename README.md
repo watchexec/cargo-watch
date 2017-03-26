@@ -30,32 +30,42 @@ Or clone and build with `$ cargo build` then place in your $PATH.
 
 ## Usage
 
-By default, it runs `test` (which implies `build`).
+By default, it runs `check` (which is available [since Rust 1.16][st-check]).
 You can easily override this, though:
 
     $ cargo watch [command...]
 
 A few examples:
 
+    $ cargo watch test
     $ cargo watch run
     $ cargo watch doc
     $ cargo watch test bench
     $ cargo watch "build --release"
     $ cargo watch "build --release" "test test_"
 
+[st-check]: https://blog.rust-lang.org/2017/03/16/Rust-1.16.html
+
 ### Cargo run
 
-Cargo Watch has special behaviour with `run` commands: it will restart the
+~~Cargo Watch has special behaviour with `run` commands: it will restart the
 process on file change. This works especially well when developing servers
-or other applications that never return on normal operation.
+or other applications that never return on normal operation.~~
 
 ⚠ This currently doesn't work properly, see [#25](https://github.com/passcod/cargo-watch/issues/25). ⚠
+
+As a result of this long-standing issue (a contributed fix would be immensely
+appreciated, but I'll get to it eventually), if you're developing servers it's
+probably better to use an alternative, like [nodemon] if you have Node, or
+[watchexec] if you like Rust tooling.
+
+[watchexec]: https://github.com/mattgreen/watchexec
 
 ## Details and tips
 
 It pairs well with [dybuk], the compiler output prettifier:
 
-    $ cargo watch check |& dybuk
+    $ cargo watch |& dybuk
 
 Just like any Cargo command, it will run from any project subdirectory.
 
@@ -71,6 +81,10 @@ are on Linux, you may have hit [the inotify watch limit](http://blog.sorah.jp/20
 You can either increase the limit (instructions are on the previous link and at
 [this Guard wiki page](https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers)),
 or you can stop whatever it is that's consuming so many inotify watches.
+
+It [does not yet][i-52] support Cargo workspaces.
+
+[i-52]: https://github.com/passcod/cargo-watch/issues/52
 
 ## Etc
 

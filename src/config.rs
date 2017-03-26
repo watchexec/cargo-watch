@@ -1,5 +1,5 @@
 /// These commands are executed when no arguments are given to `cargo watch`
-pub const DEFAULT_COMMANDS: [&'static str; 1] = ["test"];
+pub const DEFAULT_COMMANDS: [&'static str; 1] = ["check"];
 
 /// How many parent folders are searched for a `Cargo.toml`
 pub const MAX_ANCESTORS: u32 = 10;
