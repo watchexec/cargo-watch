@@ -34,6 +34,7 @@ Usage: cargo-watch [watch] [options]
 Options:
   -h, --help      Display this message
   --clear         Clear the screen before each command
+  --poll          Force use of polling for file updates
   --version       Show version
 
 `cargo watch` can take one or more arguments to pass to cargo. For example,
@@ -46,6 +47,7 @@ If no arguments are provided, then cargo will run `check`.
 struct Args {
     arg_args: Vec<String>,
     flag_clear: bool,
+    flag_poll: bool,
     flag_version: bool,
 }
 
@@ -80,7 +82,12 @@ fn main() {
 
     // Creates `Watcher` instance and a channel to communicate with it
     let (tx, rx) = channel();
-    let mut watcher = DualWatcher::new(tx, Duration::from_secs(1));
+    let d = Duration::from_secs(1);
+    let mut watcher = if args.flag_poll {
+        DualWatcher::fallback_only(tx, d)
+    } else {
+        DualWatcher::new(tx, d)
+    };
 
     // Configure watcher: we want to watch these subfolders
     for subdir in &config::WATCH_DIRS {

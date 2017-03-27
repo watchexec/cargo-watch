@@ -20,11 +20,7 @@ impl DualWatcher {
 
         let fallback = match primary {
             Some(_) => None,
-            None => PollWatcher::new(tx, d).or_else(|e| {
-                error!("Error initialising fallback notify, aborting.");
-                error!("{}", e);
-                Err(())
-            }).ok()
+            None => DualWatcher::fallback(tx, d)
         };
 
         if primary.is_none() && fallback.is_none() {
@@ -32,6 +28,23 @@ impl DualWatcher {
         }
 
         DualWatcher { primary: primary, fallback: fallback }
+    }
+
+    fn fallback(tx: Sender<DebouncedEvent>, d: Duration) -> Option<PollWatcher> {
+        PollWatcher::new(tx, d).or_else(|e| {
+            error!("Error initialising fallback notify, aborting.");
+            error!("{}", e);
+            Err(())
+        }).ok()
+    }
+
+    pub fn fallback_only(tx: Sender<DebouncedEvent>, d: Duration) -> Self {
+        let fallback = DualWatcher::fallback(tx, d);
+        if fallback.is_none() {
+            exit(1);
+        }
+
+        DualWatcher { primary: None, fallback: fallback }
     }
 
     pub fn watch<P: AsRef<Path>>(&mut self, path: P) -> Result<()> {
