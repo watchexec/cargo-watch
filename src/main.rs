@@ -14,13 +14,15 @@ extern crate rustc_serialize;
 extern crate wait_timeout;
 
 use docopt::Docopt;
-use notify::{RecommendedWatcher, Watcher, RecursiveMode};
+use self::watcher::DualWatcher;
+use std::process::exit;
 use std::sync::mpsc::channel;
 use std::time::Duration;
 
 mod cargo;
 mod config;
 mod schedule;
+mod watcher;
 
 static VERSION: &'static str = env!("CARGO_PKG_VERSION");
 static USAGE: &'static str = r#"
@@ -56,7 +58,7 @@ fn main() {
 
     if args.flag_version {
         println!("cargo-watch {}", VERSION);
-        std::process::exit(0);
+        exit(0);
     }
 
     let commands = args.arg_args;
@@ -66,24 +68,18 @@ fn main() {
         Some(path) => path,
         None => {
             error!("Not a Cargo project, aborting.");
-            std::process::exit(64);
+            exit(64);
         },
     };
 
     // Creates `Watcher` instance and a channel to communicate with it
     let (tx, rx) = channel();
-    let mut watcher: RecommendedWatcher = match Watcher::new(tx, Duration::from_secs(1)) {
-        Ok(i) => i,
-        Err(e) => {
-            error!("Failed to init notify ({:?})", e);
-            std::process::exit(1);
-        },
-    };
+    let mut watcher = DualWatcher::new(tx, Duration::from_secs(1));
 
     // Configure watcher: we want to watch these subfolders
     for subdir in &config::WATCH_DIRS {
         // We ignore any errors (e.g. if the directory doesn't exist)
-        let _ = watcher.watch(&cargo_dir.join(subdir), RecursiveMode::Recursive);
+        let _ = watcher.watch(&cargo_dir.join(subdir));
     }
 
     // Tell the user that we are ready

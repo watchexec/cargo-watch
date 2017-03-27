@@ -1,0 +1,47 @@
+use notify::{DebouncedEvent, PollWatcher, RecommendedWatcher, RecursiveMode, Result, Watcher};
+use std::path::Path;
+use std::process::exit;
+use std::sync::mpsc::Sender;
+use std::time::Duration;
+
+pub struct DualWatcher {
+    primary: Option<RecommendedWatcher>,
+    fallback: Option<PollWatcher>
+}
+
+impl DualWatcher {
+    pub fn new(tx: Sender<DebouncedEvent>, d: Duration) -> Self {
+        let primary = RecommendedWatcher::new(tx.clone(), d.clone())
+            .or_else(|e| {
+                error!("Error initialising native notify, falling back to polling.");
+                error!("{}", e);
+                Err(())
+            }).ok();
+
+        let fallback = match primary {
+            Some(_) => None,
+            None => PollWatcher::new(tx, d).or_else(|e| {
+                error!("Error initialising fallback notify, aborting.");
+                error!("{}", e);
+                Err(())
+            }).ok()
+        };
+
+        if primary.is_none() && fallback.is_none() {
+            exit(1);
+        }
+
+        DualWatcher { primary: primary, fallback: fallback }
+    }
+
+    pub fn watch<P: AsRef<Path>>(&mut self, path: P) -> Result<()> {
+        let recurse = RecursiveMode::Recursive;
+        match self.primary {
+            Some(ref mut w) => w.watch(path, recurse),
+            None => match self.fallback {
+                Some(ref mut w) => w.watch(path, recurse),
+                None => unreachable!()
+            }
+        }
+    }
+}
