@@ -46,6 +46,22 @@ A few examples:
 
 [st-check]: https://blog.rust-lang.org/2017/03/16/Rust-1.16.html
 
+### Force polling
+
+If the commands are never triggering, or you're getting this error:
+
+    ERROR:cargo_watch: Failed to init notify
+
+You can try the alternative (polling) file watcher, by passing `--poll`.
+
+### Clear screen
+
+If you prefer to clear the screen before running commands, you can pass the
+`--clear` flag. If you want to clear the screen in-between individual commands,
+you can use `clear` as a command, e.g.
+
+    $ cargo watch check clear test
+
 ### Cargo run
 
 ~~Cargo Watch has special behaviour with `run` commands: it will restart the
