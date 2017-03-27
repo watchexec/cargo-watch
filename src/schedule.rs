@@ -24,7 +24,8 @@ enum JobInfo {
 /// Waits for changes in the directory and handles them (runs in main thread)
 pub fn handle(rx: Receiver<DebouncedEvent>, mut commands: Vec<String>) {
     // If no commands were specified we use the default commands
-    if commands.is_empty() {
+    let only_clear: String = "clear".into();
+    if commands.is_empty() || commands[0] == only_clear {
         commands.extend(config::DEFAULT_COMMANDS.iter().map(|&s| s.into()));
     }
 
@@ -137,7 +138,14 @@ fn execute_commands(
         }
         let args: Vec<&str> = command.split_whitespace().collect();
 
-        println!("");
+        // If we need to clear, send instead the terminal escape.
+        if args == vec!["clear"] {
+            print!("\u{001b}c");
+            continue;
+        } else {
+            println!("");
+        }
+
         println!("$ cargo {}", command);
 
         // Update global information about the running job

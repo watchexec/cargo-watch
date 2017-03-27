@@ -33,6 +33,7 @@ Usage: cargo-watch [watch] [options]
 
 Options:
   -h, --help      Display this message
+  --clear         Clear the screen before each command
   --version       Show version
 
 `cargo watch` can take one or more arguments to pass to cargo. For example,
@@ -44,6 +45,7 @@ If no arguments are provided, then cargo will run `check`.
 #[derive(RustcDecodable, Debug)]
 struct Args {
     arg_args: Vec<String>,
+    flag_clear: bool,
     flag_version: bool,
 }
 
@@ -61,7 +63,11 @@ fn main() {
         exit(0);
     }
 
-    let commands = args.arg_args;
+    let mut commands = args.arg_args;
+
+    if args.flag_clear {
+        commands.insert(0, "clear".into());
+    }
 
     // Check if we are (somewhere) in a cargo project directory
     let cargo_dir = match cargo::root() {
