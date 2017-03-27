@@ -10,6 +10,8 @@ use std::path::PathBuf;
 ///
 /// Returns `None` if no ancestor path contains a `Cargo.toml`, or if
 /// the limit of MAX_ANCESTORS ancestors has been reached.
+///
+/// TODO: #52 Parse toml to get to workspace root
 pub fn root() -> Option<PathBuf> {
     /// Checks if the directory contains `Cargo.toml`
     fn contains_manifest(path: &PathBuf) -> bool {

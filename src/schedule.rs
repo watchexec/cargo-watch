@@ -1,43 +1,60 @@
 use cargo;
 use config;
-#[cfg(not(windows))]
-use libc;
+use duct::{Expression, sh};
 use notify::DebouncedEvent;
 use std::io;
-use std::process::{Child, Command};
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread::{self, JoinHandle};
 use wait_timeout::ChildExt;
 
-/// Information about the currently executed job
-#[derive(PartialEq, Debug, Clone, Copy)]
-enum JobInfo {
-    /// No job is executed
-    Idle,
-    /// A compile-ish job is executed (like `cargo build` or `cargo test`)
-    Rustc,
-    /// The user's application is executed (with `cargo run`)
-    User,
+#[derive(Debug)]
+pub enum Command {
+    Clear,
+    Cargo(String),
+    Shell(String),
+    Duct(Expression),
 }
 
-/// Waits for changes in the directory and handles them (runs in main thread)
-pub fn handle(rx: Receiver<DebouncedEvent>, mut commands: Vec<String>) {
-    // If no commands were specified we use the default commands
-    let only_clear: String = "clear".into();
-    if commands.is_empty() || commands[0] == only_clear {
-        commands.extend(config::DEFAULT_COMMANDS.iter().map(|&s| s.into()));
+impl Command {
+    pub fn is_clear(&self) -> bool {
+        match self {
+            &Command::Clear => true,
+            _ => false
+        }
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Setting {
+    NoIgnores,
+    Postpone,
+    Quiet,
+}
+
+pub type Settings = Vec<Setting>;
+
+/// Waits for changes in the directory and handles them (runs in main thread)
+pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: Settings) {
+    let commands = commands.into_iter().map(|c| match c {
+        Command::Cargo(s) => {
+            let mut cmd: String = "cargo-".into();
+            cmd.push_str(&s);
+            Command::Duct(sh(cmd))
+        },
+        Command::Shell(cmd) => Command::Duct(sh(cmd)),
+        c @ _ => c
+    });
 
     // We need to wrap it into an Arc to safely share it with other threads.
     // This would be possible with scoped threads, but Arc works more easily
     // in this situation.
     let commands = Arc::new(commands);
 
-    // Both threads need to know what kind of job is being executed, if any
-    let job_info = Arc::new(Mutex::new(JobInfo::Idle));
+    // Both threads need to know if a job is being executed.
+    let job_info = Arc::new(Mutex::new(false));
 
-    // The sender that can send kill signals to the processing thread
+    // The sender that can send kill signals to the processing thread.
     let mut kill: Option<Sender<()>> = None;
     let mut thread: Option<JoinHandle<()>> = None;
 
@@ -56,44 +73,25 @@ pub fn handle(rx: Receiver<DebouncedEvent>, mut commands: Vec<String>) {
         let filename = match path.file_name() {
             Some(f) => f,
             None => continue,
-        };
+        }.to_string_lossy();
 
         // Check if this file should be ignored
-        let filename = filename.to_string_lossy();
-        if cargo::is_ignored_file(&filename) {
+        if !settings.contains(&Setting::NoIgnores) && cargo::is_ignored_file(&filename) {
             info!("Ignoring change on '{}' ({})", filename, path.display());
             continue;
         }
 
         info!("Request to spawn a job");
 
+        /*
         // Check if another job is already in execution
         let mut job = job_info.lock().unwrap();
-        if *job == JobInfo::Rustc {
-            info!("Another command is currently in execution: request denied");
-            continue;
-        } else if *job == JobInfo::User {
-            // Send kill signal. We can unwrap here, because `*job` is `Idle`
-            // until the channel is created. The result can be ignored: an
-            // error means that the other end has hung up. Since we hold the
-            // lock of `job`, this means that the other thread has panicked.
-            // The other end is deallocated when `job` is reset to `Idle`. The
-            // panicking case is handled below.
-            let _ = kill.unwrap().send(());
-
-            // After the kill signal was send, we have to wait for the thread
-            // to receive it and terminate itself. About unwrap: see above.
-            // We have to reset the job info ourselves, because the other
-            // thread is unable to, because we are holding the lock.
-            let res = thread.unwrap().join();
-            *job = JobInfo::Idle;
-            if res.is_err() {
-                info!("child thread panicked...")
-            }
+        if *job {
+            // TODO: Kill the previous process.
         }
 
         // No other job is in execution: start new one.
-        *job = JobInfo::Rustc;
+        *job = true;
 
         // Create channel to send kill signals
         let (tx, rx) = channel();
@@ -107,9 +105,12 @@ pub fn handle(rx: Receiver<DebouncedEvent>, mut commands: Vec<String>) {
                 execute_commands(&thread_commands, thread_job_info, rx)
             })
         );
+        */
     }
+
 }
 
+/*
 /// Executes given commands in order (runs on extra thread)
 fn execute_commands(
     commands: &[String],
@@ -211,4 +212,4 @@ fn kill_child(child: &mut Child) -> () {
 fn kill_child(child: &mut Child) -> () {
     let _ = unsafe { libc::kill(child.id() as i32, libc::SIGTERM) };
 }
-
+*/

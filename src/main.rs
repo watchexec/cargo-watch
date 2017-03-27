@@ -1,11 +1,12 @@
 //! Watch files in a Cargo project and compile it when they change
 
-extern crate docopt;
+#[macro_use]
+extern crate clap;
+#[macro_use]
+extern crate duct;
 extern crate env_logger;
 #[macro_use]
 extern crate lazy_static;
-#[cfg(not(windows))]
-extern crate libc;
 #[macro_use]
 extern crate log;
 extern crate notify;
@@ -13,62 +14,71 @@ extern crate regex;
 extern crate rustc_serialize;
 extern crate wait_timeout;
 
-use docopt::Docopt;
-use self::watcher::DualWatcher;
+use schedule::{Command, Setting, Settings};
+use std::path::PathBuf;
 use std::process::exit;
 use std::sync::mpsc::channel;
 use std::time::Duration;
+use watcher::DualWatcher;
 
+mod args;
 mod cargo;
 mod config;
 mod schedule;
 mod watcher;
 
-static VERSION: &'static str = env!("CARGO_PKG_VERSION");
-static USAGE: &'static str = r#"
-Usage: cargo-watch [watch] [options]
-       cargo watch [options]
-       cargo-watch [watch] [<args>...]
-       cargo watch [<args>...]
-
-Options:
-  -h, --help      Display this message
-  --clear         Clear the screen before each command
-  --poll          Force use of polling for file updates
-  --version       Show version
-
-`cargo watch` can take one or more arguments to pass to cargo. For example,
-`cargo watch "test ex_ --release"` will run `cargo test ex_ --release`
-
-If no arguments are provided, then cargo will run `check`.
-"#;
-
-#[derive(RustcDecodable, Debug)]
-struct Args {
-    arg_args: Vec<String>,
-    flag_clear: bool,
-    flag_poll: bool,
-    flag_version: bool,
-}
-
 fn main() {
-    // Initialize logger
+    let matches = args::parse();
     env_logger::init().unwrap();
 
-    // Parse CLI parameters
-    let args: Args = Docopt::new(USAGE)
-                            .and_then(|d| d.decode())
-                            .unwrap_or_else(|e| e.exit());
+    // Compute settings for the scheduler
+    let mut settings: Settings = vec![];
 
-    if args.flag_version {
-        println!("cargo-watch {}", VERSION);
-        exit(0);
+    if matches.is_present("postpone") {
+        settings.push(Setting::Postpone);
     }
 
-    let mut commands = args.arg_args;
+    if matches.is_present("quiet") {
+        settings.push(Setting::Quiet);
+    }
 
-    if args.flag_clear {
-        commands.insert(0, "clear".into());
+    if matches.is_present("watch") {
+        settings.push(Setting::NoIgnores);
+    }
+
+
+    // Build up command set
+    let mut commands: Vec<Command> = vec![];
+
+    // Flagged clear always comes first
+    if matches.is_present("clear") {
+        commands.push(Command::Clear);
+    }
+
+    // Cargo commands are in front of the rest
+    for cargo in match matches.is_present("cmd:cargo") {
+        false => vec![],
+        true => values_t!(matches, "cmd:cargo", String)
+            .unwrap_or_else(|e| e.exit())
+    }.into_iter() {
+        commands.push(if cargo == "clear" {
+            Command::Clear
+        } else {
+            Command::Cargo(cargo)
+        });
+    }
+
+    // Shell/raw commands go last
+    for shell in match matches.is_present("cmd:shell") {
+        false => vec![],
+        true => values_t!(matches, "cmd:shell", String)
+            .unwrap_or_else(|e| e.exit())
+    }.into_iter() {
+        commands.push(if shell == "clear" {
+            Command::Clear
+        } else {
+            Command::Shell(shell)
+        });
     }
 
     // Check if we are (somewhere) in a cargo project directory
@@ -80,24 +90,39 @@ fn main() {
         },
     };
 
-    // Creates `Watcher` instance and a channel to communicate with it
+    // Options relevant to creating the Watcher
+    let delay = value_t!(matches, "delay", u8).unwrap_or_else(|e| e.exit());
+    let poll = matches.is_present("poll");
+
+    // Creates Watcher instance and a channel to communicate with it
     let (tx, rx) = channel();
-    let d = Duration::from_secs(1);
-    let mut watcher = if args.flag_poll {
+    let d = Duration::from_secs(delay as u64);
+    let mut watcher = if poll {
         DualWatcher::fallback_only(tx, d)
     } else {
         DualWatcher::new(tx, d)
     };
 
-    // Configure watcher: we want to watch these subfolders
-    for subdir in &config::WATCH_DIRS {
+    // Convert string watches to paths… or defaults
+    let watches = match matches.is_present("watch") {
+        false => config::default_watches(),
+        true => values_t!(matches, "watch", String)
+            .and_then(|s| Ok(s
+                .into_iter()
+                .map(|s| s.into())
+                .collect::<Vec<PathBuf>>()
+            ))
+            .unwrap_or_else(|e| e.exit())
+    };
+
+    // Configure Watcher: we want to monitor these
+    for subdir in watches {
         // We ignore any errors (e.g. if the directory doesn't exist)
         let _ = watcher.watch(&cargo_dir.join(subdir));
     }
 
-    // Tell the user that we are ready
-    println!("Waiting for changes... Hit Ctrl-C to stop.");
+    debug!("{:?}", commands);
 
     // Handle incoming events from the watcher
-    schedule::handle(rx, commands);
+    schedule::handle(rx, commands, settings);
 }

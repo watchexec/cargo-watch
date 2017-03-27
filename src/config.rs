@@ -1,16 +1,16 @@
-/// These commands are executed when no arguments are given to `cargo watch`
-pub const DEFAULT_COMMANDS: [&'static str; 1] = ["check"];
+use std::path::PathBuf;
 
 /// How many parent folders are searched for a `Cargo.toml`
 pub const MAX_ANCESTORS: u32 = 10;
 
-/// Which subdirectories are being watched for changes
-pub const WATCH_DIRS: [&'static str; 4] = [
-    "src",
-    "tests",
-    "benches",
-    "examples",
-];
+pub fn default_watches() -> Vec<PathBuf> {
+    vec![
+        "src".into(),
+        "tests".into(),
+        "benches".into(),
+        "examples".into(),
+    ]
+}
 
 /// Changes on files whose names match one of these regexes are ignored
 pub const IGNORED_FILES: [&'static str; 3] = [
