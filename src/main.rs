@@ -31,43 +31,35 @@ mod watcher;
 fn get_commands(matches: &ArgMatches) -> Vec<Command> {
     let mut commands: Vec<Command> = vec![];
 
-    // Flagged `clear` always comes first
-    if matches.is_present("clear") {
-        commands.push(Command::Clear);
-    }
-
     // Cargo commands are in front of the rest
-    for cargo in if matches.is_present("cmd:cargo") {
-        values_t!(matches, "cmd:cargo", String).unwrap_or_else(|e| e.exit())
-    } else {
-        vec![]
-    } {
-        commands.push(if cargo == "clear" {
-            Command::Clear
-        } else {
-            Command::Cargo(cargo)
-        });
+    if matches.is_present("cmd:cargo") {
+        for cargo in values_t!(matches, "cmd:cargo", String).unwrap_or_else(|e| e.exit()) {
+            commands.push(Command::Cargo(cargo));
+        }
     }
 
     // Shell/raw commands go last
-    for shell in if matches.is_present("cmd:shell") {
-        values_t!(matches, "cmd:shell", String).unwrap_or_else(|e| e.exit())
-    } else {
-        vec![]
-    } {
-        commands.push(if shell == "clear" {
-            Command::Clear
-        } else {
-            Command::Shell(shell)
-        });
+    if matches.is_present("cmd:shell") {
+        for shell in values_t!(matches, "cmd:shell", String).unwrap_or_else(|e| e.exit()) {
+            commands.push(Command::Shell(shell));
+        }
     }
 
-    debug!("{:?}", commands);
+    // Default to `cargo check`
+    if commands.is_empty() {
+        commands.push(Command::Cargo("check".into()));
+    }
+
+    debug!("Commands: {:?}", commands);
     commands
 }
 
 fn get_settings(matches: &ArgMatches) -> Settings {
     let mut settings: Settings = vec![];
+
+    if matches.is_present("clear") {
+        settings.push(Setting::Clear);
+    }
 
     if matches.is_present("postpone") {
         settings.push(Setting::Postpone);

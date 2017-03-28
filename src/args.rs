@@ -42,8 +42,7 @@ pub fn parse() -> ArgMatches<'static> {
                 .empty_values(false)
                 .min_values(1)
                 .number_of_values(1)
-                .default_value("check")
-                .help("Cargo command(s) to execute on changes"))
+                .help("Cargo command(s) to execute on changes [default: check]"))
 
             .arg(Arg::with_name("cmd:shell")
                 .short("s")
