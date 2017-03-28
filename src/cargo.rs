@@ -9,7 +9,7 @@ use std::path::PathBuf;
 /// Returns the closest ancestor path containing a `Cargo.toml`.
 ///
 /// Returns `None` if no ancestor path contains a `Cargo.toml`, or if
-/// the limit of MAX_ANCESTORS ancestors has been reached.
+/// the limit of `MAX_ANCESTORS` ancestors has been reached.
 ///
 /// TODO: #52 Parse toml to get to workspace root
 pub fn root() -> Option<PathBuf> {
@@ -24,7 +24,7 @@ pub fn root() -> Option<PathBuf> {
     // From the current directory we work our way up, looking for `Cargo.toml`
     env::current_dir().ok().and_then(|mut wd| {
         for _ in 0..config::MAX_ANCESTORS {
-            if contains_manifest(&mut wd) {
+            if contains_manifest(&wd) {
                 return Some(wd);
             }
             if !wd.pop() {

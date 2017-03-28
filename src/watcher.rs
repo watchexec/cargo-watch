@@ -11,7 +11,7 @@ pub struct DualWatcher {
 
 impl DualWatcher {
     pub fn new(tx: Sender<DebouncedEvent>, d: Duration) -> Self {
-        let primary = RecommendedWatcher::new(tx.clone(), d.clone())
+        let primary = RecommendedWatcher::new(tx.clone(), d)
             .or_else(|e| {
                 error!("Error initialising native notify, falling back to polling.");
                 error!("{}", e);

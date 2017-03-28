@@ -3,7 +3,8 @@ use config;
 use duct::{Expression, sh};
 use notify::DebouncedEvent;
 use std::io;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread::{self, JoinHandle};
 use wait_timeout::ChildExt;
@@ -18,8 +19,8 @@ pub enum Command {
 
 impl Command {
     pub fn is_clear(&self) -> bool {
-        match self {
-            &Command::Clear => true,
+        match *self {
+            Command::Clear => true,
             _ => false
         }
     }
@@ -35,7 +36,7 @@ pub enum Setting {
 pub type Settings = Vec<Setting>;
 
 /// Waits for changes in the directory and handles them (runs in main thread)
-pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: Settings) {
+pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: &Settings) {
     let commands = commands.into_iter().map(|c| match c {
         Command::Cargo(s) => {
             let mut cmd: String = "cargo-".into();
@@ -43,7 +44,7 @@ pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: Se
             Command::Duct(sh(cmd))
         },
         Command::Shell(cmd) => Command::Duct(sh(cmd)),
-        c @ _ => c
+        c => c
     });
 
     // We need to wrap it into an Arc to safely share it with other threads.
@@ -52,7 +53,7 @@ pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: Se
     let commands = Arc::new(commands);
 
     // Both threads need to know if a job is being executed.
-    let job_info = Arc::new(Mutex::new(false));
+    let job_info = Arc::new(AtomicBool::new(false));
 
     // The sender that can send kill signals to the processing thread.
     let mut kill: Option<Sender<()>> = None;
@@ -63,10 +64,10 @@ pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: Se
     while let Ok(event) = rx.recv() {
         // Check if the event refers to a valid file
         let path = match event {
-            DebouncedEvent::Create(ref p) => p,
-            DebouncedEvent::Write(ref p) => p,
-            DebouncedEvent::Remove(ref p) => p,
-            DebouncedEvent::Rename(_, ref p) => p,
+            DebouncedEvent::Create(ref p)
+            | DebouncedEvent::Write(ref p)
+            | DebouncedEvent::Remove(ref p)
+            | DebouncedEvent::Rename(_, ref p) => p,
             _ => continue,
         };
         debug!("path changed: {}", path.display());

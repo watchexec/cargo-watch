@@ -56,11 +56,11 @@ fn main() {
     }
 
     // Cargo commands are in front of the rest
-    for cargo in match matches.is_present("cmd:cargo") {
-        false => vec![],
-        true => values_t!(matches, "cmd:cargo", String)
-            .unwrap_or_else(|e| e.exit())
-    }.into_iter() {
+    for cargo in if matches.is_present("cmd:cargo") {
+        values_t!(matches, "cmd:cargo", String).unwrap_or_else(|e| e.exit())
+    } else {
+        vec![]
+    } {
         commands.push(if cargo == "clear" {
             Command::Clear
         } else {
@@ -69,11 +69,11 @@ fn main() {
     }
 
     // Shell/raw commands go last
-    for shell in match matches.is_present("cmd:shell") {
-        false => vec![],
-        true => values_t!(matches, "cmd:shell", String)
-            .unwrap_or_else(|e| e.exit())
-    }.into_iter() {
+    for shell in if matches.is_present("cmd:shell") {
+        values_t!(matches, "cmd:shell", String).unwrap_or_else(|e| e.exit())
+    } else {
+        vec![]
+    } {
         commands.push(if shell == "clear" {
             Command::Clear
         } else {
@@ -104,15 +104,16 @@ fn main() {
     };
 
     // Convert string watches to paths… or defaults
-    let watches = match matches.is_present("watch") {
-        false => config::default_watches(),
-        true => values_t!(matches, "watch", String)
+    let watches = if matches.is_present("watch") {
+        values_t!(matches, "watch", String)
             .and_then(|s| Ok(s
                 .into_iter()
                 .map(|s| s.into())
                 .collect::<Vec<PathBuf>>()
             ))
             .unwrap_or_else(|e| e.exit())
+    } else {
+        config::default_watches()
     };
 
     // Configure Watcher: we want to monitor these
@@ -124,5 +125,5 @@ fn main() {
     debug!("{:?}", commands);
 
     // Handle incoming events from the watcher
-    schedule::handle(rx, commands, settings);
+    schedule::handle(rx, commands, &settings);
 }
