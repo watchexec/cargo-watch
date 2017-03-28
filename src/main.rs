@@ -14,12 +14,13 @@ extern crate regex;
 extern crate rustc_serialize;
 extern crate wait_timeout;
 
+use clap::ArgMatches;
 use schedule::{Command, Setting, Settings};
 use std::path::PathBuf;
 use std::process::exit;
 use std::sync::mpsc::channel;
 use std::time::Duration;
-use watcher::DualWatcher;
+use watcher::{DualWatcher, Sender};
 
 mod args;
 mod cargo;
@@ -27,30 +28,10 @@ mod config;
 mod schedule;
 mod watcher;
 
-fn main() {
-    let matches = args::parse();
-    env_logger::init().unwrap();
-
-    // Compute settings for the scheduler
-    let mut settings: Settings = vec![];
-
-    if matches.is_present("postpone") {
-        settings.push(Setting::Postpone);
-    }
-
-    if matches.is_present("quiet") {
-        settings.push(Setting::Quiet);
-    }
-
-    if matches.is_present("watch") {
-        settings.push(Setting::NoIgnores);
-    }
-
-
-    // Build up command set
+fn get_commands(matches: &ArgMatches) -> Vec<Command> {
     let mut commands: Vec<Command> = vec![];
 
-    // Flagged clear always comes first
+    // Flagged `clear` always comes first
     if matches.is_present("clear") {
         commands.push(Command::Clear);
     }
@@ -81,48 +62,77 @@ fn main() {
         });
     }
 
-    // Check if we are (somewhere) in a cargo project directory
-    let cargo_dir = match cargo::root() {
-        Some(path) => path,
-        None => {
-            error!("Not a Cargo project, aborting.");
-            exit(64);
-        },
-    };
+    debug!("{:?}", commands);
+    commands
+}
 
-    // Options relevant to creating the Watcher
-    let delay = value_t!(matches, "delay", u8).unwrap_or_else(|e| e.exit());
-    let poll = matches.is_present("poll");
+fn get_settings(matches: &ArgMatches) -> Settings {
+    let mut settings: Settings = vec![];
 
-    // Creates Watcher instance and a channel to communicate with it
-    let (tx, rx) = channel();
-    let d = Duration::from_secs(delay as u64);
-    let mut watcher = if poll {
-        DualWatcher::fallback_only(tx, d)
-    } else {
-        DualWatcher::new(tx, d)
-    };
+    if matches.is_present("postpone") {
+        settings.push(Setting::Postpone);
+    }
 
-    // Convert string watches to paths… or defaults
-    let watches = if matches.is_present("watch") {
+    if matches.is_present("quiet") {
+        settings.push(Setting::Quiet);
+    }
+
+    if matches.is_present("watch") {
+        settings.push(Setting::NoIgnores);
+    }
+
+    settings
+}
+
+fn get_watches(matches: &ArgMatches) -> Vec<PathBuf> {
+    let cargo_dir = cargo::root().unwrap_or_else(|| {
+        error!("Not a Cargo project, aborting.");
+        exit(64);
+    });
+
+    if matches.is_present("watch") {
         values_t!(matches, "watch", String)
             .and_then(|s| Ok(s
                 .into_iter()
-                .map(|s| s.into())
+                .map(|p| cargo_dir.clone().join(PathBuf::from(p)))
                 .collect::<Vec<PathBuf>>()
             ))
             .unwrap_or_else(|e| e.exit())
     } else {
         config::default_watches()
-    };
+    }
+}
 
-    // Configure Watcher: we want to monitor these
-    for subdir in watches {
+fn make_watcher(matches: &ArgMatches, tx: Sender) -> DualWatcher {
+    // Options relevant to creating the Watcher
+    let poll = matches.is_present("poll");
+    let delay = value_t!(matches, "delay", u64)
+        .and_then(|d| Ok(Duration::from_secs(d)))
+        .unwrap_or_else(|e| e.exit());
+
+    if poll {
+        DualWatcher::fallback_only(tx, delay)
+    } else {
+        DualWatcher::new(tx, delay)
+    }
+}
+
+fn main() {
+    let matches = args::parse();
+    env_logger::init().unwrap();
+
+    let (tx, rx) = channel();
+    let mut watcher = make_watcher(&matches, tx);
+
+    let watches = get_watches(&matches);
+    for dir in watches {
         // We ignore any errors (e.g. if the directory doesn't exist)
-        let _ = watcher.watch(&cargo_dir.join(subdir));
+        let _ = watcher.watch(dir);
     }
 
-    debug!("{:?}", commands);
+    // Build up options from arguments
+    let commands = get_commands(&matches);
+    let settings = get_settings(&matches);
 
     // Handle incoming events from the watcher
     schedule::handle(rx, commands, &settings);

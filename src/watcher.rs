@@ -1,7 +1,7 @@
 use notify::{DebouncedEvent, PollWatcher, RecommendedWatcher, RecursiveMode, Result, Watcher};
 use std::path::Path;
 use std::process::exit;
-use std::sync::mpsc::Sender;
+use std::sync::mpsc::Sender as SyncSender;
 use std::time::Duration;
 
 pub struct DualWatcher {
@@ -9,8 +9,10 @@ pub struct DualWatcher {
     fallback: Option<PollWatcher>
 }
 
+pub type Sender = SyncSender<DebouncedEvent>;
+
 impl DualWatcher {
-    pub fn new(tx: Sender<DebouncedEvent>, d: Duration) -> Self {
+    pub fn new(tx: Sender, d: Duration) -> Self {
         let primary = RecommendedWatcher::new(tx.clone(), d)
             .or_else(|e| {
                 error!("Error initialising native notify, falling back to polling.");
@@ -30,7 +32,7 @@ impl DualWatcher {
         DualWatcher { primary: primary, fallback: fallback }
     }
 
-    fn fallback(tx: Sender<DebouncedEvent>, d: Duration) -> Option<PollWatcher> {
+    fn fallback(tx: Sender, d: Duration) -> Option<PollWatcher> {
         PollWatcher::new(tx, d).or_else(|e| {
             error!("Error initialising fallback notify, aborting.");
             error!("{}", e);
@@ -38,7 +40,7 @@ impl DualWatcher {
         }).ok()
     }
 
-    pub fn fallback_only(tx: Sender<DebouncedEvent>, d: Duration) -> Self {
+    pub fn fallback_only(tx: Sender, d: Duration) -> Self {
         let fallback = DualWatcher::fallback(tx, d);
         if fallback.is_none() {
             exit(1);
