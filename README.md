@@ -5,7 +5,7 @@
 ![Crate download count](https://img.shields.io/crates/d/cargo-watch.svg?style=flat-square)
 
 [![Build status (Travis)](https://img.shields.io/travis/passcod/cargo-watch.svg?style=flat-square)](https://travis-ci.org/passcod/cargo-watch)
-[![Code of Conduct](https://img.shields.io/badge/contributor-covenant-123456.svg?style=flat-square)](http://contributor-covenant.org/version/1/1/0/)
+[![Code of Conduct](https://img.shields.io/badge/CoC-WeAllBehave-123456.svg?style=flat-square)](./CODE_OF_CONDUCT.md)
 
 Cargo Watch watches over your project's source for changes, and runs Cargo
 commands when they occur.
@@ -103,6 +103,14 @@ $ cargo watch |& dybuk
 
 [dybuk]: https://github.com/Ticki/dybuk
 
+## Contributing
+
+The cargo-watch team enthusiastically welcomes contributions and project
+participation! There's a bunch of things you can do if you want to contribute!
+The [Contributor Guide](./CONTRIBUTING.md) has all the information you need for
+everything from reporting bugs to contributing entire new features. Please
+don't hesitate to jump in if you'd like to, or even ask us questions if
+something isn't clear. <sub>{[attribution](https://github.com/zkat/pacote#contributing)}</sub>
 
 ## Troubleshooting
 
