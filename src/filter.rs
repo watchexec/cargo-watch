@@ -18,7 +18,7 @@ impl Filter {
                 .follow_links(true)
                 .into_iter()
                 .filter_entry(|e| not_in_target(&root, e))
-                .filter_map(|e| e.ok().and_then(|e| only_gitignore(e)));
+                .filter_map(|e| e.ok().and_then(only_gitignore));
 
             info!("Walking tree for gitignores");
             for entry in walker {
