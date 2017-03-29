@@ -1,6 +1,6 @@
-use cargo;
 #[allow(deprecated)]
 use duct::{Expression, Handle, sh};
+use filter::Filter;
 use notify::DebouncedEvent;
 use std::process::exit;
 use std::sync::mpsc::Receiver;
@@ -14,14 +14,13 @@ pub enum Command {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Setting {
     Clear,
-    NoIgnores,
     Postpone,
     Quiet,
 }
 
 pub type Settings = Vec<Setting>;
 
-fn filtered(event: &DebouncedEvent) -> bool {
+fn filtered(filter: &Filter, event: &DebouncedEvent) -> bool {
     let path = match *event {
         DebouncedEvent::Create(ref p)
         | DebouncedEvent::Write(ref p)
@@ -32,13 +31,8 @@ fn filtered(event: &DebouncedEvent) -> bool {
 
     debug!("path changed: {}", path.display());
 
-    let filename = match path.file_name() {
-        Some(f) => f,
-        None => return true,
-    }.to_string_lossy();
-
-    if cargo::is_ignored_file(&filename) {
-        info!("Ignoring change on '{}' ({})", filename, path.display());
+    if filter.matched(&path) {
+        info!("Ignoring change on {}", path.display());
         return true;
     }
 
@@ -81,11 +75,15 @@ fn linearise(commands: Vec<Command>, quiet: bool) -> Expression {
         expr = expr.then(e);
     }
 
-    // TODO: Message on successful and errored command end
+    if !quiet {
+        expr = expr.then(cmd!("echo", "[Finished successfully]"));
+    }
+
     expr
 }
 
 fn start_job(expr: &Expression, quiet: bool) -> Option<Handle> {
+    info!("Starting job: {:?}", expr);
     expr.start().or_else(|e| {
         if !quiet {
             error!("Couldn't start, waiting for file change");
@@ -96,10 +94,9 @@ fn start_job(expr: &Expression, quiet: bool) -> Option<Handle> {
     }).ok()
 }
 
-pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: &Settings) {
+pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, filter: &Filter, settings: &Settings) {
     // Convenience short bools for settings
     let clear = settings.contains(&Setting::Clear);
-    let no_ignores = settings.contains(&Setting::NoIgnores);
     let postpone = settings.contains(&Setting::Postpone);
     let quiet = settings.contains(&Setting::Quiet);
 
@@ -110,15 +107,16 @@ pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: &S
     let mut job: Option<Handle> = None;
 
     if !quiet {
-        println!("Watching...");
+        println!("[Watching for changes... Ctrl-C to stop]");
     }
 
     if !postpone {
         job = start_job(&expr, quiet);
     }
 
+    info!("Starting main loop");
     while let Ok(event) = rx.recv() {
-        if !no_ignores && filtered(&event) {
+        if filtered(filter, &event) {
             continue;
         }
 
@@ -132,7 +130,7 @@ pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: &S
                 });
 
                 if status.is_none() {
-                    println!("Killing running command");
+                    println!("[Killing running command]");
                     handle.kill().unwrap_or_else(|e| {
                         error!("Couldn't kill, abort.");
                         error!("{}", e);
@@ -141,11 +139,11 @@ pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, settings: &S
                 }
             }
 
-            println!("Running command");
-        }
-
-        if clear {
-            print!("\u{001b}c");
+            if clear {
+                print!("\u{001b}c");
+            } else {
+                println!("");
+            }
         }
 
         job = start_job(&expr, quiet);

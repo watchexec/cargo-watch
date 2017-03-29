@@ -1,10 +1,11 @@
 //! Utilities for working with cargo and rust files
 
-use config;
-use regex::Regex;
 use std::env;
 use std::fs;
 use std::path::PathBuf;
+
+/// How many parent folders are searched for a `Cargo.toml`
+const MAX_ANCESTORS: u32 = 10;
 
 /// Returns the closest ancestor path containing a `Cargo.toml`.
 ///
@@ -23,7 +24,7 @@ pub fn root() -> Option<PathBuf> {
 
     // From the current directory we work our way up, looking for `Cargo.toml`
     env::current_dir().ok().and_then(|mut wd| {
-        for _ in 0..config::MAX_ANCESTORS {
+        for _ in 0..MAX_ANCESTORS {
             if contains_manifest(&wd) {
                 return Some(wd);
             }
@@ -34,19 +35,4 @@ pub fn root() -> Option<PathBuf> {
 
         None
     })
-}
-
-lazy_static! {
-    static ref IGNORED_FILES: Vec<Regex> = {
-        config::IGNORED_FILES.iter().map(|s| {
-            // FIXME: This should use the compile-time `regex!` macros, when
-            // syntax extensions become stabilized (see #32)
-            Regex::new(s).expect("Couldn't parse regex")
-        }).collect()
-    };
-}
-
-/// Checks if the given filename should be ignored
-pub fn is_ignored_file(f: &str) -> bool {
-    IGNORED_FILES.iter().any(|fr| fr.is_match(f))
 }

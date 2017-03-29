@@ -1,23 +1,21 @@
 [package]
+name = "cargo-watch"
+version = "4.0.0-pre.1"
+
 authors = ["Félix Saparelli <felix@passcod.name>"]
 categories = ["command-line-utilities", "development-tools"]
 description = "Watches over your Cargo project’s source"
 homepage = "https://github.com/passcod/cargo-watch"
 keywords = ["cargo", "watch", "compile", "notify"]
 license = "CC0-1.0"
-name = "cargo-watch"
 readme = "README.md"
 repository = "https://github.com/passcod/cargo-watch"
-version = "3.2.0"
 
 [dependencies]
 clap = "2.22.1"
 duct = "0.8.1"
 env_logger = "0.3.5"
-lazy_static = "0.2.2"
+ignore = "0.1.8"
 log = "0.3.6"
 notify = "4.0.1"
-regex = "0.1.80"
-rustc-serialize = "0.3.22"
-termcolor = "0.3.2"
-wait-timeout = "0.1.3"
+walkdir = "1.0.7"

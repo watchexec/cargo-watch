@@ -5,17 +5,16 @@ extern crate clap;
 #[macro_use]
 extern crate duct;
 extern crate env_logger;
-#[macro_use]
-extern crate lazy_static;
+extern crate ignore;
 #[macro_use]
 extern crate log;
 extern crate notify;
-extern crate regex;
-extern crate rustc_serialize;
-extern crate wait_timeout;
+extern crate walkdir;
 
 use clap::ArgMatches;
+use filter::Filter;
 use schedule::{Command, Setting, Settings};
+use std::env;
 use std::path::PathBuf;
 use std::process::exit;
 use std::sync::mpsc::channel;
@@ -24,7 +23,7 @@ use watcher::{DualWatcher, Sender};
 
 mod args;
 mod cargo;
-mod config;
+mod filter;
 mod schedule;
 mod watcher;
 
@@ -50,8 +49,37 @@ fn get_commands(matches: &ArgMatches) -> Vec<Command> {
         commands.push(Command::Cargo("check".into()));
     }
 
-    debug!("Commands: {:?}", commands);
+    info!("Commands: {:?}", commands);
     commands
+}
+
+fn get_filter(matches: &ArgMatches) -> Filter {
+    debug!("Getting current working dir");
+    let cwd = env::current_dir().unwrap_or_else(|e| {
+        error!("Cannot get current working dir, aborting.");
+        error!("{}", e);
+        exit(1);
+    });
+
+    let (patterns, walktree): (Vec<String>, bool) =
+    if matches.is_present("ignore-nothing") {
+        (vec![], false)
+    } else {
+        debug!("Enabling filter from gitignores");
+        let gitignores = !matches.is_present("no-gitignore");
+
+        let mut patterns: Vec<String> = vec!["/target/**".into()];
+        if matches.is_present("ignore") {
+            for pattern in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
+                patterns.push(pattern);
+            }
+        }
+
+        (patterns, gitignores)
+    };
+
+    info!("Filters: {:?}", patterns);
+    Filter::create(cwd, patterns, walktree)
 }
 
 fn get_settings(matches: &ArgMatches) -> Settings {
@@ -69,10 +97,7 @@ fn get_settings(matches: &ArgMatches) -> Settings {
         settings.push(Setting::Quiet);
     }
 
-    if matches.is_present("watch") {
-        settings.push(Setting::NoIgnores);
-    }
-
+    info!("Settings: {:?}", settings);
     settings
 }
 
@@ -82,24 +107,32 @@ fn get_watches(matches: &ArgMatches) -> Vec<PathBuf> {
         exit(64);
     });
 
-    if matches.is_present("watch") {
-        values_t!(matches, "watch", String)
-            .and_then(|s| Ok(s
-                .into_iter()
-                .map(|p| cargo_dir.clone().join(PathBuf::from(p)))
-                .collect::<Vec<PathBuf>>()
-            ))
-            .unwrap_or_else(|e| e.exit())
+    let watches: Vec<String> = if matches.is_present("watch") {
+        values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit())
     } else {
-        config::default_watches()
-    }
+        vec!["".into()]
+    };
+
+    let watches = watches.into_iter().map(|p|
+        cargo_dir.clone().join(PathBuf::from(if p == "." {
+            "".into() // Normalise root path
+        } else {
+            p
+        }))
+    ).collect::<Vec<PathBuf>>();
+
+    info!("Watches: {:?}", watches);
+    watches
 }
 
 fn make_watcher(matches: &ArgMatches, tx: Sender) -> DualWatcher {
     // Options relevant to creating the Watcher
     let poll = matches.is_present("poll");
     let delay = value_t!(matches, "delay", u64)
-        .and_then(|d| Ok(Duration::from_secs(d)))
+        .and_then(|d| {
+            info!("Delay: {} seconds", d);
+            Ok(Duration::from_secs(d))
+        })
         .unwrap_or_else(|e| e.exit());
 
     if poll {
@@ -124,8 +157,9 @@ fn main() {
 
     // Build up options from arguments
     let commands = get_commands(&matches);
+    let filter = get_filter(&matches);
     let settings = get_settings(&matches);
 
     // Handle incoming events from the watcher
-    schedule::handle(rx, commands, &settings);
+    schedule::handle(rx, commands, &filter, &settings);
 }

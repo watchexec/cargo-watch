@@ -29,9 +29,32 @@ pub fn parse() -> ArgMatches<'static> {
                 .long("clear")
                 .help("Clear the screen before each run"))
 
+            .arg(Arg::with_name("ignore-nothing")
+                 .long("ignore-nothing")
+                 .help("Ignore nothing, not even target/"))
+
+            .arg(Arg::with_name("no-gitignore")
+                 .long("no-gitignore")
+                 .help("Don’t use .gitignore files"))
+
+            .arg(Arg::with_name("packages:all")
+                .long("all")
+                .conflicts_with("packages:one")
+                .hidden(true)
+                .help("Reserved for workspace support"))
+
             .arg(Arg::with_name("poll")
                 .long("poll")
                 .help("Force use of polling for file changes"))
+
+            .arg(Arg::with_name("postpone")
+                .long("postpone")
+                .help("Postpone first run until a file changes"))
+
+            .arg(Arg::with_name("quiet")
+                .short("q")
+                .long("quiet")
+                .help("Suppress output from cargo-watch itself"))
 
             .arg(Arg::with_name("cmd:cargo")
                 .short("x")
@@ -55,16 +78,6 @@ pub fn parse() -> ArgMatches<'static> {
                 .number_of_values(1)
                 .help("Shell command(s) to execute on changes"))
 
-            .arg(Arg::with_name("watch")
-                .short("w")
-                .long("watch")
-                .takes_value(true)
-                .multiple(true)
-                .empty_values(false)
-                .min_values(1)
-                .number_of_values(1)
-                .help("Watch specific file(s) or folder(s)"))
-
             .arg(Arg::with_name("delay")
                 .short("d")
                 .long("delay")
@@ -73,16 +86,18 @@ pub fn parse() -> ArgMatches<'static> {
                 .default_value("1")
                 .help("File updates debounce delay in seconds"))
 
-            .arg(Arg::with_name("quiet")
-                .short("q")
-                .long("quiet")
-                .help("Suppress output from cargo-watch itself"))
+            .arg(Arg::with_name("ignore")
+                .short("i")
+                .long("ignore")
+                .takes_value(true)
+                .value_name("pattern")
+                .multiple(true)
+                .empty_values(false)
+                .min_values(1)
+                .number_of_values(1)
+                .help("Ignore a glob/gitignore-style pattern"))
 
-            .arg(Arg::with_name("postpone")
-                .long("postpone")
-                .help("Postpone first run until a file changes"))
-
-            .arg(Arg::with_name("package")
+            .arg(Arg::with_name("packages:one")
                 .short("p")
                 .long("package")
                 .takes_value(true)
@@ -93,13 +108,17 @@ pub fn parse() -> ArgMatches<'static> {
                 .hidden(true)
                 .help("Reserved for workspace support"))
 
-            .arg(Arg::with_name("all-packages")
-                .long("all")
-                .conflicts_with("package")
-                .hidden(true)
-                .help("Reserved for workspace support"))
+            .arg(Arg::with_name("watch")
+                .short("w")
+                .long("watch")
+                .takes_value(true)
+                .multiple(true)
+                .empty_values(false)
+                .min_values(1)
+                .number_of_values(1)
+                .help("Watch specific file(s) or folder(s) [default: .]"))
 
-            .after_help("Cargo commands (-x) are always executed before shell commands (-s).")
+            .after_help("Cargo commands (-x) are always executed before shell commands (-s).\n\nBy default, your entire project is watched, except for the target/ folder, and your .gitignore files are used to filter paths.")
 
         ).get_matches();
 
