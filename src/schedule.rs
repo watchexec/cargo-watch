@@ -94,7 +94,7 @@ fn start_job(expr: &Expression, quiet: bool) -> Option<Handle> {
     }).ok()
 }
 
-pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, filter: &Filter, settings: &Settings) {
+pub fn handle(rx: &Receiver<DebouncedEvent>, commands: Vec<Command>, filter: &Filter, settings: &Settings) {
     // Convenience short bools for settings
     let clear = settings.contains(&Setting::Clear);
     let postpone = settings.contains(&Setting::Postpone);

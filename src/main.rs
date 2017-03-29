@@ -161,5 +161,5 @@ fn main() {
     let settings = get_settings(&matches);
 
     // Handle incoming events from the watcher
-    schedule::handle(rx, commands, &filter, &settings);
+    schedule::handle(&rx, commands, &filter, &settings);
 }
