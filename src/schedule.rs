@@ -121,7 +121,7 @@ pub fn handle(rx: Receiver<DebouncedEvent>, commands: Vec<Command>, filter: &Fil
         }
 
         if !quiet {
-            if let &Some(ref handle) = &job {
+            if let Some(ref handle) = job {
                 debug!("Found a duct handle, checking if it's still running");
                 let status = handle.try_wait().unwrap_or_else(|e| {
                     error!("Error trying to check status of job, abort.");
