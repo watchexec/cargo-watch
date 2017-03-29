@@ -20,11 +20,15 @@ it will probably feel familiar.
 
 ## Install
 
-    $ cargo install cargo-watch
+```
+$ cargo install cargo-watch
+```
 
 To upgrade:
 
-    $ cargo install --force cargo-watch
+```
+$ cargo install --force cargo-watch
+```
 
 Or clone and build with `$ cargo build` then place in your $PATH.
 
@@ -33,80 +37,148 @@ Or clone and build with `$ cargo build` then place in your $PATH.
 By default, it runs `check` (which is available [since Rust 1.16][st-check]).
 You can easily override this, though:
 
-    $ cargo watch [command...]
-
-A few examples:
-
-    $ cargo watch test
-    $ cargo watch run
-    $ cargo watch doc
-    $ cargo watch test bench
-    $ cargo watch "build --release"
-    $ cargo watch "build --release" "test test_"
+```
+$ cargo watch [-x command]...
+```
 
 [st-check]: https://blog.rust-lang.org/2017/03/16/Rust-1.16.html
 
-### Force polling
+A few examples:
 
-If the commands are never triggering, or you're getting this error:
+```
+# Run tests only
+$ cargo watch -x test
 
-    ERROR:cargo_watch: Failed to init notify
+# Run check then tests
+$ cargo watch -x check -x test
 
-You can try the alternative (polling) file watcher, by passing `--poll`.
+# Run run with arguments
+$ cargo watch -x 'run -- --some-arg'
 
-### Clear screen
+# Run an arbitrary command
+$ cargo watch -s 'echo Hello world'
+```
 
-If you prefer to clear the screen before running commands, you can pass the
-`--clear` flag. If you want to clear the screen in-between individual commands,
-you can use `clear` as a command, e.g.
+There's a lot more you can do! Here's a copy of the help:
 
-    $ cargo watch check clear test
+```
+USAGE:
+    cargo watch [FLAGS] [OPTIONS]
 
-### Cargo run
+FLAGS:
+    -c, --clear             Clear the screen before each run
+    -h, --help              Display this message
+        --ignore-nothing    Ignore nothing, not even target/
+        --no-gitignore      Don’t use .gitignore files
+        --poll              Force use of polling for file changes
+        --postpone          Postpone first run until a file changes
+    -q, --quiet             Suppress output from cargo-watch itself
+    -V, --version           Display version information
 
-~~Cargo Watch has special behaviour with `run` commands: it will restart the
-process on file change. This works especially well when developing servers
-or other applications that never return on normal operation.~~
+OPTIONS:
+    -x, --exec <cmd>...
+            Cargo command(s) to execute on changes [default: check]
+    -s, --shell <cmd>...
+            Shell command(s) to execute on changes
+    -d, --delay <delay>
+            File updates debounce delay in seconds [default: 1]
+    -i, --ignore <pattern>...
+            Ignore a glob/gitignore-style pattern
+    -w, --watch <watch>...
+            Watch specific file(s) or folder(s) [default: .]
 
-⚠ This currently doesn't work properly, see [#25](https://github.com/passcod/cargo-watch/issues/25). ⚠
+Cargo commands (-x) are always executed before shell commands (-s).
 
-As a result of this long-standing issue (a contributed fix would be immensely
-appreciated, but I'll get to it eventually), if you're developing servers it's
-probably better to use an alternative, like [nodemon] if you have Node, or
-[watchexec] if you like Rust tooling.
+By default, your entire project is watched, except for the target/
+folder, and your .gitignore files are used to filter paths.
+```
 
-[watchexec]: https://github.com/mattgreen/watchexec
+### Prettier compiler output
 
-## Details and tips
+Cargo watch pairs well with [dybuk], the compiler output prettifier:
 
-It pairs well with [dybuk], the compiler output prettifier:
+```
+$ cargo watch |& dybuk
+```
 
-    $ cargo watch |& dybuk
+[dybuk]: https://github.com/Ticki/dybuk
 
-Just like any Cargo command, it will run from any project subdirectory.
 
-Cargo Watch will ignore everything that's not a Rust file, and files that start
-with either a dot (`.foo.rs`) or a tilde (`~foo.rs`).
+## Troubleshooting
 
-It uses the [notify] crate for file events, so it supports all platforms, some
-more efficiently than others (if you use the big three — Linux, Mac, Windows —
-you will be fine).
+### If running cargo watch errors with "Found argument 'build' which wasn't expected" (or similar)
 
-If your Cargo Watch fails to watch some deep directories but not others, and you
-are on Linux, you may have hit [the inotify watch limit](http://blog.sorah.jp/2012/01/24/inotify-limitation).
-You can either increase the limit (instructions are on the previous link and at
-[this Guard wiki page](https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers)),
-or you can stop whatever it is that's consuming so many inotify watches.
+You're probably using **version 4** (or higher) but using the **version 3** (or
+lower) style of arguments. The interface changed! Refer to the sections above
+for new usage guidelines, or to the help message:
 
-It [does not yet][i-52] support Cargo workspaces.
+```
+$ cargo watch --help
+```
+
+### I want to run cargo-watch directly, without going through cargo
+
+You can! But you'll have to specify the `watch` subcommand as the first
+argument, like so:
+
+```
+$ /path/to/cargo-watch watch -x build
+```
+
+### If file updates seems to never trigger
+
+Try using `--poll` to force the polling fallback.
+
+If that still doesn't work, and you're using an editor that does "safe saving",
+like IntelliJ / PyCharm, you may have to disable "safe saving" as that may
+prevent file notifications from being generated properly.
+
+### Linux: If it fails to watch some deep directories but not others
+
+You may have hit [the inotify watch limit][inotify-limit]. You can either
+increase the limit (instructions are on the previous link and at [this Guard
+wiki page][inotify-guard]), or you can stop whatever it is that's consuming so
+many inotify watches.
+
+[inotify-limit]: http://blog.sorah.jp/2012/01/24/inotify-limitation
+[inotify-guard]: https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers
+
+### If you want to only recompile one Cargo workspace
+
+Cargo workspaces [are not natively supported yet][i-52].
+
+However, as you can run "arbitrary commands" with the `-s` option, you can
+write workspace-aware commands manually.
 
 [i-52]: https://github.com/passcod/cargo-watch/issues/52
 
-## Etc
+### If it runs repeatedly without touching anything
+
+That can happen when watching files that are modified by the command you're
+running.
+
+If you're only running compiles or checks (i.e. any command that only affects
+the target/ folder) and you're using `-w`, you might be confusing the
+target-folder-ignorer. Check your options and paths.
+
+### Something not covered above / I have a feature request
+
+Please [open an issue][watch-issues], or look through the existing ones. You
+may also want to look through [issues for the Notify library][notify-issues]
+this tool depends on.
+
+If you want more verbose output, try running with the
+`RUST_LOG=cargo_watch=info` environment variable. You can switch `info` to
+`debug` or even `trace` (caution: very busy output!) for even more messages.
+
+Note that `-q` will hide some `error`-level messages, even with `RUST_LOG`.
+
+[notify-issues]: https://github.com/passcod/notify/issues
+[watch-issues]: https://github.com/passcod/cargo-watch/issues
+
+## About
 
 Created by [Félix Saparelli][passcod] and [awesome contributors][contributors].
 
 [contributors]: https://github.com/passcod/cargo-watch/network/members
-[dybuk]: https://github.com/Ticki/dybuk
-[notify]: https://github.com/passcod/rsnotify
 [passcod]: https://passcod.name
