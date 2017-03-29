@@ -36,7 +36,7 @@ fn filtered(filter: &Filter, event: &DebouncedEvent) -> bool {
         return true;
     }
 
-    return false;
+    false
 }
 
 fn linearise(commands: Vec<Command>, quiet: bool) -> Expression {
