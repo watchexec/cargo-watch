@@ -76,7 +76,7 @@ fn linearise(commands: Vec<Command>, quiet: bool) -> Expression {
     }
 
     if !quiet {
-        expr = expr.then(cmd!("echo", "[Finished successfully]"));
+        expr = expr.unchecked().then(cmd!("echo", "[Finished running]"));
     }
 
     expr
