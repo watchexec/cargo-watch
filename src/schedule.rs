@@ -124,9 +124,11 @@ pub fn handle(rx: &Receiver<DebouncedEvent>, commands: Vec<Command>, filter: &Fi
             if let Some(ref handle) = job {
                 debug!("Found a duct handle, checking if it's still running");
                 let status = handle.try_wait().unwrap_or_else(|e| {
-                    error!("Error trying to check status of job, abort.");
+                    error!("Error trying to check status of job.");
+                    error!("If this happens consistently, please file a bug.");
+                    error!("https://github.com/passcod/cargo-watch/issues");
                     error!("{}", e);
-                    exit(1);
+                    None
                 });
 
                 if status.is_none() {
