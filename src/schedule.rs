@@ -138,6 +138,16 @@ pub fn handle(rx: &Receiver<DebouncedEvent>, commands: Vec<Command>, filter: &Fi
                         error!("{}", e);
                         exit(1);
                     });
+
+                    info!("Waiting on the kill");
+                    handle.wait().unwrap_or_else(|e| {
+                        error!("Something went wrong after waiting on child.");
+                        error!("Aborting to avoid zombification.");
+                        error!("If this happens consistently, please file a bug.");
+                        error!("https://github.com/passcod/cargo-watch/issues");
+                        error!("{}", e);
+                        exit(1);
+                    });
                 }
             }
 
