@@ -93,16 +93,6 @@ By default, your entire project is watched, except for the target/
 folder, and your .gitignore files are used to filter paths.
 ```
 
-### Prettier compiler output
-
-Cargo watch pairs well with [dybuk], the compiler output prettifier:
-
-```
-$ cargo watch |& dybuk
-```
-
-[dybuk]: https://github.com/Ticki/dybuk
-
 ## Contributing
 
 The cargo-watch team enthusiastically welcomes contributions and project
