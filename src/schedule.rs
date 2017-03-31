@@ -39,6 +39,7 @@ fn filtered(filter: &Filter, event: &DebouncedEvent) -> bool {
     false
 }
 
+#[allow(deprecated)]
 fn linearise(commands: Vec<Command>, quiet: bool) -> Expression {
     // Keep a record of command lines
     let mut lines: Vec<String> = vec![];
@@ -47,7 +48,6 @@ fn linearise(commands: Vec<Command>, quiet: bool) -> Expression {
     let mut exprs: Vec<Expression> = vec![];
 
     for command in commands {
-        #[allow(deprecated)]
         match command {
             Command::Shell(cmd) => {
                 exprs.push(sh(&cmd));
@@ -66,8 +66,8 @@ fn linearise(commands: Vec<Command>, quiet: bool) -> Expression {
     let mut expr = exprs.remove(0);
 
     if !quiet {
-        expr = cmd!("echo",
-            format!("[Running '{}']", lines.join(" && "))
+        expr = sh(
+            format!("echo [Running '{}']", lines.join(" && ").replace("'", "\""))
         ).then(expr);
     }
 
@@ -76,7 +76,7 @@ fn linearise(commands: Vec<Command>, quiet: bool) -> Expression {
     }
 
     if !quiet {
-        expr = expr.unchecked().then(cmd!("echo", "[Finished running]"));
+        expr = expr.unchecked().then(sh("echo [Finished running]"));
     }
 
     expr

@@ -2,7 +2,6 @@
 
 #[macro_use]
 extern crate clap;
-#[macro_use]
 extern crate duct;
 extern crate env_logger;
 extern crate ignore;
