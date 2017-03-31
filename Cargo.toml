@@ -1,6 +1,6 @@
 [package]
 name = "cargo-watch"
-version = "4.0.1"
+version = "4.0.2"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
 categories = ["command-line-utilities", "development-tools"]
