@@ -67,7 +67,11 @@ fn get_filter(matches: &ArgMatches) -> Filter {
         debug!("Enabling filter from gitignores");
         let gitignores = !matches.is_present("no-gitignore");
 
-        let mut patterns: Vec<String> = vec!["/target/**".into()];
+        let mut patterns: Vec<String> = vec![
+            "/.git/**".into(),
+            "/target/**".into()
+        ];
+
         if matches.is_present("ignore") {
             for pattern in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
                 patterns.push(pattern);

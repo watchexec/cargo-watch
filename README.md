@@ -68,7 +68,7 @@ USAGE:
 FLAGS:
     -c, --clear             Clear the screen before each run
     -h, --help              Display this message
-        --ignore-nothing    Ignore nothing, not even target/
+        --ignore-nothing    Ignore nothing, not even target/ and .git/
         --no-gitignore      Don’t use .gitignore files
         --poll              Force use of polling for file changes
         --postpone          Postpone first run until a file changes
@@ -90,7 +90,7 @@ OPTIONS:
 Cargo commands (-x) are always executed before shell commands (-s).
 
 By default, your entire project is watched, except for the target/
-folder, and your .gitignore files are used to filter paths.
+and .git/ folders, and your .gitignore files are used to filter paths.
 ```
 
 ## Contributing
@@ -103,6 +103,11 @@ don't hesitate to jump in if you'd like to, or even ask us questions if
 something isn't clear. <sub>{[attribution](https://github.com/zkat/pacote#contributing)}</sub>
 
 ## Troubleshooting
+
+In all cases, start by checking your version with `cargo watch --version` and,
+if necessary, upgrading to [the latest one][releases].
+
+[releases]: https://github.com/passcod/cargo-watch/releases
 
 ### If running cargo watch errors with "Found argument 'build' which wasn't expected" (or similar)
 

@@ -31,7 +31,7 @@ pub fn parse() -> ArgMatches<'static> {
 
             .arg(Arg::with_name("ignore-nothing")
                  .long("ignore-nothing")
-                 .help("Ignore nothing, not even target/"))
+                 .help("Ignore nothing, not even target/ and .git/"))
 
             .arg(Arg::with_name("no-gitignore")
                  .long("no-gitignore")
@@ -118,7 +118,7 @@ pub fn parse() -> ArgMatches<'static> {
                 .number_of_values(1)
                 .help("Watch specific file(s) or folder(s) [default: .]"))
 
-            .after_help("Cargo commands (-x) are always executed before shell commands (-s).\n\nBy default, your entire project is watched, except for the target/ folder, and your .gitignore files are used to filter paths.")
+            .after_help("Cargo commands (-x) are always executed before shell commands (-s).\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .gitignore files are used to filter paths.")
 
         ).get_matches();
 
