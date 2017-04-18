@@ -2,167 +2,142 @@
 
 #[macro_use]
 extern crate clap;
-extern crate duct;
 extern crate env_logger;
-extern crate ignore;
 #[macro_use]
 extern crate log;
-extern crate notify;
-extern crate walkdir;
 
 use clap::ArgMatches;
-use filter::Filter;
-use schedule::{Command, Setting, Settings};
 use std::env;
-use std::path::PathBuf;
-use std::process::exit;
-use std::sync::mpsc::channel;
-use std::time::Duration;
-use watcher::{DualWatcher, Sender};
+use std::process::{Command, exit};
 
 mod args;
 mod cargo;
-mod filter;
-mod schedule;
-mod watcher;
 
-fn get_commands(matches: &ArgMatches) -> Vec<Command> {
-    let mut commands: Vec<Command> = vec![];
+fn get_command(matches: &ArgMatches) -> String {
+    let cargo_dir = cargo::root().unwrap_or_else(|| {
+        error!("Not a Cargo project, aborting.");
+        exit(64);
+    });
+
+    let mut commands: Vec<String> = vec![];
 
     // Cargo commands are in front of the rest
     if matches.is_present("cmd:cargo") {
         for cargo in values_t!(matches, "cmd:cargo", String).unwrap_or_else(|e| e.exit()) {
-            commands.push(Command::Cargo(cargo));
+            let mut cmd: String = "cargo ".into();
+            cmd.push_str(&cargo);
+            commands.push(cmd);
         }
     }
 
     // Shell/raw commands go last
     if matches.is_present("cmd:shell") {
         for shell in values_t!(matches, "cmd:shell", String).unwrap_or_else(|e| e.exit()) {
-            commands.push(Command::Shell(shell));
+            commands.push(shell);
         }
     }
 
     // Default to `cargo check`
     if commands.is_empty() {
-        commands.push(Command::Cargo("check".into()));
+        commands.push("cargo check".into());
     }
 
     info!("Commands: {:?}", commands);
-    commands
+
+    if !matches.is_present("quiet") {
+        let start = {
+            format!("echo [Running '{}']", commands.join(" && "))
+        };
+
+        commands.insert(0, start);
+        commands.push("echo [Finished running]".into());
+    }
+
+    commands.insert(0, format!("cd {}", cargo_dir.display()));
+    commands.join(" && ")
 }
 
-fn get_filter(matches: &ArgMatches) -> Filter {
-    debug!("Getting current working dir");
-    let cwd = env::current_dir().unwrap_or_else(|e| {
-        error!("Cannot get current working dir, aborting.");
-        error!("{}", e);
-        exit(1);
-    });
+fn get_filter(matches: &ArgMatches) -> Vec<String> {
+    let mut opts: Vec<String> = vec![];
 
-    let (patterns, walktree): (Vec<String>, bool) =
     if matches.is_present("ignore-nothing") {
-        (vec![], false)
-    } else {
-        debug!("Enabling filter from gitignores");
-        let gitignores = !matches.is_present("no-gitignore");
+        return vec!["--no-vcs-ignore".into()];
+    }
 
-        let mut patterns: Vec<String> = vec![
-            "/.git/**".into(),
-            "/target/**".into()
-        ];
+    if matches.is_present("no-gitignore") {
+        opts.push("--no-vcs-ignore".into());
 
-        if matches.is_present("ignore") {
-            for pattern in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
-                patterns.push(pattern);
-            }
+        opts.push("--ignore".into());
+        opts.push("target".into());
+
+        opts.push("--ignore".into());
+        opts.push(".git".into());
+    }
+
+    if matches.is_present("ignore") {
+        for ignore in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
+            opts.push("--ignore".into());
+            opts.push(ignore);
         }
+    }
 
-        (patterns, gitignores)
-    };
-
-    info!("Filters: {:?}", patterns);
-    Filter::create(cwd, patterns, walktree)
+    info!("Filters: {:?}", opts);
+    opts
 }
 
-fn get_settings(matches: &ArgMatches) -> Settings {
-    let mut settings: Settings = vec![];
+fn get_settings(matches: &ArgMatches) -> Vec<String> {
+    let mut opts: Vec<String> = vec![];
 
     if matches.is_present("clear") {
-        settings.push(Setting::Clear);
+        opts.push("--clear".into());
     }
 
     if matches.is_present("postpone") {
-        settings.push(Setting::Postpone);
+        opts.push("--postpone".into());
     }
 
-    if matches.is_present("quiet") {
-        settings.push(Setting::Quiet);
+    if matches.is_present("poll") {
+        let delay = value_t!(matches, "delay", u64).unwrap_or_else(|e| e.exit());
+        info!("Delay: {} seconds", delay);
+        opts.push("--force-poll".into());
+        opts.push(format!("{}", delay));
     }
 
-    info!("Settings: {:?}", settings);
-    settings
+    if let Ok(_) = env::var("RUST_LOG") {
+        opts.push("--debug".into());
+    }
+
+    info!("Settings: {:?}", opts);
+    opts
 }
 
-fn get_watches(matches: &ArgMatches) -> Vec<PathBuf> {
-    let cargo_dir = cargo::root().unwrap_or_else(|| {
-        error!("Not a Cargo project, aborting.");
-        exit(64);
-    });
+fn get_watches(matches: &ArgMatches) -> Vec<String> {
+    let mut opts: Vec<String> = vec![];
+    if matches.is_present("watch") {
+        for watch in values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit()) {
+            opts.push("--watch".into());
+            opts.push(watch);
+        }
+    }
 
-    let watches: Vec<String> = if matches.is_present("watch") {
-        values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit())
-    } else {
-        vec!["".into()]
-    };
-
-    let watches = watches.into_iter().map(|p|
-        cargo_dir.clone().join(PathBuf::from(if p == "." {
-            "".into() // Normalise root path
-        } else {
-            p
-        }))
-    ).collect::<Vec<PathBuf>>();
-
-    info!("Watches: {:?}", watches);
-    watches
+    info!("Watches: {:?}", opts);
+    opts
 }
 
-fn make_watcher(matches: &ArgMatches, tx: Sender) -> DualWatcher {
-    // Options relevant to creating the Watcher
-    let poll = matches.is_present("poll");
-    let delay = value_t!(matches, "delay", u64)
-        .and_then(|d| {
-            info!("Delay: {} seconds", d);
-            Ok(Duration::from_secs(d))
-        })
-        .unwrap_or_else(|e| e.exit());
-
-    if poll {
-        DualWatcher::fallback_only(tx, delay)
-    } else {
-        DualWatcher::new(tx, delay)
-    }
+fn get_options(matches: &ArgMatches) -> Vec<String> {
+    let mut opts: Vec<String> = vec![];
+    opts.append(&mut get_filter(matches));
+    opts.append(&mut get_settings(matches));
+    opts.append(&mut get_watches(matches));
+    opts.push(get_command(&matches));
+    opts
 }
 
 fn main() {
     let matches = args::parse();
     env_logger::init().unwrap();
 
-    let (tx, rx) = channel();
-    let mut watcher = make_watcher(&matches, tx);
-
-    let watches = get_watches(&matches);
-    for dir in watches {
-        // We ignore any errors (e.g. if the directory doesn't exist)
-        let _ = watcher.watch(dir);
-    }
-
-    // Build up options from arguments
-    let commands = get_commands(&matches);
-    let filter = get_filter(&matches);
-    let settings = get_settings(&matches);
-
-    // Handle incoming events from the watcher
-    schedule::handle(&rx, commands, &filter, &settings);
+    let opts = get_options(&matches);
+    let status = Command::new("watchexec").args(&opts).status();
+    info!("Exit status: {:?}", status);
 }

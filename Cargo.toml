@@ -1,6 +1,6 @@
 [package]
 name = "cargo-watch"
-version = "4.0.3"
+version = "5.0.0"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
 categories = ["command-line-utilities", "development-tools"]
@@ -13,9 +13,5 @@ repository = "https://github.com/passcod/cargo-watch"
 
 [dependencies]
 clap = "2.22.1"
-duct = "0.8.1"
 env_logger = "0.3.5"
-ignore = "0.1.8"
 log = "0.3.6"
-notify = "4.0.1"
-walkdir = "1.0.7"
