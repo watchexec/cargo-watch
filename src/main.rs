@@ -86,7 +86,9 @@ fn get_filter(matches: &ArgMatches) -> Vec<String> {
 }
 
 fn get_settings(matches: &ArgMatches) -> Vec<String> {
-    let mut opts: Vec<String> = vec![];
+    let mut opts: Vec<String> = vec![
+        "--restart".into()
+    ];
 
     if matches.is_present("clear") {
         opts.push("--clear".into());
