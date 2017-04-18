@@ -180,7 +180,7 @@ Note that this will also enable debug mode for watchexec.
 
 [notify-issues]: https://github.com/passcod/notify/issues
 [watch-issues]: https://github.com/passcod/cargo-watch/issues
-[watchexec-issues]: https://github.com/mattgreen/whatchexec/issues
+[watchexec-issues]: https://github.com/mattgreen/watchexec/issues
 
 ### Wait, is this just a wrapper on top of watchexec?
 
@@ -192,7 +192,7 @@ project and be in business.
 If you're looking for the not-a-wrapper version, check out the [master] branch!
 
 [master]: https://github.com/passcod/cargo-watch/tree/master
-[Watchexec]: https://github.com/mattgreen/whatchexec
+[Watchexec]: https://github.com/mattgreen/watchexec
 
 ## About
 
