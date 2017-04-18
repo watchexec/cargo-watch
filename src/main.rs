@@ -138,6 +138,12 @@ fn main() {
     env_logger::init().unwrap();
 
     let opts = get_options(&matches);
-    let status = Command::new("watchexec").args(&opts).status();
-    info!("Exit status: {:?}", status);
+    let status = Command::new("watchexec")
+                        .args(&opts)
+                        .status()
+                        .expect("Failed to execute watchexec! Make sure it's installed and in your PATH.");
+    
+    if !status.success() {
+        error!("Oh no! Watchexec exited with: {}", status);
+    }
 }
