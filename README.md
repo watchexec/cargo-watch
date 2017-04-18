@@ -189,6 +189,9 @@ and all the details that go with this. Cargo watch simply invokes watchexec with
 its own custom options and defaults, so you can just run `cargo-watch` in your
 project and be in business.
 
+If you're looking for the not-a-wrapper version, check out the [master] branch!
+
+[master]: https://github.com/passcod/cargo-watch/tree/master
 [Watchexec]: https://github.com/mattgreen/whatchexec
 
 ## About
