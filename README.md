@@ -21,14 +21,13 @@ it will probably feel familiar.
 ## Install
 
 ```
-$ cargo install watchexec
-$ cargo install --git https://github.com/passcod/cargo-watch --branch just-wrap-watchexec
+$ cargo install cargo-watch
 ```
 
 To upgrade:
 
 ```
-$ cargo install --force --git https://github.com/passcod/cargo-watch --branch just-wrap-watchexec
+$ cargo install --force cargo-watch
 ```
 
 Or clone and build with `$ cargo build` then place in your $PATH.
@@ -68,6 +67,7 @@ USAGE:
 
 FLAGS:
     -c, --clear             Clear the screen before each run
+        --debug             Display debug output
     -h, --help              Display this message
         --ignore-nothing    Ignore nothing, not even target/ and .git/
         --no-gitignore      Don’t use .gitignore files
@@ -172,11 +172,9 @@ may also want to look through [issues for the Notify library][notify-issues]
 this tool depends on, or the [issues for the Watchexec tool][watchexec-issues]
 that we use under the covers.
 
-If you want more verbose output, try running with the
-`RUST_LOG=cargo_watch=info` environment variable. You can switch `info` to
-`debug` or even `trace` (caution: very busy output!) for even more messages.
-
-Note that this will also enable debug mode for watchexec.
+If you want more verbose output, try running with the `--debug` flag. Note that
+this will also enable debug mode for watchexec. When filing an issue, make sure
+to include a log with `--debug` enabled so problems can be diagnosed better.
 
 [notify-issues]: https://github.com/passcod/notify/issues
 [watch-issues]: https://github.com/passcod/cargo-watch/issues
@@ -185,13 +183,10 @@ Note that this will also enable debug mode for watchexec.
 ### Wait, is this just a wrapper on top of watchexec?
 
 It is! [Watchexec] does a really good job of watching files and running commands
-and all the details that go with this. Cargo watch simply invokes watchexec with
-its own custom options and defaults, so you can just run `cargo-watch` in your
-project and be in business.
+and all the details that go with this. Cargo watch simply embeds watchexec and
+calls it with its own custom options and defaults, so you can just run
+`cargo-watch` in your project and be in business.
 
-If you're looking for the not-a-wrapper version, check out the [master] branch!
-
-[master]: https://github.com/passcod/cargo-watch/tree/master
 [Watchexec]: https://github.com/mattgreen/watchexec
 
 ## About

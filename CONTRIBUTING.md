@@ -49,6 +49,7 @@ If you run into an error or bug with the project:
 
 * Open an Issue at https://github.com/passcod/cargo-watch/issues
 * Include *reproduction steps* that someone else can follow to recreate the bug or error on their own.
+* Include a log by running the same command with `--debug` enabled.
 * Provide project and platform versions (rustc, cargo, etc), depending on what seems relevant. If not, please be ready to provide that information if maintainers ask for it.
 
 Once it's filed:
@@ -89,7 +90,7 @@ If you want to go the usual route and run the project locally, though:
 Then in your terminal:
 * `cd path/to/your/clone`
 * `cargo build`
-* `cargo run -- watch -d`
+* `cargo run -- watch`
 
 And you should be ready to go!
 
