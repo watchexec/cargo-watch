@@ -68,8 +68,8 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
 
     opts.push(format!("*{}.DS_Store", MAIN_SEPARATOR));
     opts.push("*.swp".into());
-    opts.push(".git".into());
-    opts.push("target".into());
+    opts.push(format!("*{s}.git*{s}*", s=MAIN_SEPARATOR));
+    opts.push(format!("*{s}target{s}*", s=MAIN_SEPARATOR));
 
     if matches.is_present("ignore") {
         for ignore in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
