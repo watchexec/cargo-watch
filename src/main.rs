@@ -2,21 +2,21 @@
 
 #[macro_use]
 extern crate clap;
-extern crate env_logger;
-#[macro_use]
-extern crate log;
+extern crate watchexec;
 
-use clap::ArgMatches;
-use std::env;
-use std::process::{Command, exit};
+use clap::{ArgMatches, Error, ErrorKind};
+use std::path::MAIN_SEPARATOR;
+use watchexec::cli::Args;
 
 mod args;
 mod cargo;
 
-fn get_command(matches: &ArgMatches) -> String {
+fn get_command(debug: bool, matches: &ArgMatches) -> String {
     let cargo_dir = cargo::root().unwrap_or_else(|| {
-        error!("Not a Cargo project, aborting.");
-        exit(64);
+        Error::with_description(
+            "Not a Cargo project, aborting.",
+            ErrorKind::Io
+        ).exit();
     });
 
     let mut commands: Vec<String> = vec![];
@@ -42,7 +42,9 @@ fn get_command(matches: &ArgMatches) -> String {
         commands.push("cargo check".into());
     }
 
-    info!("Commands: {:?}", commands);
+    if debug {
+        println!(">>> Commands: {:?}", commands);
+    }
 
     if !matches.is_present("quiet") {
         let start = {
@@ -57,95 +59,99 @@ fn get_command(matches: &ArgMatches) -> String {
     commands.join(" && ")
 }
 
-fn get_filter(matches: &ArgMatches) -> Vec<String> {
+fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
     let mut opts: Vec<String> = vec![];
 
     if matches.is_present("ignore-nothing") {
-        return vec!["--no-vcs-ignore".into()];
+        return (true, vec![]);
     }
 
-    if matches.is_present("no-gitignore") {
-        opts.push("--no-vcs-ignore".into());
-
-        opts.push("--ignore".into());
-        opts.push("target".into());
-
-        opts.push("--ignore".into());
-        opts.push(".git".into());
-    }
+    opts.push(format!("*{}.DS_Store", MAIN_SEPARATOR));
+    opts.push("*.swp".into());
+    opts.push(".git".into());
+    opts.push("target".into());
 
     if matches.is_present("ignore") {
         for ignore in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
-            opts.push("--ignore".into());
             opts.push(ignore);
         }
     }
 
-    info!("Filters: {:?}", opts);
-    opts
+    let novcs = matches.is_present("no-gitignore");
+
+    if debug {
+        println!(">>> No VCS ignores: {:?}", novcs);
+        println!(">>> Ignores: {:?}", opts);
+    }
+
+    (novcs, opts)
 }
 
-fn get_settings(matches: &ArgMatches) -> Vec<String> {
-    let mut opts: Vec<String> = vec![
-        "--restart".into()
-    ];
-
-    if matches.is_present("clear") {
-        opts.push("--clear".into());
-    }
-
-    if matches.is_present("postpone") {
-        opts.push("--postpone".into());
-    }
-
+fn get_poll(debug: bool, matches: &ArgMatches) -> (bool, u32) {
     if matches.is_present("poll") {
-        let delay = value_t!(matches, "delay", u64).unwrap_or_else(|e| e.exit());
-        info!("Delay: {} seconds", delay);
-        opts.push("--force-poll".into());
-        opts.push(format!("{}", delay));
-    }
+        let delay = value_t!(matches, "delay", u32).unwrap_or_else(|e| e.exit());
 
-    if let Ok(_) = env::var("RUST_LOG") {
-        opts.push("--debug".into());
-    }
+        if debug {
+            println!(">>> Poll with delay: {} seconds", delay);
+        }
 
-    info!("Settings: {:?}", opts);
-    opts
+        (true, delay)
+    } else {
+        (false, 1000)
+    }
 }
 
-fn get_watches(matches: &ArgMatches) -> Vec<String> {
+fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<String> {
     let mut opts: Vec<String> = vec![];
     if matches.is_present("watch") {
         for watch in values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit()) {
-            opts.push("--watch".into());
             opts.push(watch);
         }
     }
 
-    info!("Watches: {:?}", opts);
+    if debug {
+        println!(">>> Watches: {:?}", opts);
+    }
+
     opts
 }
 
-fn get_options(matches: &ArgMatches) -> Vec<String> {
-    let mut opts: Vec<String> = vec![];
-    opts.append(&mut get_filter(matches));
-    opts.append(&mut get_settings(matches));
-    opts.append(&mut get_watches(matches));
-    opts.push(get_command(&matches));
-    opts
+fn get_options(debug: bool, matches: &ArgMatches) -> Args {
+    let (novcs, ignores) = get_ignores(debug, &matches);
+    let (poll, delay) = get_poll(debug, &matches);
+
+    let args = Args {
+        filters: vec![],
+        no_shell: false,
+        once: false,
+        signal: None,
+        restart: true,
+
+        poll: poll,
+        poll_interval: delay,
+
+        ignores: ignores,
+        no_vcs_ignore: novcs,
+
+        clear_screen: matches.is_present("clear"),
+        debug: debug,
+        run_initially: !matches.is_present("postpone"),
+
+        cmd: get_command(debug, &matches),
+        paths: get_watches(debug, &matches),
+    };
+
+    if debug {
+        println!(">>> Watchexec arguments: {:?}", args);
+    }
+
+    args
 }
 
 fn main() {
     let matches = args::parse();
-    env_logger::init().unwrap();
+    let debug = matches.is_present("debug");
 
-    let opts = get_options(&matches);
-    let status = Command::new("watchexec")
-                        .args(&opts)
-                        .status()
-                        .expect("Failed to execute watchexec! Make sure it's installed and in your PATH.");
-    
-    if !status.success() {
-        error!("Oh no! Watchexec exited with: {}", status);
-    }
+    let opts = get_options(debug, &matches);
+    watchexec::run(opts)
 }

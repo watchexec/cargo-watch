@@ -29,6 +29,10 @@ pub fn parse() -> ArgMatches<'static> {
                 .long("clear")
                 .help("Clear the screen before each run"))
 
+            .arg(Arg::with_name("debug")
+                .long("debug")
+                .help("Show debug output"))
+
             .arg(Arg::with_name("ignore-nothing")
                  .long("ignore-nothing")
                  .help("Ignore nothing, not even target/ and .git/"))
@@ -116,7 +120,8 @@ pub fn parse() -> ArgMatches<'static> {
                 .empty_values(false)
                 .min_values(1)
                 .number_of_values(1)
-                .help("Watch specific file(s) or folder(s) [default: .]"))
+                .default_value(".")
+                .help("Watch specific file(s) or folder(s)"))
 
             .after_help("Cargo commands (-x) are always executed before shell commands (-s).\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .gitignore files are used to filter paths.")
 
