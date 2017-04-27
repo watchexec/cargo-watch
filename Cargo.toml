@@ -13,4 +13,4 @@ repository = "https://github.com/passcod/cargo-watch"
 
 [dependencies]
 clap = "2.22.1"
-watchexec = { path = "../watchexec" }
+watchexec = "~1.8.1"
