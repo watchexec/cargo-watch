@@ -63,13 +63,30 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
     let mut opts: Vec<String> = vec![];
 
     if matches.is_present("ignore-nothing") {
+        if debug {
+            println!(">>> Ignoring nothing");
+        }
+
         return (true, vec![]);
+    }
+
+    let novcs = matches.is_present("no-gitignore");
+    if debug {
+        println!(">>> Load Git/VCS ignores: {:?}", !novcs);
     }
 
     opts.push(format!("*{}.DS_Store", MAIN_SEPARATOR));
     opts.push("*.swp".into());
-    opts.push(format!("*{s}.git*{s}*", s=MAIN_SEPARATOR));
+
+    opts.push(format!("*{s}.hg{s}*", s=MAIN_SEPARATOR));
+    opts.push(format!("*{s}.git{s}*", s=MAIN_SEPARATOR));
+    opts.push(format!("*{s}.svn{s}*", s=MAIN_SEPARATOR));
+
     opts.push(format!("*{s}target{s}*", s=MAIN_SEPARATOR));
+
+    if debug {
+        println!(">>> Default ignores: {:?}", opts);
+    }
 
     if matches.is_present("ignore") {
         for ignore in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
@@ -77,11 +94,8 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
         }
     }
 
-    let novcs = matches.is_present("no-gitignore");
-
     if debug {
-        println!(">>> No VCS ignores: {:?}", novcs);
-        println!(">>> Ignores: {:?}", opts);
+        println!(">>> All ignores: {:?}", opts);
     }
 
     (novcs, opts)
