@@ -94,9 +94,21 @@ By default, your entire project is watched, except for the target/
 and .git/ folders, and your .gitignore files are used to filter paths.
 ```
 
+### Reloading servers
+
+Cargo Watch pairs very well with [Catflap], a tool for Unixy platforms that
+lets one spawn a socket before the watcher runs that Rust servers can then bind
+to, avoiding request-dropping and the infamous ADDRINUSE error. For example:
+
+```
+$ catflap -- cargo watch -x run
+```
+
+[Catflap]: https://github.com/passcod/catflap
+
 ## Contributing
 
-The cargo-watch team enthusiastically welcomes contributions and project
+The Cargo Watch team enthusiastically welcomes contributions and project
 participation! There's a bunch of things you can do if you want to contribute!
 The [Contributor Guide](./CONTRIBUTING.md) has all the information you need for
 everything from reporting bugs to contributing entire new features. Please
