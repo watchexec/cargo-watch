@@ -122,6 +122,21 @@ if necessary, upgrading to [the latest one][releases].
 
 [releases]: https://github.com/passcod/cargo-watch/releases
 
+### On Windows 7 (or lower): "failed to add to job object: Access denied (OS Error 5)"
+
+Cargo Watch versions 5.0.0 and up (and watchexec versions 1.3.0 and up) [do not
+support Windows 7 or lower][i-69]. There are no plans at the moment to add such
+support.
+
+You can downgrade to the last version which did support Windows 7 (and lower),
+but do keep in mind that many bug fixes and features are missing there:
+
+```
+$ cargo install --force --vers 4.0.3 cargo-watch
+```
+
+[i-69]: https://github.com/passcod/cargo-watch/issues/69
+
 ### If running cargo watch errors with "Found argument 'build' which wasn't expected" (or similar)
 
 You're probably using **version 4** (or higher) but using the **version 3** (or
