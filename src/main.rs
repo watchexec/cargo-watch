@@ -55,7 +55,7 @@ fn get_command(debug: bool, matches: &ArgMatches) -> String {
         commands.push("echo [Finished running]".into());
     }
 
-    commands.insert(0, format!("cd {}", cargo_dir.display()));
+    commands.insert(0, format!("cd \"{}\"", cargo_dir.display()));
     commands.join(" && ")
 }
 
