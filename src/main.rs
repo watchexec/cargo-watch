@@ -5,20 +5,25 @@ extern crate clap;
 extern crate watchexec;
 
 use clap::{ArgMatches, Error, ErrorKind};
+use std::env::set_current_dir;
 use std::path::MAIN_SEPARATOR;
 use watchexec::cli::Args;
 
 mod args;
 mod cargo;
 
-fn get_command(debug: bool, matches: &ArgMatches) -> String {
-    let cargo_dir = cargo::root().unwrap_or_else(|| {
+fn change_dir() {
+    cargo::root().and_then(|p|
+        set_current_dir(p).ok()
+    ).unwrap_or_else(|| {
         Error::with_description(
             "Not a Cargo project, aborting.",
             ErrorKind::Io
         ).exit();
     });
+}
 
+fn get_command(debug: bool, matches: &ArgMatches) -> String {
     let mut commands: Vec<String> = vec![];
 
     // Cargo commands are in front of the rest
@@ -55,7 +60,6 @@ fn get_command(debug: bool, matches: &ArgMatches) -> String {
         commands.push("echo [Finished running]".into());
     }
 
-    commands.insert(0, format!("cd \"{}\"", cargo_dir.display()));
     commands.join(" && ")
 }
 
@@ -163,6 +167,8 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
 }
 
 fn main() {
+    change_dir();
+
     let matches = args::parse();
     let debug = matches.is_present("debug");
 
