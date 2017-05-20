@@ -156,6 +156,12 @@ argument, like so:
 $ /path/to/cargo-watch watch -x build
 ```
 
+### I want to run cargo-watch outside of a Cargo project
+
+That's not supported. If you have a good reason to use a Cargo-specific tool
+outside a Cargo project, please open an issue! Otherwise, you'll probably be
+best served with using [Watchexec].
+
 ### If file updates seems to never trigger
 
 Try using `--poll` to force the polling fallback.
