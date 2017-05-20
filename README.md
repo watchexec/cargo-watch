@@ -207,14 +207,30 @@ to include a log with `--debug` enabled so problems can be diagnosed better.
 [watch-issues]: https://github.com/passcod/cargo-watch/issues
 [watchexec-issues]: https://github.com/mattgreen/watchexec/issues
 
+### I want to embed Cargo Watch in my own (Rust) tool
+
+You cannot do that directly. You may of course call `cargo-watch` as any other
+program, but if you want to directly / statically embed it, that's not
+possible. But! Cargo Watch is built on top of [Watchexec], Watchexec is itself
+built on [Notify], and both of these can be used as Rust libraries.
+
+- If you want to build a tool that runs, restarts, and otherwise manages
+  commands in response to file changes, you'll most probably want to use
+  **Watchexec**.
+
+- If you want to build a tool that responds to file changes, but does not need
+  to run commands, or does so in a way that is not well-supported by Watchexec,
+  then **Notify** is your ticket.
+
+[Notify]: https://github.com/passcod/notify
+[Watchexec]: https://github.com/mattgreen/watchexec
+
 ### Wait, is this just a wrapper on top of watchexec?
 
 It is! [Watchexec] does a really good job of watching files and running commands
 and all the details that go with this. Cargo watch simply embeds watchexec and
 calls it with its own custom options and defaults, so you can just run
 `cargo-watch` in your project and be in business.
-
-[Watchexec]: https://github.com/mattgreen/watchexec
 
 ## About
 
