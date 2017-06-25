@@ -113,7 +113,7 @@ fn get_poll(debug: bool, matches: &ArgMatches) -> (bool, u32) {
             println!(">>> Poll with delay: {} seconds", delay);
         }
 
-        (true, delay)
+        (true, delay * 1000)
     } else {
         (false, 1000)
     }
