@@ -170,7 +170,7 @@ If that still doesn't work, and you're using an editor that does "safe saving",
 like IntelliJ / PyCharm, you may have to disable "safe saving" as that may
 prevent file notifications from being generated properly.
 
-### Linux: If it fails to watch some deep directories but not others
+### Linux: If it fails to watch some deep directories but not others / "No space left on device"
 
 You may have hit [the inotify watch limit][inotify-limit]. You can either
 increase the limit (instructions are on the previous link and at [this Guard
