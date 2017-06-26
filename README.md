@@ -172,13 +172,10 @@ prevent file notifications from being generated properly.
 
 ### Linux: If it fails to watch some deep directories but not others / "No space left on device"
 
-You may have hit [the inotify watch limit][inotify-limit]. You can either
-increase the limit (instructions are on the previous link and at [this Guard
-wiki page][inotify-guard]), or you can stop whatever it is that's consuming so
-many inotify watches.
+You may have hit the inotify watch limit. [Here's a summary of what this means
+and how to increase it.][inotify limit]
 
-[inotify-limit]: http://blog.sorah.jp/2012/01/24/inotify-limitation
-[inotify-guard]: https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers
+[inotify limit]: https://blog.passcod.name/2017/jun/25/inotify-watch-limit
 
 ### If you want to only recompile one Cargo workspace
 
