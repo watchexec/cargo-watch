@@ -71,6 +71,7 @@ FLAGS:
     -h, --help              Display this message
         --ignore-nothing    Ignore nothing, not even target/ and .git/
         --no-gitignore      Don’t use .gitignore files
+        --no-restart        Don’t restart command while it’s still running
         --poll              Force use of polling for file changes
         --postpone          Postpone first run until a file changes
     -q, --quiet             Suppress output from cargo-watch itself
