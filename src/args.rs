@@ -41,6 +41,10 @@ pub fn parse() -> ArgMatches<'static> {
                  .long("no-gitignore")
                  .help("Don’t use .gitignore files"))
 
+            .arg(Arg::with_name("no-restart")
+                 .long("no-restart")
+                 .help("Don’t restart command while it’s still running"))
+
             .arg(Arg::with_name("packages:all")
                 .long("all")
                 .conflicts_with("packages:one")

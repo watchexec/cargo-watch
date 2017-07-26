@@ -143,7 +143,7 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
         no_shell: false,
         once: false,
         signal: None,
-        restart: true,
+        restart: !matches.is_present("no-restart"),
 
         poll: poll,
         poll_interval: delay,
