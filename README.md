@@ -107,6 +107,31 @@ $ catflap -- cargo watch -x run
 
 [Catflap]: https://github.com/passcod/catflap
 
+### Restarting an application only if the build/check succeeds
+
+[Brought up by @LeDominik](https://github.com/passcod/cargo-watch/issues/75),
+here's a pattern that may be very useful: you're working on a server or app,
+but want it to keep running while you're writing a new feature or fixing a bug,
+potentially causing the code not to compile anymore in the meantime.
+
+In this case, you can use this strategy: run a first `cargo watch` with check,
+build, test, or whatever you want, and append `-s 'touch .trigger` (or equivalent
+for your platform). Then, run a second `cargo watch` simultaneously that _only_
+watches that `.trigger` file. For example:
+
+```
+$ cargo watch -x check -s 'touch .trigger'
+```
+
+and
+
+```
+$ cargo watch --no-gitignore -w .trigger -x run`
+```
+
+The `--no-gitignore` flag ensures that you can safely add `.trigger` to your
+`.gitignore` file to avoid mistakenly committing it.
+
 ## Contributing
 
 The Cargo Watch team enthusiastically welcomes contributions and project
