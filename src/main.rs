@@ -167,11 +167,11 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
 }
 
 fn main() {
+    let matches = args::parse();
+
     change_dir();
 
-    let matches = args::parse();
     let debug = matches.is_present("debug");
-
     let opts = get_options(debug, &matches);
     watchexec::run(opts)
 }
