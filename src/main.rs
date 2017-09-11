@@ -13,14 +13,11 @@ mod args;
 mod cargo;
 
 fn change_dir() {
-    cargo::root().and_then(|p|
-        set_current_dir(p).ok()
-    ).unwrap_or_else(|| {
-        Error::with_description(
-            "Not a Cargo project, aborting.",
-            ErrorKind::Io
-        ).exit();
-    });
+    cargo::root()
+        .and_then(|p| set_current_dir(p).ok())
+        .unwrap_or_else(|| {
+            Error::with_description("Not a Cargo project, aborting.", ErrorKind::Io).exit();
+        });
 }
 
 fn get_command(debug: bool, matches: &ArgMatches) -> String {
@@ -82,11 +79,11 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
     opts.push(format!("*{}.DS_Store", MAIN_SEPARATOR));
     opts.push("*.swp".into());
 
-    opts.push(format!("*{s}.hg{s}**", s=MAIN_SEPARATOR));
-    opts.push(format!("*{s}.git{s}**", s=MAIN_SEPARATOR));
-    opts.push(format!("*{s}.svn{s}**", s=MAIN_SEPARATOR));
+    opts.push(format!("*{s}.hg{s}**", s = MAIN_SEPARATOR));
+    opts.push(format!("*{s}.git{s}**", s = MAIN_SEPARATOR));
+    opts.push(format!("*{s}.svn{s}**", s = MAIN_SEPARATOR));
 
-    opts.push(format!("*{s}target{s}**", s=MAIN_SEPARATOR));
+    opts.push(format!("*{s}target{s}**", s = MAIN_SEPARATOR));
 
     if debug {
         println!(">>> Default ignores: {:?}", opts);
@@ -157,6 +154,8 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
 
         cmd: get_command(debug, &matches),
         paths: get_watches(debug, &matches),
+
+        debounce: 500,
     };
 
     if debug {
