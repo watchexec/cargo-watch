@@ -1,6 +1,6 @@
 [root]
 name = "cargo-watch"
-version = "5.1.1"
+version = "6.0.0"
 dependencies = [
  "clap 2.26.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "watchexec 1.8.5 (registry+https://github.com/rust-lang/crates.io-index)",
