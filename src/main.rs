@@ -116,6 +116,18 @@ fn get_poll(debug: bool, matches: &ArgMatches) -> (bool, u32) {
     }
 }
 
+fn get_debounce(debug: bool, matches: &ArgMatches) -> u64 {
+    if matches.is_present("delay") {
+        let debounce = value_t!(matches, "delay", u64).unwrap();
+        if debug {
+            println!(">>> File updates debounce: {} seconds", debounce);
+        }
+        debounce * 1000
+    } else {
+        500
+    }
+}
+
 fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<String> {
     let mut opts: Vec<String> = vec![];
     if matches.is_present("watch") {
@@ -134,6 +146,7 @@ fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<String> {
 fn get_options(debug: bool, matches: &ArgMatches) -> Args {
     let (novcs, ignores) = get_ignores(debug, &matches);
     let (poll, delay) = get_poll(debug, &matches);
+    let debounce = get_debounce(debug, &matches);
 
     let args = Args {
         filters: vec![],
@@ -155,7 +168,7 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
         cmd: get_command(debug, &matches),
         paths: get_watches(debug, &matches),
 
-        debounce: 500,
+        debounce: debounce,
     };
 
     if debug {
