@@ -102,27 +102,13 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
     (novcs, opts)
 }
 
-fn get_poll(debug: bool, matches: &ArgMatches) -> (bool, u32) {
-    if matches.is_present("poll") {
-        let delay = value_t!(matches, "delay", u32).unwrap_or_else(|e| e.exit());
-
-        if debug {
-            println!(">>> Poll with delay: {} seconds", delay);
-        }
-
-        (true, delay * 1000)
-    } else {
-        (false, 1000)
-    }
-}
-
 fn get_debounce(debug: bool, matches: &ArgMatches) -> u64 {
     if matches.is_present("delay") {
-        let debounce = value_t!(matches, "delay", u64).unwrap();
+        let debounce = value_t!(matches, "delay", f64).unwrap_or_else(|e| e.exit());
         if debug {
             println!(">>> File updates debounce: {} seconds", debounce);
         }
-        debounce * 1000
+        (debounce * 1000f64) as u64
     } else {
         500
     }
@@ -145,7 +131,6 @@ fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<String> {
 
 fn get_options(debug: bool, matches: &ArgMatches) -> Args {
     let (novcs, ignores) = get_ignores(debug, &matches);
-    let (poll, delay) = get_poll(debug, &matches);
     let debounce = get_debounce(debug, &matches);
 
     let args = Args {
@@ -155,8 +140,9 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
         signal: None,
         restart: !matches.is_present("no-restart"),
 
-        poll: poll,
-        poll_interval: delay,
+        poll: matches.is_present("poll"),
+        poll_interval: debounce as u32,
+        debounce: debounce,
 
         ignores: ignores,
         no_vcs_ignore: novcs,
@@ -167,8 +153,6 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
 
         cmd: get_command(debug, &matches),
         paths: get_watches(debug, &matches),
-
-        debounce: debounce,
     };
 
     if debug {

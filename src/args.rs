@@ -91,7 +91,7 @@ pub fn parse() -> ArgMatches<'static> {
                 .long("delay")
                 .takes_value(true)
                 .empty_values(false)
-                .default_value("1")
+                .default_value("0.5")
                 .help("File updates debounce delay in seconds"))
 
             .arg(Arg::with_name("ignore")
