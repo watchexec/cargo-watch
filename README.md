@@ -97,7 +97,10 @@ and .git/ folders, and your .gitignore files are used to filter paths.
 
 ### Ignore syntax
 
-See the [`glob::Pattern` docs](https://doc.rust-lang.org/glob/glob/struct.Pattern.html) for a more detailed specification of glob matching syntax.
+See the [`glob::Pattern` docs][glob::Pattern] for a more detailed
+specification of the glob matching syntax used for `--ignore`.
+
+[glob::Pattern]: https://doc.rust-lang.org/glob/glob/struct.Pattern.html
 
 ### Reloading servers
 
