@@ -95,6 +95,13 @@ By default, your entire project is watched, except for the target/
 and .git/ folders, and your .gitignore files are used to filter paths.
 ```
 
+### Ignore syntax
+
+See the [`glob::Pattern` docs][glob::Pattern] for a more detailed
+specification of the glob matching syntax used for `--ignore`.
+
+[glob::Pattern]: https://doc.rust-lang.org/glob/glob/struct.Pattern.html
+
 ### Reloading servers
 
 Cargo Watch pairs very well with [Catflap], a tool for Unixy platforms that
