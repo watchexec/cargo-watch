@@ -5,7 +5,9 @@
 ![Crate download count](https://img.shields.io/crates/d/cargo-watch.svg?style=flat-square)
 
 [![Build status (Travis)](https://img.shields.io/travis/passcod/cargo-watch.svg?style=flat-square)](https://travis-ci.org/passcod/cargo-watch)
-[![Code of Conduct](https://img.shields.io/badge/CoC-WeAllBehave-123456.svg?style=flat-square)](./CODE_OF_CONDUCT.md)
+[![Code of Conduct](https://img.shields.io/badge/Code_of_Conduct-WeAllBehave-123456.svg?style=flat-square)](./CODE_OF_CONDUCT.md)
+
+![[Support this on Patreon!](https://www.patreon.com/passcod)](https://c5.patreon.com/external/logo/become_a_patron_button.png)
 
 Cargo Watch watches over your project's source for changes, and runs Cargo
 commands when they occur.
