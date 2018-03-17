@@ -102,6 +102,14 @@ and .git/ folders, and your .gitignore files are used to filter paths.
 See the [`glob::Pattern` docs][glob::Pattern] for a more detailed
 specification of the glob matching syntax used for `--ignore`.
 
+On Windows, patterns should be specified with Windows-style (`\\`) separators.
+Unix-style separators (`/`) would not match Windows paths, which could be
+confusing and give the appearance of commandline ignores not working.
+
+From Cargo Watch 7.0.0, `/` in commandline ignores are automatically translated
+to `\\` when running on Windows, but one should still try to write the correct
+patterns for the platform, as there may be more subtle differences.
+
 [glob::Pattern]: https://doc.rust-lang.org/glob/glob/struct.Pattern.html
 
 ### Reloading servers
@@ -238,8 +246,8 @@ this tool depends on, or the [issues for the Watchexec tool][watchexec-issues]
 that we use under the covers.
 
 If you want more verbose output, try running with the `--debug` flag. Note that
-this will also enable debug mode for watchexec. When filing an issue, make sure
-to include a log with `--debug` enabled so problems can be diagnosed better.
+this will also enable debug mode for watchexec. When filing an issue, **make
+sure to include a log with `--debug` enabled so problems can be diagnosed.**
 
 [notify-issues]: https://github.com/passcod/notify/issues
 [watch-issues]: https://github.com/passcod/cargo-watch/issues
