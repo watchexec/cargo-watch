@@ -1,6 +1,10 @@
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 
 pub fn parse() -> ArgMatches<'static> {
+    let footnote = "Cargo commands (-x) are always executed before shell commands (-s).\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .gitignore files are used to filter paths.".to_owned();
+
+    #[cfg(windows)] let footnote = format!("{}\n\nOn Windows, patterns given to -i have forward slashes (/) automatically converted to backward ones (\\) to ease command portability.", footnote);
+
     let matches = App::new(env!("CARGO_PKG_NAME"))
         .bin_name("cargo")
         .version(env!("CARGO_PKG_VERSION"))
@@ -127,7 +131,7 @@ pub fn parse() -> ArgMatches<'static> {
                 .default_value(".")
                 .help("Watch specific file(s) or folder(s)"))
 
-            .after_help("Cargo commands (-x) are always executed before shell commands (-s).\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .gitignore files are used to filter paths.")
+            .after_help(footnote.as_str())
 
         ).get_matches();
 
