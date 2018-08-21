@@ -110,7 +110,7 @@ patterns for the platform, as there may be more subtle differences.
 
 [glob::Pattern]: https://doc.rust-lang.org/glob/glob/struct.Pattern.html
 
-### Reloading servers
+### Reloading servers seamlessly
 
 Cargo Watch pairs very well with [Catflap], a tool for Unixy platforms that
 lets one spawn a socket before the watcher runs that Rust servers can then bind
@@ -121,6 +121,10 @@ $ catflap -- cargo watch -x run
 ```
 
 [Catflap]: https://github.com/passcod/catflap
+
+Of course, if you don't need to guard against these issues or don't want to
+modify your program to grab sockets instead of ports, you can use Cargo Watch
+as-is: it will happily just restart your server normally.
 
 ### Restarting an application only if the build/check succeeds
 
