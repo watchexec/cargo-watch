@@ -20,6 +20,8 @@ it will probably feel familiar.
 
 ## Install
 
+Pre-built binaries are available [on the Github Releases tab](https://github.com/passcod/cargo-watch/releases).
+
 ```
 $ cargo install cargo-watch
 ```
