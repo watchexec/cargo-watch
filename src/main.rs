@@ -170,5 +170,5 @@ fn main() {
 
     let debug = matches.is_present("debug");
     let opts = get_options(debug, &matches);
-    watchexec::run(opts)
+    watchexec::run(opts);
 }
