@@ -1,4 +1,9 @@
 //! Watch files in a Cargo project and compile it when they change
+#![forbid(unsafe_code)]
+#![cfg_attr(feature = "cargo-clippy", deny(clippy_pedantic))]
+#![cfg_attr(feature = "cargo-clippy", allow(non_ascii_literal))]
+#![cfg_attr(feature = "cargo-clippy", allow(cast_sign_loss))]
+#![cfg_attr(feature = "cargo-clippy", allow(cast_possible_truncation))]
 
 #[macro_use]
 extern crate clap;
@@ -89,7 +94,8 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
 
     if matches.is_present("ignore") {
         for ignore in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
-            #[cfg(windows)] let ignore = ignore.replace("/", MAIN_SEPARATOR);
+            #[cfg(windows)]
+            let ignore = ignore.replace("/", MAIN_SEPARATOR);
             opts.push(ignore);
         }
     }
@@ -101,13 +107,13 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
     (novcs, opts)
 }
 
-fn get_debounce(debug: bool, matches: &ArgMatches) -> u64 {
+fn get_debounce(debug: bool, matches: &ArgMatches) -> u32 {
     if matches.is_present("delay") {
-        let debounce = value_t!(matches, "delay", f64).unwrap_or_else(|e| e.exit());
+        let debounce = value_t!(matches, "delay", f32).unwrap_or_else(|e| e.exit());
         if debug {
             println!(">>> File updates debounce: {} seconds", debounce);
         }
-        (debounce * 1000f64) as u64
+        (debounce * 1000.0) as u32
     } else {
         500
     }
@@ -132,7 +138,7 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
     let (novcs, ignores) = get_ignores(debug, &matches);
     let debounce = get_debounce(debug, &matches);
 
-    let args = Args {
+    let arglist = Args {
         filters: vec![],
         no_shell: false,
         once: false,
@@ -140,14 +146,14 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
         restart: !matches.is_present("no-restart"),
 
         poll: matches.is_present("poll"),
-        poll_interval: debounce as u32,
-        debounce: debounce,
+        poll_interval: debounce,
+        debounce: u64::from(debounce),
 
-        ignores: ignores,
+        ignores,
         no_vcs_ignore: novcs,
 
         clear_screen: matches.is_present("clear"),
-        debug: debug,
+        debug,
         run_initially: !matches.is_present("postpone"),
 
         cmd: get_command(debug, &matches),
@@ -155,10 +161,10 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
     };
 
     if debug {
-        println!(">>> Watchexec arguments: {:?}", args);
+        println!(">>> Watchexec arguments: {:?}", arglist);
     }
 
-    args
+    arglist
 }
 
 fn main() {
