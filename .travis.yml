@@ -43,7 +43,7 @@ script:
   - cargo build --target $TARGET
   - cargo test --target $TARGET
 
-before_deploy: ./.package.sh $TRAVIS_TAG $TARGET
+before_deploy: ./.package $TRAVIS_TAG $TARGET
 deploy:
   provider: releases
   api_key:

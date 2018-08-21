@@ -1,6 +1,6 @@
 [package]
 name = "cargo-watch"
-version = "7.0.1"
+version = "7.0.2"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
 categories = ["command-line-utilities", "development-tools"]
@@ -10,6 +10,10 @@ keywords = ["cargo", "watch", "compile", "notify"]
 license = "CC0-1.0"
 readme = "README.md"
 repository = "https://github.com/passcod/cargo-watch"
+
+[badges]
+appveyor = { repository = "passcod/cargo-watch" }
+travis-ci = { repository = "passcod/cargo-watch" }
 
 [dependencies]
 clap = "2.26.0"

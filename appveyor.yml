@@ -5,6 +5,9 @@ environment:
     - TARGET: x86_64-pc-windows-gnu
       CHANNEL: stable
 
+# Not MSBuild
+build: false
+
 # Install Rust and Cargo
 # (Based on from https://github.com/rust-lang/libc/blob/master/appveyor.yml)
 install:
@@ -35,5 +38,4 @@ deploy:
   auth_token:
     secure: OkayPFKJ16PAH15rWQBdEQDgd3tlNP/ZcssaunpK9AHU+t9zZlO5qvUAok1JT3lR
   on:
-    branch: master
     appveyor_repo_tag: true

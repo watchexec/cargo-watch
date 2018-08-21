@@ -46,7 +46,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "cargo-watch"
-version = "7.0.1"
+version = "7.0.2"
 dependencies = [
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "watchexec 1.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
