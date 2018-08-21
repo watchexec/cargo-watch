@@ -37,7 +37,7 @@ matrix:
     - rust: nightly
   fast_finish: true
 
-before_script: rustup target add $TARGET
+before_script: rustup target add $TARGET || echo ok
 script:
   - cargo check --target $TARGET
   - cargo build --target $TARGET
