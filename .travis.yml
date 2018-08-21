@@ -1,4 +1,57 @@
 language: rust
-
-# http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+cache: cargo
+dist: trusty
 sudo: false
+
+env:
+  global:
+    - PROJECT_NAME=cargo-watch
+
+matrix:
+  include:
+    # Default test+release version
+    - os: osx
+      rust: stable
+      env: TARGET=x86_64-apple-darwin
+    - os: linux
+      rust: stable
+      env: TARGET=x86_64-unknown-linux-gnu
+
+    # Extra targets for linux only
+    - os: linux
+      rust: stable
+      env: TARGET=i686-unknown-linux-musl
+    - os: linux
+      rust: stable
+      env: TARGET=x86_64-unknown-linux-musl
+
+    # Non-critical but interesting for upcoming Rust changes
+    - os: linux
+      rust: nightly
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: osx
+      rust: nightly
+      env: TARGET=x86_64-apple-darwin
+
+  allow_failures:
+    - rust: nightly
+  fast_finish: true
+
+before_script: rustup target add $TARGET
+script:
+  - cargo check --target $TARGET
+  - cargo build --target $TARGET
+  - cargo test --target $TARGET
+
+before_deploy: ./.package.sh $TRAVIS_TAG $TARGET
+deploy:
+  provider: releases
+  api_key:
+    secure: LXi48d/kJVntJKV0SjKk9HHMc3IzxQt+3YY2PDDB7toQmVOf6mVdaRHSLQ5p08g6R4/z2hzsqDaKC7lvy1E5BuQotMJ9b4uw5ZiAE534CHr2IgQIwTJvV4gweC9fwZk8Ln8k3PY0Z9wLy/tzWaZHo9WK4IqjB4XrTOhR2vDoaq0=
+  file_glob: true
+  file: ${PROJECT_NAME}-${TRAVIS_TAG}-${TARGET}.*
+  skip_cleanup: true
+  on:
+    repo: passcod/cargo-watch
+    tags: true
+    rust: stable

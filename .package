@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+tag=$1
+target=$2
+
+if [[ -z "$tag" ]]; then
+    echo Tag is needed
+    exit 1
+fi
+
+if [[ -z "$target" ]]; then
+    echo Target is needed
+    exit 1
+fi
+
+
+cargo build --target $target --release
+
+build_dir=$(mktemp -d 2>/dev/null || mktemp -d -t tmp)
+out_dir=$(pwd)
+name="cargo-watch-$tag-$target"
+mkdir "$build_dir/$name"
+
+cp target/$target/release/cargo-watch "$build_dir/$name/"
+cp LICENSE "$build_dir/$name/"
+
+pushd $build_dir
+strip cargo-watch
+tar cvf "$out_dir/$name.tar" *
+popd
+xz -f9 "$name.tar"
+
