@@ -25,8 +25,8 @@ cp target/$target/release/cargo-watch "$build_dir/$name/"
 cp LICENSE "$build_dir/$name/"
 
 pushd $build_dir
-strip cargo-watch
-tar cvf "$out_dir/$name.tar" *
+strip "$name/cargo-watch"
+tar cvf "$out_dir/$name.tar" "$name"
 popd
 xz -f9 "$name.tar"
 
