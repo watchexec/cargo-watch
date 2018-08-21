@@ -1,11 +1,11 @@
 # $ cargo watch
 
-[![Crate release version](https://img.shields.io/crates/v/cargo-watch.svg?style=flat-square)](https://crates.io/crates/cargo-watch)
-[![Crate license: CC0 1.0](https://img.shields.io/crates/l/cargo-watch.svg?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
-![Crate download count](https://img.shields.io/crates/d/cargo-watch.svg?style=flat-square)
+[![Crate release version](https://flat.badgen.net/crates/v/cargo-watch)](https://crates.io/crates/cargo-watch)
+[![Crate license: CC0 1.0](https://flat.badgen.net/github/license/passcod/cargo-watch)](https://creativecommons.org/publicdomain/zero/1.0/)
+[![Crate download count](https://flat.badgen.net/crates/d/cargo-watch)](https://crates.io/crates/cargo-watch)
 
-[![Build status (Travis)](https://img.shields.io/travis/passcod/cargo-watch.svg?style=flat-square)](https://travis-ci.org/passcod/cargo-watch)
-[![Code of Conduct](https://img.shields.io/badge/Code_of_Conduct-WeAllBehave-123456.svg?style=flat-square)](./CODE_OF_CONDUCT.md)
+[![Build status (Travis)](https://flat.badgen.net/travis/passcod/cargo-watch/master)](https://travis-ci.org/passcod/cargo-watch)
+[![Build status (Appveyor)](https://flat.badgen.net/appveyor/ci/passcod/cargo-watch/master)](https://ci.appveyor.com/project/passcod/cargo-watch)
 
 Cargo Watch watches over your project's source for changes, and runs Cargo
 commands when they occur.
