@@ -49,9 +49,7 @@ fn get_command(debug: bool, matches: &ArgMatches) -> String {
     }
 
     if !matches.is_present("quiet") {
-        let start = {
-            format!("echo [Running '{}']", commands.join(" && "))
-        };
+        let start = { format!("echo [Running '{}']", commands.join(" && ")) };
 
         commands.insert(0, start);
         commands.push("echo [Finished running]".into());
@@ -91,7 +89,7 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
 
     if matches.is_present("ignore") {
         for ignore in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
-            #[cfg(windows)] let ignore = ignore.replace("/", &MAIN_SEPARATOR.to_string());
+            #[cfg(windows)] let ignore = ignore.replace("/", MAIN_SEPARATOR);
             opts.push(ignore);
         }
     }
