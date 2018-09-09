@@ -25,7 +25,7 @@ fn change_dir() {
         });
 }
 
-fn get_command(debug: bool, matches: &ArgMatches) -> String {
+fn get_commands(debug: bool, matches: &ArgMatches) -> Vec<String> {
     let mut commands: Vec<String> = vec![];
 
     // Cargo commands are in front of the rest
@@ -60,7 +60,7 @@ fn get_command(debug: bool, matches: &ArgMatches) -> String {
         commands.push("echo [Finished running]".into());
     }
 
-    commands.join(" && ")
+    vec![commands.join(" && ")]
 }
 
 fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
@@ -156,7 +156,7 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
         debug,
         run_initially: !matches.is_present("postpone"),
 
-        cmd: get_command(debug, &matches),
+        cmd: get_commands(debug, &matches),
         paths: get_watches(debug, &matches),
     };
 
@@ -167,12 +167,12 @@ fn get_options(debug: bool, matches: &ArgMatches) -> Args {
     arglist
 }
 
-fn main() {
+fn main() -> watchexec::error::Result<()> {
     let matches = args::parse();
 
     change_dir();
 
     let debug = matches.is_present("debug");
     let opts = get_options(debug, &matches);
-    watchexec::run(opts);
+    watchexec::run(opts)
 }

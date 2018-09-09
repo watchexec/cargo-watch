@@ -17,4 +17,4 @@ travis-ci = { repository = "passcod/cargo-watch" }
 
 [dependencies]
 clap = "2.26.0"
-watchexec = "1.9.0"
+watchexec = "1.9.1"
