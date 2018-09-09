@@ -1,6 +1,6 @@
 [package]
 name = "cargo-watch"
-version = "7.0.3"
+version = "7.0.4"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
 categories = ["command-line-utilities", "development-tools"]
@@ -17,4 +17,4 @@ travis-ci = { repository = "passcod/cargo-watch" }
 
 [dependencies]
 clap = "2.26.0"
-watchexec = "1.9.1"
+watchexec = "1.9.2"
