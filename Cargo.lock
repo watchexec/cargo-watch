@@ -50,7 +50,7 @@ dependencies = [
 
 [[package]]
 name = "cargo-watch"
-version = "7.0.2"
+version = "7.0.3"
 dependencies = [
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "watchexec 1.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
