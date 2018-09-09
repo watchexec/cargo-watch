@@ -32,7 +32,7 @@ popd
 xz -f9 "$name.tar"
 
 
-if [[ "$TARGET" == "x86_64-unknown-linux-gnu" ]]; then
+if [[ "$target" == "x86_64-unknown-linux-gnu" ]]; then
     mkdir -p "$build_dir/deb/$name"
     pushd "$build_dir/deb/$name"
 
@@ -40,7 +40,7 @@ if [[ "$TARGET" == "x86_64-unknown-linux-gnu" ]]; then
     cp "../../$name/$project" usr/bin/
     cat <<CONTROL > DEBIAN/control
 Package: $project
-Version: ${TRAVIS_TAG}
+Version: ${$tag/v/}
 Architecture: amd64
 Maintainer: Félix Saparelli <aur@passcod.name>
 Installed-Size: $(du -d1 usr | tail -n1 | cut -d\t -f1)
