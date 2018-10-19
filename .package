@@ -16,21 +16,32 @@ fi
 
 cargo build --target $target --release
 
+ext=""
+if [[ "$target" =~ *windows* ]]; then
+    ext=".exe"
+fi
+
 project="cargo-watch"
 build_dir=$(mktemp -d 2>/dev/null || mktemp -d -t tmp)
 out_dir=$(pwd)
 name="$project-$tag-$target"
 mkdir "$build_dir/$name"
 
-cp target/$target/release/$project "$build_dir/$name/"
+cp target/$target/release/$project$ext "$build_dir/$name/"
 cp LICENSE "$build_dir/$name/"
 
 pushd $build_dir
-strip "$name/$project"
-tar cvf "$out_dir/$name.tar" "$name"
+if [[ -z "$ext" ]]; then
+    # assume empty ext is linux/mac/unix
+    strip "$name/$project"
+    tar cvf "$out_dir/$name.tar" "$name"
+    xz -f9 "$name.tar"
+else
+    # and otherwise is windows
+    choco install 7zip
+    7z a -tzip -mx9 "$out_dir/$name.zip" "$name"
+fi
 popd
-xz -f9 "$name.tar"
-
 
 if [[ "$target" == "x86_64-unknown-linux-gnu" ]]; then
     mkdir -p "$build_dir/deb/$name"

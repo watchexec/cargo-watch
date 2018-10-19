@@ -14,7 +14,10 @@ env:
 
 matrix:
   include:
-    # Default test+release version
+    # Default test+release versions
+    - os: windows
+      rust: stable
+      env: TARGET=x86_64-pc-windows-msvc
     - os: osx
       rust: stable
       env: TARGET=x86_64-apple-darwin
@@ -22,7 +25,7 @@ matrix:
       rust: stable
       env: TARGET=x86_64-unknown-linux-gnu
 
-    # Extra targets for linux only
+    # Extra targets, also released
     - os: linux
       rust: stable
       env: TARGET=i686-unknown-linux-musl
@@ -30,7 +33,15 @@ matrix:
       rust: stable
       env: TARGET=x86_64-unknown-linux-musl
 
+    # Cross-compile release target, no tests (RasPi 3)
+    - os: linux
+      rust: stable
+      env: TARGET=aarch64-unknown-linux-gnu NO_RUN=1
+
     # Non-critical but interesting for upcoming Rust changes
+    - os: windows
+      rust: nightly
+      env: TARGET=x86_64-pc-windows-msvc
     - os: linux
       rust: nightly
       env: TARGET=x86_64-unknown-linux-gnu
@@ -46,7 +57,7 @@ before_script: rustup target add $TARGET || echo ok
 script:
   - cargo check --target $TARGET
   - cargo build --target $TARGET
-  - cargo test --target $TARGET
+  - '[[ -z "$NO_RUN" ]] && cargo test --target $TARGET'
 
 before_deploy: ./.package $TRAVIS_TAG $TARGET
 deploy:
