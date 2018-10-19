@@ -55,7 +55,7 @@ if [[ -z "$windows" ]]; then
     cd "$out_dir"
     xz -f9 "$name.tar"
 else
-    7za a "$out_dir/$name.zip" "$name"
+    7z a "$out_dir/$name.zip" "$name"
 fi
 
 ### Debify
