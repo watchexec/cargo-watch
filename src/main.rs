@@ -82,6 +82,8 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
     opts.push(format!("*{}.DS_Store", MAIN_SEPARATOR));
     opts.push("*.sw?".into());
     opts.push("*.sw?x".into());
+    opts.push("#*#".into());
+    opts.push(".#*".into());
 
     opts.push(format!("*{s}.hg{s}**", s = MAIN_SEPARATOR));
     opts.push(format!("*{s}.git{s}**", s = MAIN_SEPARATOR));
