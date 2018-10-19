@@ -31,10 +31,10 @@ matrix:
       env: TARGET=x86_64-pc-windows-gnu
     - os: linux
       rust: stable
-      env: TARGET=i686-unknown-linux-musl
+      env: TARGET=x86_64-unknown-linux-musl
     - os: linux
       rust: stable
-      env: TARGET=x86_64-unknown-linux-musl
+      env: TARGET=i686-unknown-linux-musl
 
     # Non-critical but interesting for upcoming Rust changes
     - os: windows
