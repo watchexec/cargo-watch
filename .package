@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+### Args
+
 tag=$1
 target=$2
 
@@ -14,27 +16,53 @@ if [[ -z "$target" ]]; then
 fi
 
 
-cargo build --target $target --release
+### Vars
+
+ext=""
+windows=""
+if [[ "$target" == *"windows"* ]]; then
+    choco install 7zip
+    ext=".exe"
+    windows="1"
+fi
 
 project="cargo-watch"
 build_dir=$(mktemp -d 2>/dev/null || mktemp -d -t tmp)
 out_dir=$(pwd)
 name="$project-$tag-$target"
+
+### Build
+
+cargo build --target $target --release
+
+### Decorate
+
 mkdir "$build_dir/$name"
-
-cp target/$target/release/$project "$build_dir/$name/"
+cp "target/$target/release/$project$ext" "$build_dir/$name/"
 cp LICENSE "$build_dir/$name/"
+ls -shal "$build_dir/$name/"
 
-pushd $build_dir
-strip "$name/$project"
-tar cvf "$out_dir/$name.tar" "$name"
-popd
-xz -f9 "$name.tar"
+### Strip
 
+cd "$build_dir"
+strip "$name/$project$ext"
+ls -shal "$name/"
+
+### Pack
+
+if [[ -z "$windows" ]]; then
+    tar cvf "$out_dir/$name.tar" "$name"
+    cd "$out_dir"
+    xz -f9 "$name.tar"
+else
+    7z a "$out_dir/$name.zip" "$name"
+fi
+
+### Debify
 
 if [[ "$target" == "x86_64-unknown-linux-gnu" ]]; then
     mkdir -p "$build_dir/deb/$name"
-    pushd "$build_dir/deb/$name"
+    cd "$build_dir/deb/$name"
 
     mkdir -p DEBIAN usr/bin
     cp "../../$name/$project" usr/bin/
@@ -51,6 +79,6 @@ CONTROL
 	cd ..
 	fakeroot dpkg -b "$name"
 	mv "$name.deb" "$out_dir/"
-	popd
 fi
 
+ls -shal "$out_dir/"
