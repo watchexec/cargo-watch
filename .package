@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+### Args
+
 tag=$1
 target=$2
 
@@ -14,10 +16,11 @@ if [[ -z "$target" ]]; then
 fi
 
 
-cargo build --target $target --release
+### Vars
 
 ext=""
 if [[ "$target" =~ *windows* ]]; then
+    choco install 7zip
     ext=".exe"
 fi
 
@@ -25,24 +28,34 @@ project="cargo-watch"
 build_dir=$(mktemp -d 2>/dev/null || mktemp -d -t tmp)
 out_dir=$(pwd)
 name="$project-$tag-$target"
-mkdir "$build_dir/$name"
 
+### Build
+
+cargo build --target $target --release
+
+### Decorate
+
+mkdir "$build_dir/$name"
 cp target/$target/release/$project$ext "$build_dir/$name/"
 cp LICENSE "$build_dir/$name/"
 
+### Pack
+
 pushd $build_dir
-if [[ -z "$ext" ]]; then
-    # assume empty ext is linux/mac/unix
-    strip "$name/$project"
-    tar cvf "$out_dir/$name.tar" "$name"
-    popd
-    xz -f9 "$name.tar"
-else
-    # and otherwise is windows
-    choco install 7zip
+strip "$name/$project$ext"
+tar cvf "$out_dir/$name.tar" "$name"
+
+### Compress
+
+if [[ "$target" =~ *windows* ]]; then
     7z a -tzip -mx9 "$out_dir/$name.zip" "$name"
     popd
+else
+    popd
+    xz -f9 "$name.tar"
 fi
+
+### Debify
 
 if [[ "$target" == "x86_64-unknown-linux-gnu" ]]; then
     mkdir -p "$build_dir/deb/$name"
