@@ -33,11 +33,6 @@ matrix:
       rust: stable
       env: TARGET=x86_64-unknown-linux-musl
 
-    # Cross-compile release target, no tests (RasPi 3)
-    - os: linux
-      rust: stable
-      env: TARGET=aarch64-unknown-linux-gnu NO_RUN=1
-
     # Non-critical but interesting for upcoming Rust changes
     - os: windows
       rust: nightly
@@ -57,7 +52,7 @@ before_script: rustup target add $TARGET || echo ok
 script:
   - cargo check --target $TARGET
   - cargo build --target $TARGET
-  - '[[ -z "$NO_RUN" ]] && cargo test --target $TARGET'
+  - cargo test --target $TARGET
 
 before_deploy: ./.package $TRAVIS_TAG $TARGET
 deploy:
