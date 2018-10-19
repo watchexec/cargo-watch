@@ -39,18 +39,18 @@ mkdir "$build_dir/$name"
 cp target/$target/release/$project$ext "$build_dir/$name/"
 cp LICENSE "$build_dir/$name/"
 
-### Pack
+### Strip
 
 pushd $build_dir
 strip "$name/$project$ext"
-tar cvf "$out_dir/$name.tar" "$name"
 
-### Compress
+### Pack
 
 if [[ "$target" =~ *windows* ]]; then
-    7z a -tzip -mx9 "$out_dir/$name.zip" "$name"
+    7za a "$out_dir/$name.zip" "$name"
     popd
 else
+    tar cvf "$out_dir/$name.tar" "$name"
     popd
     xz -f9 "$name.tar"
 fi
