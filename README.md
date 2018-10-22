@@ -245,6 +245,13 @@ If you're only running compiles or checks (i.e. any command that only affects
 the target/ folder) and you're using `-w`, you might be confusing the
 target-folder-ignorer. Check your options and paths.
 
+### If it runs repeatedly only touching ignored files
+
+Make sure the files you ignored are the only ones being touched. Use the 
+`--debug` option to see exactly which files were modified and triggered the 
+restart (or were ignored). Some programs and libraries create temporary files
+that may not match a simple ignore pattern.
+
 ### Something not covered above / I have a feature request
 
 Please [open an issue][watch-issues], or look through the existing ones. You
