@@ -79,16 +79,28 @@ fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
         println!(">>> Load Git/VCS ignores: {:?}", !novcs);
     }
 
+    // Mac
     opts.push(format!("*{}.DS_Store", MAIN_SEPARATOR));
+
+    // Vim
     opts.push("*.sw?".into());
     opts.push("*.sw?x".into());
+
+    // Emacs
     opts.push("#*#".into());
     opts.push(".#*".into());
 
+    // VCS
     opts.push(format!("*{s}.hg{s}**", s = MAIN_SEPARATOR));
     opts.push(format!("*{s}.git{s}**", s = MAIN_SEPARATOR));
     opts.push(format!("*{s}.svn{s}**", s = MAIN_SEPARATOR));
 
+    // SQLite
+    opts.push("*.db".into());
+    opts.push("*.db-*".into());
+    opts.push(format!("*{s}*.db-journal{s}**", s = MAIN_SEPARATOR));
+
+    // Rust
     opts.push(format!("*{s}target{s}**", s = MAIN_SEPARATOR));
 
     if debug {
