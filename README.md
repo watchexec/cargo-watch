@@ -145,7 +145,7 @@ $ cargo watch -x check -s 'touch .trigger'
 and
 
 ```
-$ cargo watch --no-gitignore -w .trigger -x run`
+$ cargo watch --no-gitignore -w .trigger -x run
 ```
 
 The `--no-gitignore` flag ensures that you can safely add `.trigger` to your
