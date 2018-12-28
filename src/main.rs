@@ -54,10 +54,10 @@ fn get_commands(debug: bool, matches: &ArgMatches) -> Vec<String> {
     }
 
     if !matches.is_present("quiet") {
-        let start = { format!("echo [Running '{}']", commands.join(" && ")) };
+        let start = { format!(r#"echo "[Running '{}']""#, commands.join(" && ")) };
 
         commands.insert(0, start);
-        commands.push("echo [Finished running]".into());
+        commands.push(r#"echo "[Finished running]""#.into());
     }
 
     vec![commands.join(" && ")]
