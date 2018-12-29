@@ -26,9 +26,6 @@ matrix:
       env: TARGET=x86_64-unknown-linux-gnu
 
     # Extra targets, also released
-    - os: windows
-      rust: stable
-      env: TARGET=x86_64-pc-windows-gnu
     - os: linux
       rust: stable
       env: TARGET=x86_64-unknown-linux-musl
@@ -36,7 +33,7 @@ matrix:
       rust: stable
       env: TARGET=i686-unknown-linux-musl
 
-    # Non-critical but interesting for upcoming Rust changes
+    # Non-critical, best-effort
     - os: windows
       rust: nightly
       env: TARGET=x86_64-pc-windows-msvc
@@ -46,9 +43,13 @@ matrix:
     - os: osx
       rust: nightly
       env: TARGET=x86_64-apple-darwin
+    - os: windows
+      rust: stable
+      env: TARGET=x86_64-pc-windows-gnu
 
   allow_failures:
     - rust: nightly
+    - env: TARGET=x86_64-pc-windows-gnu
   fast_finish: true
 
 before_script: rustup target add $TARGET || echo ok
