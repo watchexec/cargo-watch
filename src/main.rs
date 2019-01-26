@@ -10,8 +10,10 @@ extern crate clap;
 extern crate watchexec;
 
 use clap::{ArgMatches, Error, ErrorKind};
-use std::env::set_current_dir;
-use std::path::MAIN_SEPARATOR;
+use std::{
+    env::set_current_dir,
+    path::{PathBuf, MAIN_SEPARATOR},
+};
 use watchexec::cli::Args;
 
 mod args;
@@ -26,7 +28,7 @@ fn change_dir() {
 }
 
 fn get_commands(debug: bool, matches: &ArgMatches) -> Vec<String> {
-    let mut commands: Vec<String> = vec![];
+    let mut commands: Vec<String> = Vec::new();
 
     // Cargo commands are in front of the rest
     if matches.is_present("cmd:cargo") {
@@ -64,14 +66,14 @@ fn get_commands(debug: bool, matches: &ArgMatches) -> Vec<String> {
 }
 
 fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
-    let mut opts: Vec<String> = vec![];
+    let mut opts = Vec::new();
 
     if matches.is_present("ignore-nothing") {
         if debug {
             println!(">>> Ignoring nothing");
         }
 
-        return (true, vec![]);
+        return (true, Vec::new());
     }
 
     let novcs = matches.is_present("no-gitignore");
@@ -134,10 +136,10 @@ fn get_debounce(debug: bool, matches: &ArgMatches) -> u32 {
     }
 }
 
-fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<String> {
-    let mut opts: Vec<String> = vec![];
+fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<PathBuf> {
+    let mut opts = Vec::new();
     if matches.is_present("watch") {
-        for watch in values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit()) {
+        for watch in values_t!(matches, "watch", PathBuf).unwrap_or_else(|e| e.exit()) {
             opts.push(watch);
         }
     }

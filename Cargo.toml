@@ -17,4 +17,4 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 clap = "2.26.0"
-watchexec = "1.9.2"
+watchexec = "1.10.0"
