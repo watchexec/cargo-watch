@@ -14,10 +14,12 @@ use std::{
     env::set_current_dir,
     path::{PathBuf, MAIN_SEPARATOR},
 };
-use watchexec::cli::Args;
+use watch::CwHandler;
+use watchexec::{cli::Args, run::watch};
 
 mod args;
 mod cargo;
+mod watch;
 
 fn change_dir() {
     cargo::root()
@@ -55,14 +57,11 @@ fn get_commands(debug: bool, matches: &ArgMatches) -> Vec<String> {
         println!(">>> Commands: {:?}", commands);
     }
 
-    if !matches.is_present("quiet") {
-        let start = { format!(r#"echo "[Running '{}']""#, commands.join(" && ")) };
-
-        commands.insert(0, start);
-        commands.push(r#"echo "[Finished running]""#.into());
+    if matches.is_present("quiet") {
+        commands.push("quiet".into());
     }
 
-    vec![commands.join(" && ")]
+    commands
 }
 
 fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
@@ -191,5 +190,5 @@ fn main() -> watchexec::error::Result<()> {
 
     let debug = matches.is_present("debug");
     let opts = get_options(debug, &matches);
-    watchexec::run(opts)
+    watch::<CwHandler>(opts)
 }
