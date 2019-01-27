@@ -20,5 +20,6 @@ clap = "2.26.0"
 watchexec = "1.10.0"
 
 [dev-dependencies]
-insta = "0.5.2"
+insta = { git = "https://github.com/mitsuhiko/insta" }
 assert_cmd = "0.10.2"
+wait-timeout = "0.2.0"

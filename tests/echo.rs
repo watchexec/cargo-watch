@@ -1,8 +1,9 @@
+extern crate assert_cmd;
 extern crate cargo_watch;
-extern crate watchexec;
 #[macro_use]
 extern crate insta;
-extern crate assert_cmd;
+extern crate wait_timeout;
+extern crate watchexec;
 
 use assert_cmd::prelude::*;
 use std::{
@@ -13,6 +14,7 @@ use std::{
     thread::sleep,
     time::Duration,
 };
+use wait_timeout::ChildExt;
 
 fn touch(n: u8) -> io::Result<()> {
     let path: PathBuf = format!("./tests/touchdata/{}.txt", n).into();
@@ -23,9 +25,19 @@ fn touch(n: u8) -> io::Result<()> {
         .map(|_| ())
 }
 
+fn std_to_string<T: io::Read>(handle: &mut Option<T>) -> String {
+    if let Some(ref mut handle) = handle {
+        let mut buf = String::with_capacity(1024);
+        handle.read_to_string(&mut buf).unwrap();
+        buf
+    } else {
+        unreachable!()
+    }
+}
+
 #[test]
 fn it_runs() {
-    let main = Command::main_binary()
+    let mut main = Command::main_binary()
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -44,12 +56,13 @@ fn it_runs() {
     sleep(Duration::from_millis(50));
     touch(1).unwrap();
 
+    main.wait_timeout(Duration::from_secs(3)).unwrap();
     main.wait_with_output().unwrap().assert().success();
 }
 
 #[test]
 fn with_announce() {
-    let main = Command::main_binary()
+    let mut main = Command::main_binary()
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -68,21 +81,21 @@ fn with_announce() {
     sleep(Duration::from_millis(50));
     touch(1).unwrap();
 
-    let out = main.wait_with_output().unwrap();
+    main.wait_timeout(Duration::from_secs(3)).unwrap();
 
     assert_snapshot_matches!(
         "with_announce.stdout",
-        std::str::from_utf8(&out.stdout).unwrap()
+        std_to_string(&mut main.stdout)
     );
     assert_snapshot_matches!(
         "with_announce.stderr",
-        std::str::from_utf8(&out.stderr).unwrap()
+        std_to_string(&mut main.stderr)
     );
 }
 
 #[test]
 fn without_announce() {
-    let main = Command::main_binary()
+    let mut main = Command::main_binary()
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -102,22 +115,22 @@ fn without_announce() {
     sleep(Duration::from_millis(50));
     touch(1).unwrap();
 
-    let out = main.wait_with_output().unwrap();
+    main.wait_timeout(Duration::from_secs(3)).unwrap();
 
     assert_snapshot_matches!(
         "without_announce.stdout",
-        std::str::from_utf8(&out.stdout).unwrap()
+        std_to_string(&mut main.stdout)
     );
     assert_snapshot_matches!(
         "without_announce.stderr",
-        std::str::from_utf8(&out.stderr).unwrap()
+        std_to_string(&mut main.stderr)
     );
 }
 
 #[cfg(unix)]
 #[test]
 fn with_error() {
-    let main = Command::main_binary()
+    let mut main = Command::main_binary()
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -138,14 +151,14 @@ fn with_error() {
     sleep(Duration::from_millis(50));
     touch(1).unwrap();
 
-    let out = main.wait_with_output().unwrap();
+    main.wait_timeout(Duration::from_secs(3)).unwrap();
 
     assert_snapshot_matches!(
         "with_error.stdout",
-        std::str::from_utf8(&out.stdout).unwrap()
+        std_to_string(&mut main.stdout)
     );
     assert_snapshot_matches!(
         "with_error.stderr",
-        std::str::from_utf8(&out.stderr).unwrap()
+        std_to_string(&mut main.stderr)
     );
 }
