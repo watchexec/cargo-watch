@@ -1,5 +1,6 @@
 extern crate assert_cmd;
 extern crate cargo_watch;
+#[cfg(unix)]
 #[macro_use]
 extern crate insta;
 extern crate wait_timeout;
@@ -60,6 +61,7 @@ fn it_runs() {
     main.wait_with_output().unwrap().assert().success();
 }
 
+#[cfg(unix)]
 #[test]
 fn with_announce() {
     let mut main = Command::main_binary()
@@ -87,6 +89,7 @@ fn with_announce() {
     assert_snapshot_matches!("with_announce.stderr", std_to_string(&mut main.stderr));
 }
 
+#[cfg(unix)]
 #[test]
 fn without_announce() {
     let mut main = Command::main_binary()
