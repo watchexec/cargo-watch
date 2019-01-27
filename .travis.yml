@@ -1,7 +1,14 @@
 language: rust
-cache: cargo
-dist: trusty
-sudo: false
+dist: xenial
+
+cache:
+  - directories:
+    - $HOME/.cargo
+    - target/debug/deps
+    - target/$TARGET/debug/deps
+before_cache:
+  # Travis can't cache files that are not readable by "others"
+  - chmod -R a+r $HOME/.cargo
 
 addons:
   apt:
@@ -57,7 +64,8 @@ matrix:
   fast_finish: true
 
 before_script:
-  - rustup target add $TARGET || echo ok
+  - rustup target add $TARGET || true
+  - rm tests/touchdata/*.txt || true
   - |
     if [[ $TRAVIS_OS_NAME == "windows" ]]; then
       echo '[replace]' >> Cargo.toml

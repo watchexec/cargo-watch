@@ -37,7 +37,7 @@ fn std_to_string<T: io::Read>(handle: &mut Option<T>) -> String {
 }
 
 #[test]
-fn it_runs() {
+fn without_poll() {
     let mut main = Command::main_binary()
         .unwrap()
         .stderr(Stdio::piped())
@@ -46,6 +46,32 @@ fn it_runs() {
             "watch",
             "--testing-only--once",
             "--no-gitignore",
+            "-w",
+            "./tests/touchdata/",
+            "-s",
+            "echo it runs",
+        ])
+        .spawn()
+        .unwrap();
+
+    sleep(Duration::from_millis(50));
+    touch(1).unwrap();
+
+    main.wait_timeout(Duration::from_secs(3)).unwrap();
+    main.wait_with_output().unwrap().assert().success();
+}
+
+#[test]
+fn with_poll() {
+    let mut main = Command::main_binary()
+        .unwrap()
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .args(&[
+            "watch",
+            "--testing-only--once",
+            "--no-gitignore",
+            "--poll",
             "-w",
             "./tests/touchdata/",
             "-s",
@@ -72,6 +98,7 @@ fn with_announce() {
             "watch",
             "--testing-only--once",
             "--no-gitignore",
+            "--poll",
             "-w",
             "./tests/touchdata/",
             "-s",
@@ -101,6 +128,7 @@ fn without_announce() {
             "--testing-only--once",
             "--no-gitignore",
             "--quiet",
+            "--poll",
             "-w",
             "./tests/touchdata/",
             "-s",
@@ -129,6 +157,7 @@ fn with_error() {
             "watch",
             "--testing-only--once",
             "--no-gitignore",
+            "--poll",
             "-w",
             "./tests/touchdata/",
             "-s",
