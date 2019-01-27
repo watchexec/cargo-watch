@@ -31,9 +31,11 @@ matrix:
     - os: linux
       rust: stable
       env: TARGET=x86_64-unknown-linux-musl
+
+    # Rust minimum version check
     - os: linux
-      rust: stable
-      env: TARGET=i686-unknown-linux-musl
+      rust: 1.26.1
+      env: TARGET=x86_64-unknown-linux-gnu
 
     # Non-critical, best-effort
     - os: windows
