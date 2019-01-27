@@ -79,7 +79,7 @@ fn with_announce() {
         .unwrap();
 
     sleep(Duration::from_millis(50));
-    touch(1).unwrap();
+    touch(2).unwrap();
 
     main.wait_timeout(Duration::from_secs(3)).unwrap();
 
@@ -107,7 +107,7 @@ fn without_announce() {
         .unwrap();
 
     sleep(Duration::from_millis(50));
-    touch(1).unwrap();
+    touch(3).unwrap();
 
     main.wait_timeout(Duration::from_secs(3)).unwrap();
 
@@ -137,7 +137,7 @@ fn with_error() {
         .unwrap();
 
     sleep(Duration::from_millis(50));
-    touch(1).unwrap();
+    touch(4).unwrap();
 
     main.wait_timeout(Duration::from_secs(3)).unwrap();
 

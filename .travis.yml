@@ -56,14 +56,19 @@ matrix:
     - env: TARGET=x86_64-pc-windows-gnu
   fast_finish: true
 
-before_script: rustup target add $TARGET || echo ok
+before_script:
+  - rustup target add $TARGET || echo ok
+  - |
+    if [[ $TRAVIS_OS_NAME == "windows" ]]; then
+      echo '[replace]' >> Cargo.toml
+      echo '"insta:0.5.2" = { git = "https://github.com/mitsuhiko/insta" }' >> Cargo.toml
+    fi
+  # workaround while waiting for new insta release
+  # https://github.com/mitsuhiko/insta/issues/7
 script:
   - cargo check --target $TARGET
   - cargo build --target $TARGET
-  - |
-    if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-      cargo test --target $TARGET
-    fi
+  - cargo test --target $TARGET
 
 before_deploy: ./.package $TRAVIS_TAG $TARGET
 deploy:

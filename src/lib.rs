@@ -137,8 +137,8 @@ pub fn get_debounce(debug: bool, matches: &ArgMatches) -> u32 {
 pub fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<PathBuf> {
     let mut opts = Vec::new();
     if matches.is_present("watch") {
-        for watch in values_t!(matches, "watch", PathBuf).unwrap_or_else(|e| e.exit()) {
-            opts.push(watch);
+        for watch in values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit()) {
+            opts.push(watch.into());
         }
     }
 
