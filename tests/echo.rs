@@ -1,6 +1,5 @@
 extern crate assert_cmd;
 extern crate cargo_watch;
-#[cfg(unix)]
 #[macro_use]
 extern crate insta;
 extern crate wait_timeout;
