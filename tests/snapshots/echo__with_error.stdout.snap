@@ -1,0 +1,10 @@
+---
+created: "2019-01-27T03:24:41.651783823+00:00"
+creator: insta@0.5.2
+expression: "std::str::from_utf8(&out.stdout).unwrap()"
+source: tests/echo.rs
+---
+[Running 'echo with error && false']
+with error
+[Finished running. Exit status: 1]
+

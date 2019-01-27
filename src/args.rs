@@ -25,6 +25,11 @@ pub fn parse() -> ArgMatches<'static> {
                 .help_message("Display this message")
                 .version_message("Display version information")
                 .arg(
+                    Arg::with_name("once")
+                        .long("testing-only--once")
+                        .hidden(true),
+                )
+                .arg(
                     Arg::with_name("clear")
                         .short("c")
                         .long("clear")

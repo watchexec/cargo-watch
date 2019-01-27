@@ -1,0 +1,7 @@
+---
+created: "2019-01-27T03:25:02.155548314+00:00"
+creator: insta@0.5.2
+expression: "std::str::from_utf8(&out.stderr).unwrap()"
+source: tests/echo.rs
+---
+
