@@ -65,6 +65,7 @@ matrix:
 
 before_script:
   - rustup target add $TARGET || true
+  - rustup component add --target $TARGET rustfmt || true
   - rm tests/touchdata/*.txt || true
   - |
     if [[ $TRAVIS_OS_NAME == "windows" ]]; then

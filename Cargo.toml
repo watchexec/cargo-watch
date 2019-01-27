@@ -15,6 +15,11 @@ repository = "https://github.com/passcod/cargo-watch"
 travis-ci = { repository = "passcod/cargo-watch" }
 maintenance = { status = "passively-maintained" }
 
+[profile.release]
+lto = true
+panic = "abort"
+codegen-units = 1
+
 [dependencies]
 clap = "2.26.0"
 watchexec = "1.10.0"
