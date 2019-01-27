@@ -36,6 +36,8 @@ fn std_to_string<T: io::Read>(handle: &mut Option<T>) -> String {
     }
 }
 
+// fsevents has trouble
+#[cfg(not(target_os = "macos"))]
 #[test]
 fn without_poll() {
     let mut main = Command::main_binary()
@@ -55,9 +57,12 @@ fn without_poll() {
         .unwrap();
 
     sleep(Duration::from_millis(50));
-    touch(1).unwrap();
+    touch(0).unwrap();
 
-    main.wait_timeout(Duration::from_secs(3)).unwrap();
+    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+        main.kill().unwrap();
+    }
+
     main.wait_with_output().unwrap().assert().success();
 }
 
@@ -83,11 +88,13 @@ fn with_poll() {
     sleep(Duration::from_millis(50));
     touch(1).unwrap();
 
-    main.wait_timeout(Duration::from_secs(3)).unwrap();
+    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+        main.kill().unwrap();
+    }
+
     main.wait_with_output().unwrap().assert().success();
 }
 
-#[cfg(unix)]
 #[test]
 fn with_announce() {
     let mut main = Command::main_binary()
@@ -110,13 +117,14 @@ fn with_announce() {
     sleep(Duration::from_millis(50));
     touch(2).unwrap();
 
-    main.wait_timeout(Duration::from_secs(3)).unwrap();
+    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+        main.kill().unwrap();
+    }
 
     assert_snapshot_matches!("with_announce.stdout", std_to_string(&mut main.stdout));
     assert_snapshot_matches!("with_announce.stderr", std_to_string(&mut main.stderr));
 }
 
-#[cfg(unix)]
 #[test]
 fn without_announce() {
     let mut main = Command::main_binary()
@@ -140,7 +148,9 @@ fn without_announce() {
     sleep(Duration::from_millis(50));
     touch(3).unwrap();
 
-    main.wait_timeout(Duration::from_secs(3)).unwrap();
+    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+        main.kill().unwrap();
+    }
 
     assert_snapshot_matches!("without_announce.stdout", std_to_string(&mut main.stdout));
     assert_snapshot_matches!("without_announce.stderr", std_to_string(&mut main.stderr));
@@ -171,7 +181,9 @@ fn with_error() {
     sleep(Duration::from_millis(50));
     touch(4).unwrap();
 
-    main.wait_timeout(Duration::from_secs(3)).unwrap();
+    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+        main.kill().unwrap();
+    }
 
     assert_snapshot_matches!("with_error.stdout", std_to_string(&mut main.stdout));
     assert_snapshot_matches!("with_error.stderr", std_to_string(&mut main.stderr));
