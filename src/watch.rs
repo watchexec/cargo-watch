@@ -22,8 +22,11 @@ impl Handler for CwHandler {
         if !quiet {
             #[cfg(unix)]
             final_cmd.push_str("; echo [Finished running. Exit status: $?]");
-            #[cfg(not(unix))]
-            final_cmd.push_str("; echo [Finished running]");
+            #[cfg(windows)]
+            final_cmd.push_str(" & echo [Finished running]");
+            #[cfg(not(any(unix, windows)))]
+            final_cmd.push_str(" ; echo [Finished running]");
+            // ^ could be wrong depending on the platform, to be fixed on demand
         }
 
         let mut inner_args = args.clone();
