@@ -67,13 +67,6 @@ before_script:
   - rustup target add $TARGET || true
   - rustup component add --target $TARGET rustfmt || true
   - rm tests/touchdata/*.txt || true
-  - |
-    if [[ $TRAVIS_OS_NAME == "windows" ]]; then
-      echo '[replace]' >> Cargo.toml
-      echo '"insta:0.5.2" = { git = "https://github.com/mitsuhiko/insta" }' >> Cargo.toml
-    fi
-  # workaround while waiting for new insta release
-  # https://github.com/mitsuhiko/insta/issues/7
 script:
   - cargo check --target $TARGET
   - |
