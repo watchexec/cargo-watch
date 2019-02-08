@@ -1,4 +1,5 @@
 use watchexec::{
+    cli,
     cli::Args,
     error::Result,
     pathop::PathOp,
@@ -40,6 +41,10 @@ impl Handler for CwHandler {
     }
 
     fn on_manual(&mut self) -> Result<bool> {
+        if self.args.clear_screen {
+            cli::clear_screen();
+        }
+
         self.start();
         self.inner.on_manual()
     }
