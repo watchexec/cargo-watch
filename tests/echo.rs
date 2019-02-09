@@ -39,7 +39,7 @@ fn std_to_string<T: io::Read>(handle: &mut Option<T>) -> String {
 #[cfg(not(target_os = "macos"))]
 #[test]
 fn without_poll() {
-    let mut main = Command::main_binary()
+    let mut main = Command::cargo_bin("cargo-watch")
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -67,7 +67,7 @@ fn without_poll() {
 
 #[test]
 fn with_poll() {
-    let mut main = Command::main_binary()
+    let mut main = Command::cargo_bin("cargo-watch")
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -96,7 +96,7 @@ fn with_poll() {
 
 #[test]
 fn with_announce() {
-    let mut main = Command::main_binary()
+    let mut main = Command::cargo_bin("cargo-watch")
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -126,7 +126,7 @@ fn with_announce() {
 
 #[test]
 fn without_announce() {
-    let mut main = Command::main_binary()
+    let mut main = Command::cargo_bin("cargo-watch")
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -158,7 +158,7 @@ fn without_announce() {
 #[cfg(unix)]
 #[test]
 fn with_error() {
-    let mut main = Command::main_binary()
+    let mut main = Command::cargo_bin("cargo-watch")
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
