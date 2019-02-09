@@ -71,6 +71,7 @@ script:
   - cargo check --target $TARGET
   - |
     if [[ $TRAVIS_RUST_VERSION != "1.26.1" ]] && [[ $TRAVIS_OS_NAME == "linux" ]]; then
+      cargo install --debug --path .
       cargo test --target $TARGET
     fi
 
