@@ -1,11 +1,14 @@
-use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
+use std::env;
+use std::process;
+
+use clap::{App, AppSettings, Arg, ArgMatches, ErrorKind, SubCommand};
 
 pub fn parse() -> ArgMatches<'static> {
     let footnote = "Cargo commands (-x) are always executed before shell commands (-s).\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .gitignore files are used to filter paths.".to_owned();
 
     #[cfg(windows)] let footnote = format!("{}\n\nOn Windows, patterns given to -i have forward slashes (/) automatically converted to backward ones (\\) to ease command portability.", footnote);
 
-    let matches = App::new(env!("CARGO_PKG_NAME"))
+    let mut app = App::new(env!("CARGO_PKG_NAME"))
         .bin_name("cargo")
         .version(env!("CARGO_PKG_VERSION"))
         .help_message("")
@@ -148,8 +151,32 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("Watch specific file(s) or folder(s)"),
                 )
                 .after_help(footnote.as_str()),
-        )
-        .get_matches();
+        );
+
+    // Allow invocation of cargo-watch with both `cargo-watch watch ARGS` (as invoked by cargo) and `cargo-watch ARGS`.
+    let mut args: Vec<String> = env::args().collect();
+    args.insert(1, "watch".into());
+
+    let matches = match app.get_matches_from_safe_borrow(args) {
+        Ok(matches) => matches,
+        Err(err) => {
+            match err.kind {
+                ErrorKind::HelpDisplayed => {
+                    println!("{}", err);
+                    process::exit(0);
+                }
+
+                ErrorKind::VersionDisplayed => {
+                    // Unlike HelpDisplayed, VersionDisplayed emits the output by itself (clap-rs/clap#1390)
+                    // It also does so without a trailing newline, so print one ourselves.
+                    println!();
+                    process::exit(0);
+                }
+
+                _ => app.get_matches(),
+            }
+        }
+    };
 
     matches.subcommand.unwrap().matches
 }

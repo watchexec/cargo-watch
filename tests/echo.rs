@@ -155,6 +155,36 @@ fn without_announce() {
     assert_snapshot_matches!("without_announce.stdout", std_to_string(&mut main.stdout));
 }
 
+#[test]
+fn without_watch() {
+    let mut main = Command::cargo_bin("cargo-watch")
+        .unwrap()
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .args(&[
+            "--testing-only--once",
+            "--no-gitignore",
+            "--quiet",
+            "--poll",
+            "-w",
+            "./tests/touchdata/",
+            "-s",
+            "echo without watch",
+        ])
+        .spawn()
+        .unwrap();
+
+    sleep(Duration::from_millis(50));
+    touch(3).unwrap();
+
+    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+        main.kill().unwrap();
+    }
+
+    assert_snapshot_matches!("without_watch.stderr", std_to_string(&mut main.stderr));
+    assert_snapshot_matches!("without_watch.stdout", std_to_string(&mut main.stdout));
+}
+
 #[cfg(unix)]
 #[test]
 fn with_error() {
