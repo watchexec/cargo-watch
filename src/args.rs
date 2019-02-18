@@ -1,7 +1,5 @@
-use std::env;
-use std::process;
-
 use clap::{App, AppSettings, Arg, ArgMatches, ErrorKind, SubCommand};
+use std::{env, process};
 
 pub fn parse() -> ArgMatches<'static> {
     let footnote = "Cargo commands (-x) are always executed before shell commands (-s).\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .gitignore files are used to filter paths.".to_owned();
@@ -153,7 +151,8 @@ pub fn parse() -> ArgMatches<'static> {
                 .after_help(footnote.as_str()),
         );
 
-    // Allow invocation of cargo-watch with both `cargo-watch watch ARGS` (as invoked by cargo) and `cargo-watch ARGS`.
+    // Allow invocation of cargo-watch with both `cargo-watch watch ARGS`
+    // (as invoked by cargo) and `cargo-watch ARGS`.
     let mut args: Vec<String> = env::args().collect();
     args.insert(1, "watch".into());
 
@@ -167,8 +166,9 @@ pub fn parse() -> ArgMatches<'static> {
                 }
 
                 ErrorKind::VersionDisplayed => {
-                    // Unlike HelpDisplayed, VersionDisplayed emits the output by itself (clap-rs/clap#1390)
-                    // It also does so without a trailing newline, so print one ourselves.
+                    // Unlike HelpDisplayed, VersionDisplayed emits the output
+                    // by itself (clap-rs/clap#1390). It also does so without a
+                    // trailing newline, so we print one ourselves.
                     println!();
                     process::exit(0);
                 }

@@ -4,41 +4,20 @@ extern crate wait_timeout;
 extern crate watchexec;
 
 use assert_cmd::prelude::*;
-use assert_cmd::assert::Assert;
 use std::{
-    fs::OpenOptions,
-    io,
-    path::PathBuf,
     process::{Command, Stdio},
-    thread::sleep,
     time::Duration,
 };
 use wait_timeout::ChildExt;
 
-fn std_to_string<T: io::Read>(handle: &mut Option<T>) -> String {
-    if let Some(ref mut handle) = handle {
-        let mut buf = String::with_capacity(1024);
-        handle.read_to_string(&mut buf).unwrap();
-        buf
-    } else {
-        unreachable!()
-    }
-}
-
-fn expect_version(assert: Assert) {
-    const VERSION: &'static str = env!("CARGO_PKG_VERSION");
-    assert.stdout(format!("cargo-watch {}\n", VERSION));
-}
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 #[test]
 fn with_cargo() {
     let mut main = Command::new("cargo")
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
-        .args(&[
-            "watch",
-            "--version",
-        ])
+        .args(&["watch", "--version"])
         .spawn()
         .unwrap();
 
@@ -46,7 +25,8 @@ fn with_cargo() {
         main.kill().unwrap();
     }
 
-    expect_version(main.wait_with_output().unwrap().assert().success());
+    let assert = main.wait_with_output().unwrap().assert().success();
+    assert.stdout(format!("cargo-watch {}\n", VERSION));
 }
 
 #[test]
@@ -55,10 +35,7 @@ fn without_cargo() {
         .unwrap()
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
-        .args(&[
-            "watch",
-            "--version",
-        ])
+        .args(&["watch", "--version"])
         .spawn()
         .unwrap();
 
@@ -66,5 +43,24 @@ fn without_cargo() {
         main.kill().unwrap();
     }
 
-    expect_version(main.wait_with_output().unwrap().assert().success());
+    let assert = main.wait_with_output().unwrap().assert().success();
+    assert.stdout(format!("cargo-watch {}\n", VERSION));
+}
+
+#[test]
+fn without_watch() {
+    let mut main = Command::cargo_bin("cargo-watch")
+        .unwrap()
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .args(&["--version"])
+        .spawn()
+        .unwrap();
+
+    if main.wait_timeout(Duration::from_secs(1)).unwrap().is_none() {
+        main.kill().unwrap();
+    }
+
+    let assert = main.wait_with_output().unwrap().assert().success();
+    assert.stdout(format!("cargo-watch {}\n", VERSION));
 }

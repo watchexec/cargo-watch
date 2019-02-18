@@ -58,7 +58,11 @@ fn without_poll() {
     sleep(Duration::from_millis(50));
     touch(0).unwrap();
 
-    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+    if main
+        .wait_timeout(Duration::from_secs(30))
+        .unwrap()
+        .is_none()
+    {
         main.kill().unwrap();
     }
 
@@ -87,7 +91,11 @@ fn with_poll() {
     sleep(Duration::from_millis(50));
     touch(1).unwrap();
 
-    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+    if main
+        .wait_timeout(Duration::from_secs(30))
+        .unwrap()
+        .is_none()
+    {
         main.kill().unwrap();
     }
 
@@ -116,7 +124,11 @@ fn with_announce() {
     sleep(Duration::from_millis(50));
     touch(2).unwrap();
 
-    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+    if main
+        .wait_timeout(Duration::from_secs(30))
+        .unwrap()
+        .is_none()
+    {
         main.kill().unwrap();
     }
 
@@ -147,42 +159,16 @@ fn without_announce() {
     sleep(Duration::from_millis(50));
     touch(3).unwrap();
 
-    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+    if main
+        .wait_timeout(Duration::from_secs(30))
+        .unwrap()
+        .is_none()
+    {
         main.kill().unwrap();
     }
 
     assert_snapshot_matches!("without_announce.stderr", std_to_string(&mut main.stderr));
     assert_snapshot_matches!("without_announce.stdout", std_to_string(&mut main.stdout));
-}
-
-#[test]
-fn without_watch() {
-    let mut main = Command::cargo_bin("cargo-watch")
-        .unwrap()
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .args(&[
-            "--testing-only--once",
-            "--no-gitignore",
-            "--quiet",
-            "--poll",
-            "-w",
-            "./tests/touchdata/",
-            "-s",
-            "echo without watch",
-        ])
-        .spawn()
-        .unwrap();
-
-    sleep(Duration::from_millis(50));
-    touch(3).unwrap();
-
-    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
-        main.kill().unwrap();
-    }
-
-    assert_snapshot_matches!("without_watch.stderr", std_to_string(&mut main.stderr));
-    assert_snapshot_matches!("without_watch.stdout", std_to_string(&mut main.stdout));
 }
 
 #[cfg(unix)]
@@ -210,7 +196,11 @@ fn with_error() {
     sleep(Duration::from_millis(50));
     touch(4).unwrap();
 
-    if main.wait_timeout(Duration::from_secs(30)).unwrap().is_none() {
+    if main
+        .wait_timeout(Duration::from_secs(30))
+        .unwrap()
+        .is_none()
+    {
         main.kill().unwrap();
     }
 
