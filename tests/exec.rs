@@ -1,16 +1,16 @@
 extern crate assert_cmd;
 extern crate cargo_watch;
+extern crate predicates;
 extern crate wait_timeout;
 extern crate watchexec;
 
 use assert_cmd::prelude::*;
+use predicates::str::is_match;
 use std::{
     process::{Command, Stdio},
     time::Duration,
 };
 use wait_timeout::ChildExt;
-
-const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 #[test]
 fn with_cargo() {
@@ -25,8 +25,11 @@ fn with_cargo() {
         main.kill().unwrap();
     }
 
-    let assert = main.wait_with_output().unwrap().assert().success();
-    assert.stdout(format!("cargo-watch {}\n", VERSION));
+    main.wait_with_output()
+        .unwrap()
+        .assert()
+        .success()
+        .stdout(is_match(r"cargo-watch \d+\.\d+\.\d+\n").unwrap());
 }
 
 #[test]
@@ -43,8 +46,11 @@ fn without_cargo() {
         main.kill().unwrap();
     }
 
-    let assert = main.wait_with_output().unwrap().assert().success();
-    assert.stdout(format!("cargo-watch {}\n", VERSION));
+    main.wait_with_output()
+        .unwrap()
+        .assert()
+        .success()
+        .stdout(is_match(r"cargo-watch \d+\.\d+\.\d+\n").unwrap());
 }
 
 #[test]
@@ -61,6 +67,9 @@ fn without_watch() {
         main.kill().unwrap();
     }
 
-    let assert = main.wait_with_output().unwrap().assert().success();
-    assert.stdout(format!("cargo-watch {}\n", VERSION));
+    main.wait_with_output()
+        .unwrap()
+        .assert()
+        .success()
+        .stdout(is_match(r"cargo-watch \d+\.\d+\.\d+\n").unwrap());
 }

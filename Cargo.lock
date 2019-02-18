@@ -120,6 +120,7 @@ dependencies = [
  "assert_cmd 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "insta 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "predicates 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "wait-timeout 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "watchexec 1.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -286,6 +287,14 @@ dependencies = [
  "cfg-if 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.48 (registry+https://github.com/rust-lang/crates.io-index)",
  "redox_syscall 0.1.51 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "float-cmp"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -541,6 +550,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "normalize-line-endings"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "notify"
 version = "4.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -653,7 +667,10 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "difference 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "float-cmp 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "normalize-line-endings 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "predicates-core 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1250,6 +1267,7 @@ dependencies = [
 "checksum failure_derive 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "ea1063915fd7ef4309e222a5a07cf9c319fb9c7836b1f89b85458672dbb127e1"
 "checksum fake-simd 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "e88a8acf291dafb59c2d96e8f59828f3838bb1a70398823ade51a84de6a6deed"
 "checksum filetime 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)" = "a2df5c1a8c4be27e7707789dc42ae65976e60b394afd293d1419ab915833e646"
+"checksum float-cmp 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "134a8fa843d80a51a5b77d36d42bc2def9edcb0262c914861d08129fd1926600"
 "checksum fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)" = "2fad85553e09a6f881f739c29f0b00b0f01357c743266d478b68951ce23285f3"
 "checksum fsevent 0.2.17 (registry+https://github.com/rust-lang/crates.io-index)" = "c4bbbf71584aeed076100b5665ac14e3d85eeb31fdbb45fbd41ef9a682b5ec05"
 "checksum fsevent-sys 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "1a772d36c338d07a032d5375a36f15f9a7043bf0cb8ce7cee658e037c6032874"
@@ -1279,6 +1297,7 @@ dependencies = [
 "checksum miow 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "8c1f2f3b1cf331de6896aabf6e9d55dca90356cc9960cca7eaaf408a355ae919"
 "checksum net2 0.2.33 (registry+https://github.com/rust-lang/crates.io-index)" = "42550d9fb7b6684a6d404d9fa7250c2eb2646df731d1c06afc06dcee9e1bcf88"
 "checksum nix 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d37e713a259ff641624b6cb20e3b12b2952313ba36b6823c0f16e6cfd9e5de17"
+"checksum normalize-line-endings 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "2e0a1a39eab95caf4f5556da9289b9e68f0aafac901b2ce80daaf020d3b733a8"
 "checksum notify 4.0.7 (registry+https://github.com/rust-lang/crates.io-index)" = "c968cf37cf949114b00d51b0b23536d1c3a4a3963767cf4c969c65a6af78dc7d"
 "checksum num-integer 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)" = "e83d528d2677f0518c570baf2b7abdcf0cd2d248860b68507bdcb3e91d4c0cea"
 "checksum num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)" = "0b3a5d7cc97d6d30d8b9bc8fa19bf45349ffe46241e8816f50f62f6d6aaabee1"
