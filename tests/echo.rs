@@ -44,7 +44,6 @@ fn without_poll() {
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .args(&[
-            "watch",
             "--testing-only--once",
             "--no-gitignore",
             "-w",
@@ -76,7 +75,6 @@ fn with_poll() {
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .args(&[
-            "watch",
             "--testing-only--once",
             "--no-gitignore",
             "--poll",
@@ -109,7 +107,6 @@ fn with_announce() {
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .args(&[
-            "watch",
             "--testing-only--once",
             "--no-gitignore",
             "--poll",
@@ -143,7 +140,6 @@ fn without_announce() {
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .args(&[
-            "watch",
             "--testing-only--once",
             "--no-gitignore",
             "--quiet",
@@ -179,7 +175,6 @@ fn with_error() {
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .args(&[
-            "watch",
             "--testing-only--once",
             "--no-gitignore",
             "--poll",

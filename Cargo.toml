@@ -22,7 +22,7 @@ codegen-units = 1
 
 [dependencies]
 clap = "2.26.0"
-watchexec = "1.10.0"
+watchexec = "1.10.1"
 
 [dev-dependencies]
 insta = "0.5.3"

@@ -40,6 +40,10 @@ impl Handler for CwHandler {
     }
 
     fn on_manual(&mut self) -> Result<bool> {
+        if self.args.once {
+            return Ok(true);
+        }
+
         self.start();
         self.inner.on_manual()
     }
