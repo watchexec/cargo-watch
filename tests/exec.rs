@@ -4,6 +4,7 @@ extern crate wait_timeout;
 extern crate watchexec;
 
 use assert_cmd::prelude::*;
+use assert_cmd::assert::Assert;
 use std::{
     fs::OpenOptions,
     io,
@@ -24,6 +25,11 @@ fn std_to_string<T: io::Read>(handle: &mut Option<T>) -> String {
     }
 }
 
+fn expect_version(assert: Assert) {
+    const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+    assert.stdout(format!("cargo-watch {}\n", VERSION));
+}
+
 #[test]
 fn with_cargo() {
     let mut main = Command::new("cargo")
@@ -40,7 +46,7 @@ fn with_cargo() {
         main.kill().unwrap();
     }
 
-    main.wait_with_output().unwrap().assert().success();
+    expect_version(main.wait_with_output().unwrap().assert().success());
 }
 
 #[test]
@@ -60,6 +66,5 @@ fn without_cargo() {
         main.kill().unwrap();
     }
 
-    main.wait_with_output().unwrap().assert().success();
+    expect_version(main.wait_with_output().unwrap().assert().success());
 }
-
