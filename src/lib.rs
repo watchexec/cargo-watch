@@ -89,6 +89,9 @@ pub fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
     // Emacs
     opts.push("#*#".into());
     opts.push(".#*".into());
+    
+    // Kate
+    opts.push(".*.kate-swp".into());
 
     // VCS
     opts.push(format!("*{s}.hg{s}**", s = MAIN_SEPARATOR));
