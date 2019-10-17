@@ -172,6 +172,18 @@ if necessary, upgrading to [the latest one][releases].
 
 [releases]: https://github.com/passcod/cargo-watch/releases
 
+### RLS is slow while using cargo watch, or vice versa, or it's waiting for the project lock a lot
+
+Cargo builds (and checks, and clippy, and tests because the tests have to be
+built) take out a lock on the project so two cargo instances don't run at the
+same time. That may include language servers like RLS (and possibly RA)! So
+your editor might be fighting with cargo watch for the lock when you save.
+
+There's not really a way around this. Either stop using cargo watch, or stop
+using RLS/RA, or accept that whenever you save there may be some slowdown for a
+little while. While I'm investigating ways to make this less of an issue,
+there's not going to be a quick fix anytime soon.
+
 ### On Windows 7 (or lower): "failed to add to job object: Access denied (OS Error 5)"
 
 Cargo Watch versions 5.0.0 and up (and watchexec versions 1.3.0 and up) [do not
@@ -247,8 +259,8 @@ target-folder-ignorer. Check your options and paths.
 
 ### If it runs repeatedly only touching ignored files
 
-Make sure the files you ignored are the only ones being touched. Use the 
-`--debug` option to see exactly which files were modified and triggered the 
+Make sure the files you ignored are the only ones being touched. Use the
+`--debug` option to see exactly which files were modified and triggered the
 restart (or were ignored). Some programs and libraries create temporary files
 that may not match a simple ignore pattern.
 
