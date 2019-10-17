@@ -160,10 +160,10 @@ everything from reporting bugs to contributing entire new features. Please
 don't hesitate to jump in if you'd like to, or even ask us questions if
 something isn't clear. <sub>{[attribution](https://github.com/zkat/pacote#contributing)}</sub>
 
-You can also contribute financially with [Ko-fi] or [Patreon].
+You can also contribute financially with [Patreon] or [GitHub Sponsorship].
 
-[Ko-fi]: https://ko-fi.com/passcod
 [Patreon]: https://www.patreon.com/passcod
+[GitHub Sponsors]: https://github.com/users/passcod/sponsorship
 
 ## Troubleshooting
 
