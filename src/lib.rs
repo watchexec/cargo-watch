@@ -56,10 +56,6 @@ pub fn get_commands(debug: bool, matches: &ArgMatches) -> Vec<String> {
         println!(">>> Commands: {:?}", commands);
     }
 
-    if matches.is_present("quiet") {
-        commands.push("quiet".into());
-    }
-
     commands
 }
 
@@ -152,7 +148,7 @@ pub fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<PathBuf> {
     opts
 }
 
-pub fn get_options(debug: bool, matches: &ArgMatches) -> Args {
+pub fn get_watchexec_args(debug: bool, matches: &ArgMatches) -> Args {
     let (novcs, ignores) = get_ignores(debug, &matches);
     let debounce = get_debounce(debug, &matches);
 
@@ -169,6 +165,7 @@ pub fn get_options(debug: bool, matches: &ArgMatches) -> Args {
 
         ignores,
         no_vcs_ignore: novcs,
+        no_ignore: false,
 
         clear_screen: matches.is_present("clear"),
         debug,

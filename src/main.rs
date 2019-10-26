@@ -10,7 +10,11 @@ fn main() -> watchexec::error::Result<()> {
 
     cargo_watch::change_dir();
 
+    let quiet = matches.is_present("quiet");
     let debug = matches.is_present("debug");
-    let opts = cargo_watch::get_options(debug, &matches);
-    watchexec::run::watch::<cargo_watch::watch::CwHandler>(opts)
+    let mut watchexec_args = cargo_watch::get_watchexec_args(debug, &matches);
+
+    let handler = cargo_watch::watch::CwHandler::new(&mut watchexec_args, quiet)?;
+
+    watchexec::run::watch(&handler)
 }

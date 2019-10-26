@@ -1,3 +1,4 @@
+use clap::ArgMatches;
 use watchexec::{
     cli::Args,
     error::Result,
@@ -5,20 +6,35 @@ use watchexec::{
     run::{ExecHandler, Handler},
 };
 
-pub struct CwHandler {
-    args: Args,
+pub struct CwHandler<'a> {
+    args: &'a Args,
     quiet: bool,
-    inner: ExecHandler,
+    inner: ExecHandler<'a>,
 }
 
-impl Handler for CwHandler {
-    fn new(mut args: Args) -> Result<Self> {
-        let quiet = args.cmd.last() == Some(&"quiet".into());
-        if quiet {
-            args.cmd.pop();
+impl<'a> Handler for CwHandler<'a> {
+    fn args(&self) -> &Args {
+        return self.inner.args();
+    }
+
+    fn on_manual(&self) -> Result<bool> {
+        if self.args.once {
+            return Ok(true);
         }
 
-        let mut final_cmd = args.cmd.join(" && ");
+        self.start();
+        self.inner.on_manual()
+    }
+
+    fn on_update(&self, ops: &[PathOp]) -> Result<bool> {
+        self.start();
+        self.inner.on_update(ops)
+    }
+}
+
+impl<'a> CwHandler<'a> {
+    pub fn new(watchexec_args: &'a mut Args, quiet: bool) -> Result<CwHandler> {
+        let mut final_cmd = watchexec_args.cmd.join(" && ");
         if !quiet {
             #[cfg(unix)]
             final_cmd.push_str("; echo [Finished running. Exit status: $?]");
@@ -29,32 +45,15 @@ impl Handler for CwHandler {
             // ^ could be wrong depending on the platform, to be fixed on demand
         }
 
-        let mut inner_args = args.clone();
-        inner_args.cmd = vec![final_cmd];
+        watchexec_args.cmd = vec![final_cmd];
 
-        Ok(Self {
-            args: args.clone(),
-            quiet,
-            inner: ExecHandler::new(inner_args)?,
+        Ok(CwHandler {
+            args: watchexec_args,
+            inner: ExecHandler::new(watchexec_args)?,
+            quiet: quiet,
         })
     }
 
-    fn on_manual(&mut self) -> Result<bool> {
-        if self.args.once {
-            return Ok(true);
-        }
-
-        self.start();
-        self.inner.on_manual()
-    }
-
-    fn on_update(&mut self, ops: &[PathOp]) -> Result<bool> {
-        self.start();
-        self.inner.on_update(ops)
-    }
-}
-
-impl CwHandler {
     fn start(&self) {
         if !self.quiet {
             println!("[Running '{}']", self.args.cmd.join(" && "));
