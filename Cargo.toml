@@ -29,3 +29,10 @@ assert_cmd = "0.11.1"
 insta = "0.8.1"
 predicates = "1.0.1"
 wait-timeout = "0.2.0"
+
+# TODO:
+# remove this if/when https://github.com/watchexec/watchexec/pull/134 is
+# merged and a new version of watchexec is released
+[patch.crates-io.watchexec]
+git = 'https://github.com/waynr/watchexec'
+branch = 'issue133-leave-handler-initialization-to-watch-caller'
