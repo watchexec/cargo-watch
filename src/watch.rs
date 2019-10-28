@@ -5,19 +5,20 @@ use watchexec::{
     run::{ExecHandler, Handler},
 };
 
-pub struct CwHandler<'a> {
-    args: &'a Args,
+pub struct CwHandler {
+    cmd: String,
+    once: bool,
     quiet: bool,
-    inner: ExecHandler<'a>,
+    inner: ExecHandler,
 }
 
-impl<'a> Handler for CwHandler<'a> {
+impl Handler for CwHandler {
     fn args(&self) -> Args {
         self.inner.args()
     }
 
     fn on_manual(&self) -> Result<bool> {
-        if self.args.once {
+        if self.once {
             Ok(true)
         } else {
             self.start();
@@ -31,9 +32,10 @@ impl<'a> Handler for CwHandler<'a> {
     }
 }
 
-impl<'a> CwHandler<'a> {
-    pub fn new(watchexec_args: &'a mut Args, quiet: bool) -> Result<CwHandler> {
-        let mut final_cmd = watchexec_args.cmd.join(" && ");
+impl CwHandler {
+    pub fn new(mut args: Args, quiet: bool) -> Result<Self> {
+        let cmd = args.cmd.join(" && ");
+        let mut final_cmd = cmd.clone();
         if !quiet {
             #[cfg(unix)]
             final_cmd.push_str("; echo [Finished running. Exit status: $?]");
@@ -44,18 +46,19 @@ impl<'a> CwHandler<'a> {
             // ^ could be wrong depending on the platform, to be fixed on demand
         }
 
-        watchexec_args.cmd = vec![final_cmd];
+        args.cmd = vec![final_cmd];
 
-        Ok(CwHandler {
-            args: watchexec_args,
-            inner: ExecHandler::new(watchexec_args)?,
+        Ok(Self {
+            once: args.once,
+            cmd,
+            inner: ExecHandler::new(args)?,
             quiet,
         })
     }
 
     fn start(&self) {
         if !self.quiet {
-            println!("[Running '{}']", self.args.cmd.join(" && "));
+            println!("[Running '{}']", self.cmd);
         }
     }
 }

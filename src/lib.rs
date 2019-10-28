@@ -1,12 +1,9 @@
 //! Watch files in a Cargo project and compile it when they change
-#![forbid(
-    unsafe_code,
-    clippy::pedantic,
-)]
+#![forbid(unsafe_code, clippy::pedantic)]
 #![allow(
     clippy::non_ascii_literal,
     clippy::cast_sign_loss,
-    clippy::cast_possible_truncation,
+    clippy::cast_possible_truncation
 )]
 
 #[macro_use]
@@ -152,7 +149,7 @@ pub fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<PathBuf> {
     opts
 }
 
-pub fn get_watchexec_args(debug: bool, matches: &ArgMatches) -> Args {
+pub fn get_options(debug: bool, matches: &ArgMatches) -> Args {
     let (novcs, ignores) = get_ignores(debug, &matches);
     let debounce = get_debounce(debug, &matches);
 
