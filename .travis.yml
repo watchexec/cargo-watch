@@ -61,8 +61,8 @@ before_script:
 script:
   - cargo check --target $TARGET
   - |
-    if [[ $TRAVIS_RUST_VERSION != "1.26.1" ]] && [[ $TRAVIS_OS_NAME == "linux" ]]; then
-      cargo install --debug --path .
+    if [[ $TRAVIS_RUST_VERSION != "1.38.0" ]] && [[ $TRAVIS_OS_NAME == "linux" ]]; then
+      cargo install --debug --force --path .
       cargo test --target $TARGET
     fi
 
