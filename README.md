@@ -264,6 +264,23 @@ Make sure the files you ignored are the only ones being touched. Use the
 restart (or were ignored). Some programs and libraries create temporary files
 that may not match a simple ignore pattern.
 
+### I don't have colour in my cargo output / for cargo test
+
+This sometimes happens on some terminal configurations. A quick workaround
+(instead of going down the rabbit hole of debugging your console settings) is
+to pass `--color=always` to the command. E.g.
+
+```
+$ cargo watch -x 'check --color=always'
+```
+
+For test (and bench) commands, you'll need to pass the flag to the underlying
+program instead of cargo:
+
+```
+$ cargo watch -x 'test -- --color=always'
+```
+
 ### Something not covered above / I have a feature request
 
 Please [open an issue][watch-issues], or look through the existing ones. You
