@@ -1,4 +1,3 @@
-use clap::ArgMatches;
 use watchexec::{
     cli::Args,
     error::Result,
@@ -13,17 +12,17 @@ pub struct CwHandler<'a> {
 }
 
 impl<'a> Handler for CwHandler<'a> {
-    fn args(&self) -> &Args {
-        return self.inner.args();
+    fn args(&self) -> Args {
+        self.inner.args()
     }
 
     fn on_manual(&self) -> Result<bool> {
         if self.args.once {
-            return Ok(true);
+            Ok(true)
+        } else {
+            self.start();
+            self.inner.on_manual()
         }
-
-        self.start();
-        self.inner.on_manual()
     }
 
     fn on_update(&self, ops: &[PathOp]) -> Result<bool> {
@@ -50,7 +49,7 @@ impl<'a> CwHandler<'a> {
         Ok(CwHandler {
             args: watchexec_args,
             inner: ExecHandler::new(watchexec_args)?,
-            quiet: quiet,
+            quiet,
         })
     }
 

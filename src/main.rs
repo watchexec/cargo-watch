@@ -1,6 +1,5 @@
 //! Watch files in a Cargo project and compile it when they change
-#![forbid(unsafe_code)]
-#![cfg_attr(feature = "cargo-clippy", deny(clippy_pedantic))]
+#![forbid(unsafe_code, clippy::pedantic)]
 
 extern crate cargo_watch;
 extern crate watchexec;

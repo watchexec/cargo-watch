@@ -19,7 +19,7 @@ pub fn root() -> Option<PathBuf> {
         fs::read_dir(path)
             .map(|entries| {
                 entries
-                    .filter_map(|res| res.ok())
+                    .filter_map(Result::ok)
                     .any(|ent| &ent.file_name() == "Cargo.toml")
             })
             .unwrap_or(false)

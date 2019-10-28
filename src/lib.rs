@@ -1,9 +1,13 @@
 //! Watch files in a Cargo project and compile it when they change
-#![forbid(unsafe_code)]
-#![cfg_attr(feature = "cargo-clippy", deny(clippy_pedantic))]
-#![cfg_attr(feature = "cargo-clippy", allow(non_ascii_literal))]
-#![cfg_attr(feature = "cargo-clippy", allow(cast_sign_loss))]
-#![cfg_attr(feature = "cargo-clippy", allow(cast_possible_truncation))]
+#![forbid(
+    unsafe_code,
+    clippy::pedantic,
+)]
+#![allow(
+    clippy::non_ascii_literal,
+    clippy::cast_sign_loss,
+    clippy::cast_possible_truncation,
+)]
 
 #[macro_use]
 extern crate clap;
@@ -85,7 +89,7 @@ pub fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
     // Emacs
     opts.push("#*#".into());
     opts.push(".#*".into());
-    
+
     // Kate
     opts.push(".*.kate-swp".into());
 
