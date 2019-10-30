@@ -11,11 +11,8 @@ extern crate clap;
 extern crate watchexec;
 
 use clap::{ArgMatches, Error, ErrorKind};
-use std::{
-    env::set_current_dir,
-    path::{PathBuf, MAIN_SEPARATOR},
-};
-use watchexec::cli::Args;
+use std::{env::set_current_dir, path::MAIN_SEPARATOR};
+use watchexec::{Args, ArgsBuilder};
 
 pub mod args;
 pub mod cargo;
@@ -29,7 +26,7 @@ pub fn change_dir() {
         });
 }
 
-pub fn get_commands(debug: bool, matches: &ArgMatches) -> Vec<String> {
+pub fn set_commands(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches) {
     let mut commands: Vec<String> = Vec::new();
 
     // Cargo commands are in front of the rest
@@ -57,73 +54,69 @@ pub fn get_commands(debug: bool, matches: &ArgMatches) -> Vec<String> {
         println!(">>> Commands: {:?}", commands);
     }
 
-    commands
+    builder.cmd(commands);
 }
 
-pub fn get_ignores(debug: bool, matches: &ArgMatches) -> (bool, Vec<String>) {
-    let mut opts = Vec::new();
-
+pub fn set_ignores(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches) {
     if matches.is_present("ignore-nothing") {
         if debug {
             println!(">>> Ignoring nothing");
         }
 
-        return (true, Vec::new());
+        builder.no_vcs_ignore(true);
+        return;
     }
 
     let novcs = matches.is_present("no-gitignore");
+    builder.no_vcs_ignore(novcs);
     if debug {
         println!(">>> Load Git/VCS ignores: {:?}", !novcs);
     }
 
-    // Mac
-    opts.push(format!("*{}.DS_Store", MAIN_SEPARATOR));
-
-    // Vim
-    opts.push("*.sw?".into());
-    opts.push("*.sw?x".into());
-
-    // Emacs
-    opts.push("#*#".into());
-    opts.push(".#*".into());
-
-    // Kate
-    opts.push(".*.kate-swp".into());
-
-    // VCS
-    opts.push(format!("*{s}.hg{s}**", s = MAIN_SEPARATOR));
-    opts.push(format!("*{s}.git{s}**", s = MAIN_SEPARATOR));
-    opts.push(format!("*{s}.svn{s}**", s = MAIN_SEPARATOR));
-
-    // SQLite
-    opts.push("*.db".into());
-    opts.push("*.db-*".into());
-    opts.push(format!("*{s}*.db-journal{s}**", s = MAIN_SEPARATOR));
-
-    // Rust
-    opts.push(format!("*{s}target{s}**", s = MAIN_SEPARATOR));
+    let mut list = vec![
+        // Mac
+        format!("*{}.DS_Store", MAIN_SEPARATOR),
+        // Vim
+        "*.sw?".into(),
+        "*.sw?x".into(),
+        // Emacs
+        "#*#".into(),
+        ".#*".into(),
+        // Kate
+        ".*.kate-swp".into(),
+        // VCS
+        format!("*{s}.hg{s}**", s = MAIN_SEPARATOR),
+        format!("*{s}.git{s}**", s = MAIN_SEPARATOR),
+        format!("*{s}.svn{s}**", s = MAIN_SEPARATOR),
+        // SQLite
+        "*.db".into(),
+        "*.db-*".into(),
+        format!("*{s}*.db-journal{s}**", s = MAIN_SEPARATOR),
+        // Rust
+        format!("*{s}target{s}**", s = MAIN_SEPARATOR),
+    ];
 
     if debug {
-        println!(">>> Default ignores: {:?}", opts);
+        println!(">>> Default ignores: {:?}", list);
     }
 
     if matches.is_present("ignore") {
         for ignore in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
             #[cfg(windows)]
             let ignore = ignore.replace("/", &MAIN_SEPARATOR.to_string());
-            opts.push(ignore);
+            list.push(ignore);
         }
     }
 
     if debug {
-        println!(">>> All ignores: {:?}", opts);
+        println!(">>> All ignores: {:?}", list);
     }
 
-    (novcs, opts)
+    builder.ignores(list);
 }
 
-pub fn get_debounce(debug: bool, matches: &ArgMatches) -> u32 {
-    if matches.is_present("delay") {
+pub fn set_debounce(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches) {
+    let d = if matches.is_present("delay") {
         let debounce = value_t!(matches, "delay", f32).unwrap_or_else(|e| e.exit());
         if debug {
             println!(">>> File updates debounce: {} seconds", debounce);
@@ -131,10 +124,12 @@ pub fn get_debounce(debug: bool, matches: &ArgMatches) -> u32 {
         (debounce * 1000.0) as u32
     } else {
         500
-    }
+    };
+
+    builder.poll_interval(d).debounce(d);
 }
 
-pub fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<PathBuf> {
+pub fn set_watches(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches) {
     let mut opts = Vec::new();
     if matches.is_present("watch") {
         for watch in values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit()) {
@@ -142,43 +137,37 @@ pub fn get_watches(debug: bool, matches: &ArgMatches) -> Vec<PathBuf> {
         }
     }
 
+    if opts.is_empty() {
+        opts.push(".".into());
+    }
+
     if debug {
         println!(">>> Watches: {:?}", opts);
     }
 
-    opts
+    builder.paths(opts);
 }
 
 pub fn get_options(debug: bool, matches: &ArgMatches) -> Args {
-    let (novcs, ignores) = get_ignores(debug, &matches);
-    let debounce = get_debounce(debug, &matches);
+    let mut builder = ArgsBuilder::default();
+    builder
+        .restart(!matches.is_present("no-restart"))
+        .poll(matches.is_present("poll"))
+        .clear_screen(matches.is_present("clear"))
+        .debug(debug)
+        .run_initially(!matches.is_present("postpone"));
 
-    let arglist = Args {
-        filters: vec![],
-        no_shell: false,
-        once: matches.is_present("once"),
-        signal: None,
-        restart: !matches.is_present("no-restart"),
+    set_ignores(debug, &mut builder, &matches);
+    set_debounce(debug, &mut builder, &matches);
+    set_watches(debug, &mut builder, &matches);
+    set_commands(debug, &mut builder, &matches);
 
-        poll: matches.is_present("poll"),
-        poll_interval: debounce,
-        debounce: u64::from(debounce),
-
-        ignores,
-        no_vcs_ignore: novcs,
-        no_ignore: false,
-
-        clear_screen: matches.is_present("clear"),
-        debug,
-        run_initially: !matches.is_present("postpone"),
-
-        cmd: get_commands(debug, &matches),
-        paths: get_watches(debug, &matches),
-    };
+    let mut args = builder.build().unwrap();
+    args.once = matches.is_present("once");
 
     if debug {
-        println!(">>> Watchexec arguments: {:?}", arglist);
+        println!(">>> Watchexec arguments: {:?}", args);
     }
 
-    arglist
+    args
 }

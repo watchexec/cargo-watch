@@ -1,8 +1,8 @@
 use watchexec::{
-    cli::Args,
     error::Result,
     pathop::PathOp,
     run::{ExecHandler, Handler},
+    Args,
 };
 
 pub struct CwHandler {
