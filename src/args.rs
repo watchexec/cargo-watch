@@ -44,12 +44,17 @@ pub fn parse() -> ArgMatches<'static> {
                 .arg(
                     Arg::with_name("ignore-nothing")
                         .long("ignore-nothing")
-                        .help("Ignore nothing, not even target/ and .git/"),
+                        .help("Ignore nothing, not even target/, .git/, and .ignore"),
                 )
                 .arg(
                     Arg::with_name("no-gitignore")
                         .long("no-gitignore")
                         .help("Don’t use .gitignore files"),
+                )
+                .arg(
+                    Arg::with_name("no-ignore")
+                        .long("no-ignore")
+                        .help("Don’t use .ignore files"),
                 )
                 .arg(
                     Arg::with_name("no-restart")
