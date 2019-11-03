@@ -64,6 +64,7 @@ pub fn set_ignores(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches)
         }
 
         builder.no_vcs_ignore(true);
+        builder.no_ignore(true);
         return;
     }
 
@@ -71,6 +72,12 @@ pub fn set_ignores(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches)
     builder.no_vcs_ignore(novcs);
     if debug {
         println!(">>> Load Git/VCS ignores: {:?}", !novcs);
+    }
+
+    let noignore = matches.is_present("no-ignore");
+    builder.no_ignore(noignore);
+    if debug {
+        println!(">>> Load .ignore ignores: {:?}", !noignore);
     }
 
     let mut list = vec![
