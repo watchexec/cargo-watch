@@ -95,6 +95,16 @@ By default, your entire project is watched, except for the target/
 and .git/ folders, and your .gitignore files are used to filter paths.
 ```
 
+### Ignore files
+
+`.gitignore` files are used by default to ignore paths to watch and trigger runs. To stop honouring them, pass `--no-gitignore`.
+
+`.ignore` files in the same syntax are also used by default. This file can be used to specify files that should be ignored by cargo watch but checked into git, without constantly adding `--ignore abc` options on the command-line. Do note that `.ignore` files may also be used by other programs, like [ripgrep](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#automatic-filtering). To stop honouring these, pass `--no-ignore`.
+
+Cargo watch also has an internal list of default ignores on top of those specified in files, like `target/` and `.git/` and various other common types (logs, editor swap files, lockfiles, etc).
+
+To skip absolutely all ignores, use the `--ignore-nothing` flag.
+
 ### Ignore syntax
 
 See the [`glob::Pattern` docs][glob::Pattern] for a more detailed
