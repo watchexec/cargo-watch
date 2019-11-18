@@ -71,6 +71,7 @@ FLAGS:
     -h, --help              Display this message
         --ignore-nothing    Ignore nothing, not even target/ and .git/
         --no-gitignore      Don’t use .gitignore files
+        --no-ignore         Don’t use .ignore files
         --no-restart        Don’t restart command while it’s still running
         --poll              Force use of polling for file changes
         --postpone          Postpone first run until a file changes
@@ -92,16 +93,28 @@ OPTIONS:
 Cargo commands (-x) are always executed before shell commands (-s).
 
 By default, your entire project is watched, except for the target/
-and .git/ folders, and your .gitignore files are used to filter paths.
+and .git/ folders, and your .ignore and .gitignore files are used to
+filter paths.
+
+On Windows, patterns given to -i have forward slashes (/) automatically
+converted to backward ones (\) to ease command portability.
 ```
 
 ### Ignore files
 
-`.gitignore` files are used by default to ignore paths to watch and trigger runs. To stop honouring them, pass `--no-gitignore`.
+`.gitignore` files are used by default to ignore paths to watch and trigger
+runs. To stop honouring them, pass `--no-gitignore`.
 
-`.ignore` files in the same syntax are also used by default. This file can be used to specify files that should be ignored by cargo watch but checked into git, without constantly adding `--ignore abc` options on the command-line. Do note that `.ignore` files may also be used by other programs, like [ripgrep](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#automatic-filtering). To stop honouring these, pass `--no-ignore`.
+`.ignore` files in the same syntax are also used by default. This file can be
+used to specify files that should be ignored by cargo watch but checked into
+git, without constantly adding `--ignore abc` options on the command-line. Do
+note that `.ignore` files may also be used by other programs, like
+[ripgrep](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#automatic-filtering).
+To stop honouring these, pass `--no-ignore`.
 
-Cargo watch also has an internal list of default ignores on top of those specified in files, like `target/` and `.git/` and various other common types (logs, editor swap files, lockfiles, etc).
+Cargo watch also has an internal list of default ignores on top of those
+specified in files, like `target/` and `.git/` and various other common types
+(logs, editor swap files, lockfiles, etc).
 
 To skip absolutely all ignores, use the `--ignore-nothing` flag.
 
@@ -117,6 +130,11 @@ confusing and give the appearance of commandline ignores not working.
 From Cargo Watch 7.0.0, `/` in commandline ignores are automatically translated
 to `\\` when running on Windows, but one should still try to write the correct
 patterns for the platform, as there may be more subtle differences.
+
+From Cargo Watch 7.3.0, `--ignore` patterns were fixed to provide better
+experience with directory matching. Previously, ignoring a folder would need
+unyieldy `-i folder/**` patterns; now that is handled internally, and only `-i
+folder` is needed for the same effect.
 
 [glob::Pattern]: https://doc.rust-lang.org/glob/glob/struct.Pattern.html
 
@@ -192,11 +210,12 @@ your editor might be fighting with cargo watch for the lock when you save.
 There's not really a way around this. Either stop using cargo watch, or stop
 using RLS/RA, or accept that whenever you save there may be some slowdown for a
 little while. While I'm investigating ways to make this less of an issue,
-there's not going to be a quick fix anytime soon.
+there's not going to be a quick fix anytime soon. Rust Analyzer is itself
+working on a different solution in conjunction with the compiler.
 
 ### On Windows 7 (or lower): "failed to add to job object: Access denied (OS Error 5)"
 
-Cargo Watch versions 5.0.0 and up (and watchexec versions 1.3.0 and up) [do not
+Cargo Watch versions 5.0.0 and up (and Watchexec versions 1.3.0 and up) [do not
 support Windows 7 or lower][i-69]. There are no plans at the moment to add such
 support.
 
@@ -208,16 +227,6 @@ $ cargo install --force --vers 4.0.3 cargo-watch
 ```
 
 [i-69]: https://github.com/passcod/cargo-watch/issues/69
-
-### If running cargo watch errors with "Found argument 'build' which wasn't expected" (or similar)
-
-You're probably using **version 4** (or higher) but using the **version 3** (or
-lower) style of arguments. The interface changed! Refer to the sections above
-for new usage guidelines, or to the help message:
-
-```
-$ cargo watch --help
-```
 
 ### I want to run cargo-watch directly, without going through cargo
 
@@ -267,6 +276,9 @@ If you're only running compiles or checks (i.e. any command that only affects
 the target/ folder) and you're using `-w`, you might be confusing the
 target-folder-ignorer. Check your options and paths.
 
+You can also use the `--watch-when-idle` flag to ignore any event that happens
+while the command is running.
+
 ### If it runs repeatedly only touching ignored files
 
 Make sure the files you ignored are the only ones being touched. Use the
@@ -274,11 +286,13 @@ Make sure the files you ignored are the only ones being touched. Use the
 restart (or were ignored). Some programs and libraries create temporary files
 that may not match a simple ignore pattern.
 
+As above, you can also use the `--watch-when-idle` flag to help.
+
 ### I don't have colour in my cargo output / for cargo test
 
-This sometimes happens on some terminal configurations. A quick workaround
-(instead of going down the rabbit hole of debugging your console settings) is
-to pass `--color=always` to the command. E.g.
+This sometimes happens on some terminal configurations or for test harnesses.
+A quick workaround (instead of going down the rabbit hole of debugging your
+console settings) is to pass `--color=always` to the command. E.g.
 
 ```
 $ cargo watch -x 'check --color=always'
@@ -308,10 +322,13 @@ sure to include a log with `--debug` enabled so problems can be diagnosed.**
 
 ### I want to embed Cargo Watch in my own (Rust) tool
 
-You cannot do that directly. You may of course call `cargo-watch` as any other
-program, but if you want to directly / statically embed it, that's not
-possible. But! Cargo Watch is built on top of [Watchexec], Watchexec is itself
-built on [Notify], and both of these can be used as Rust libraries.
+It is not recommended to do that directly. You may of course call `cargo-watch`
+as any other program, and technically it exposes an (undocumented) library that
+could be directly / statically embedded. If you have no other option, that may
+be your best bet.
+
+However, for most cases, consider building on top of [Watchexec] instead. That
+is itself built on [Notify], and both of these can be used as Rust libraries.
 
 - If you want to build a tool that runs, restarts, and otherwise manages
   commands in response to file changes, you'll most probably want to use
@@ -326,10 +343,15 @@ built on [Notify], and both of these can be used as Rust libraries.
 
 ### Wait, is this just a wrapper on top of watchexec?
 
-It is! [Watchexec] does a really good job of watching files and running commands
-and all the details that go with this. Cargo watch simply embeds watchexec and
-calls it with its own custom options and defaults, so you can just run
-`cargo-watch` in your project and be in business.
+Kind of! [Watchexec] does a really good job of watching files and running
+commands and all the details that go with this. Cargo Watch uses the Watchexec
+library interface and calls it with its own custom options, defaults, and
+particularities, so you can just run `cargo-watch` in your project and be in
+business.
+
+When asking questions and/or filing bugs, keep in mind that Cargo Watch and
+Watchexec share the same maintainer at the moment (but Notify does not,
+anymore)!
 
 ## About
 
