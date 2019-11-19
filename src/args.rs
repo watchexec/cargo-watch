@@ -79,6 +79,11 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("Postpone first run until a file changes"),
                 )
                 .arg(
+                    Arg::with_name("watch-when-idle")
+                        .long("watch-when-idle")
+                        .help("Ignore events emitted while the commands run"),
+                )
+                .arg(
                     Arg::with_name("quiet")
                         .short("q")
                         .long("quiet")

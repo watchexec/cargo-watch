@@ -120,7 +120,7 @@ dependencies = [
  "insta 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "predicates 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "wait-timeout 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "watchexec 1.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "watchexec 1.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -203,16 +203,16 @@ dependencies = [
 
 [[package]]
 name = "darling"
-version = "0.10.1"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "darling_core 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "darling_macro 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "darling_core 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "darling_macro 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "darling_core"
-version = "0.10.1"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -225,21 +225,21 @@ dependencies = [
 
 [[package]]
 name = "darling_macro"
-version = "0.10.1"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "darling_core 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "darling_core 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "derive_builder"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "darling 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive_builder_core 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "darling 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_builder_core 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -247,10 +247,10 @@ dependencies = [
 
 [[package]]
 name = "derive_builder_core"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "darling 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "darling 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1109,11 +1109,11 @@ dependencies = [
 
 [[package]]
 name = "watchexec"
-version = "1.11.1"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive_builder 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_builder 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "env_logger 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "glob 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "globset 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1201,11 +1201,11 @@ dependencies = [
 "checksum clicolors-control 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "90082ee5dcdd64dc4e9e0d37fbf3ee325419e39c0092191e0393df65518f741e"
 "checksum cloudabi 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "ddfc5b9aa5d4507acaf872de71051dfd0e309860e88966e1051e462a077aac4f"
 "checksum console 0.7.7 (registry+https://github.com/rust-lang/crates.io-index)" = "8ca57c2c14b8a2bf3105bc9d15574aad80babf6a9c44b1058034cdf8bd169628"
-"checksum darling 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)" = "3fe629a532efad5526454efb0700f86d5ad7ff001acb37e431c8bf017a432a8e"
-"checksum darling_core 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ee54512bec54b41cf2337a22ddfadb53c7d4c738494dc2a186d7b037ad683b85"
-"checksum darling_macro 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)" = "0cd3e432e52c0810b72898296a69d66b1d78d1517dff6cde7a130557a55a62c1"
-"checksum derive_builder 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "dfbc80e9c3b77201f32c9541b13d9678388782272554af7e65103310265462e6"
-"checksum derive_builder_core 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "8b68a4fe580fdda1bf3860b2360b9020696d42fc58f2343cf4be2faedf74c5a9"
+"checksum darling 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)" = "0d706e75d87e35569db781a9b5e2416cff1236a47ed380831f959382ccd5f858"
+"checksum darling_core 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)" = "f0c960ae2da4de88a91b2d920c2a7233b400bc33cb28453a2987822d8392519b"
+"checksum darling_macro 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)" = "d9b5a2f4ac4969822c62224815d069952656cadc7084fdca9751e6d959189b72"
+"checksum derive_builder 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a2658621297f2cf68762a6f7dc0bb7e1ff2cfd6583daef8ee0fed6f7ec468ec0"
+"checksum derive_builder_core 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "2791ea3e372c8495c0bc2033991d76b512cd799d07491fbd6890124db9458bef"
 "checksum difference 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "524cbf6897b527295dff137cec09ecf3a05f4fddffd7dfcd1585403449e74198"
 "checksum digest 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)" = "f3d0c8c8752312f9713efd397ff63acb9f85585afbf179282e720e7704954dd5"
 "checksum dtoa 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)" = "ea57b42383d091c85abcc2706240b94ab2a8fa1fc81c10ff23c4de06e2a90b5e"
@@ -1310,7 +1310,7 @@ dependencies = [
 "checksum void 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
 "checksum wait-timeout 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "9f200f5b12eb75f8c1ed65abd4b2db8a6e1b138a20de009dacee265a2498f3f6"
 "checksum walkdir 2.2.9 (registry+https://github.com/rust-lang/crates.io-index)" = "9658c94fa8b940eab2250bd5a457f9c48b748420d71293b165c8cdbe2f55f71e"
-"checksum watchexec 1.11.1 (registry+https://github.com/rust-lang/crates.io-index)" = "f7f300463f4a44c54fb8e42670727643c752a0e0fd4f6f561f2ed62ffee33f9c"
+"checksum watchexec 1.12.0 (registry+https://github.com/rust-lang/crates.io-index)" = "4f26a8b354b1b1aeecc19eea435ece3cf5c12534f20810f81c4c12ac2b470752"
 "checksum winapi 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)" = "167dc9d6949a9b857f3451275e911c3f44255842c1f7a76f33c55103a909087a"
 "checksum winapi 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)" = "8093091eeb260906a183e6ae1abdba2ef5ef2257a21801128899c3fc699229c6"
 "checksum winapi-build 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "2d315eee3b34aca4797b2da6b13ed88266e6d612562a0c46390af8299fc699bc"

@@ -161,6 +161,7 @@ pub fn get_options(debug: bool, matches: &ArgMatches) -> Args {
         .restart(!matches.is_present("no-restart"))
         .poll(matches.is_present("poll"))
         .clear_screen(matches.is_present("clear"))
+        .watch_when_idle(matches.is_present("watch-when-idle"))
         .debug(debug)
         .run_initially(!matches.is_present("postpone"));
 
