@@ -77,24 +77,19 @@ FLAGS:
         --postpone          Postpone first run until a file changes
     -q, --quiet             Suppress output from cargo-watch itself
     -V, --version           Display version information
+        --watch-when-idle   Ignore events emitted while the commands run
 
 OPTIONS:
-    -x, --exec <cmd>...
-            Cargo command(s) to execute on changes [default: check]
-    -s, --shell <cmd>...
-            Shell command(s) to execute on changes
-    -d, --delay <delay>
-            File updates debounce delay in seconds [default: 0.5]
-    -i, --ignore <pattern>...
-            Ignore a glob/gitignore-style pattern
-    -w, --watch <watch>...
-            Watch specific file(s) or folder(s) [default: .]
+    -x, --exec <cmd>...         Cargo command(s) to execute on changes [default: check]
+    -s, --shell <cmd>...        Shell command(s) to execute on changes
+    -d, --delay <delay>         File updates debounce delay in seconds [default: 0.5]
+    -i, --ignore <pattern>...   Ignore a glob/gitignore-style pattern
+    -w, --watch <watch>...      Watch specific file(s) or folder(s) [default: .]
 
 Cargo commands (-x) are always executed before shell commands (-s).
 
-By default, your entire project is watched, except for the target/
-and .git/ folders, and your .ignore and .gitignore files are used to
-filter paths.
+By default, your entire project is watched, except for the target/ and .git/
+folders, and your .ignore and .gitignore files are used to filter paths.
 
 On Windows, patterns given to -i have forward slashes (/) automatically
 converted to backward ones (\) to ease command portability.
