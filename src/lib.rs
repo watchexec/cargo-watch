@@ -3,7 +3,8 @@
 #![allow(
     clippy::non_ascii_literal,
     clippy::cast_sign_loss,
-    clippy::cast_possible_truncation
+    clippy::cast_possible_truncation,
+    clippy::too_many_lines
 )]
 
 #[macro_use]
