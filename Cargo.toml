@@ -26,6 +26,6 @@ watchexec = "=1.12.0"
 
 [dev-dependencies]
 assert_cmd = "0.11.1"
-insta = "0.8.1"
+insta = "0.12.0"
 predicates = "1.0.1"
 wait-timeout = "0.2.0"

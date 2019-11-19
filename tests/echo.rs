@@ -129,8 +129,8 @@ fn with_announce() {
         main.kill().unwrap();
     }
 
-    assert_snapshot_matches!("with_announce.stderr", std_to_string(&mut main.stderr));
-    assert_snapshot_matches!("with_announce.stdout", std_to_string(&mut main.stdout));
+    assert_snapshot!("with_announce.stderr", std_to_string(&mut main.stderr));
+    assert_snapshot!("with_announce.stdout", std_to_string(&mut main.stdout));
 }
 
 #[test]
@@ -163,8 +163,8 @@ fn without_announce() {
         main.kill().unwrap();
     }
 
-    assert_snapshot_matches!("without_announce.stderr", std_to_string(&mut main.stderr));
-    assert_snapshot_matches!("without_announce.stdout", std_to_string(&mut main.stdout));
+    assert_snapshot!("without_announce.stderr", std_to_string(&mut main.stderr));
+    assert_snapshot!("without_announce.stdout", std_to_string(&mut main.stdout));
 }
 
 #[cfg(unix)]
@@ -199,6 +199,6 @@ fn with_error() {
         main.kill().unwrap();
     }
 
-    assert_snapshot_matches!("with_error.stderr", std_to_string(&mut main.stderr));
-    assert_snapshot_matches!("with_error.stdout", std_to_string(&mut main.stdout));
+    assert_snapshot!("with_error.stderr", std_to_string(&mut main.stderr));
+    assert_snapshot!("with_error.stdout", std_to_string(&mut main.stdout));
 }
