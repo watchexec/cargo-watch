@@ -4,6 +4,7 @@
 [![Crate license: CC0 1.0](https://flat.badgen.net/github/license/passcod/cargo-watch)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![Crate download count](https://flat.badgen.net/crates/d/cargo-watch)](https://crates.io/crates/cargo-watch)
 [![Build status](https://flat.badgen.net/travis/passcod/cargo-watch/master)](https://travis-ci.org/passcod/cargo-watch)
+[![MSRV: 1.38.0](https://flat.badgen.net/badge/MSRV/1.38.0/purple)](https://blog.rust-lang.org/2019/09/26/Rust-1.38.0.html)
 
 Cargo Watch watches over your project's source for changes, and runs Cargo
 commands when they occur.
