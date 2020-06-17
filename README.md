@@ -59,6 +59,9 @@ $ cargo watch -x 'run -- --some-arg'
 
 # Run an arbitrary command
 $ cargo watch -s 'echo Hello world'
+
+# Run with features passed to cargo
+$ cargo watch --features "feature1,feature2"
 ```
 
 There's a lot more you can do! Here's a copy of the help:
@@ -85,6 +88,7 @@ OPTIONS:
     -x, --exec <cmd>...         Cargo command(s) to execute on changes [default: check]
     -s, --shell <cmd>...        Shell command(s) to execute on changes
     -d, --delay <delay>         File updates debounce delay in seconds [default: 0.5]
+        --features <features>   Space-separated list of features passed to cargo invocations
     -i, --ignore <pattern>...   Ignore a glob/gitignore-style pattern
     -w, --watch <watch>...      Watch specific file(s) or folder(s) [default: .]
 
@@ -301,6 +305,16 @@ program instead of cargo:
 ```
 $ cargo watch -x 'test -- --color=always'
 ```
+
+### I want to compile my build with additional features
+
+The `--features` flag is recognized and passed to all cargo invocations.
+
+```
+$ cargo watch --features feature1,feature2
+```
+
+will run `cargo check --features feature1,feature2` on every watched change.
 
 ### Something not covered above / I have a feature request
 
