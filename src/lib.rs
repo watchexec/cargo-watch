@@ -30,10 +30,18 @@ pub fn change_dir() {
 pub fn set_commands(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches) {
     let mut commands: Vec<String> = Vec::new();
 
+    // --features are injected at start of every cargo invocation
+    let features = value_t!(matches, "features", String).ok();
+
     // Cargo commands are in front of the rest
     if matches.is_present("cmd:cargo") {
         for cargo in values_t!(matches, "cmd:cargo", String).unwrap_or_else(|e| e.exit()) {
             let mut cmd: String = "cargo ".into();
+            if let Some(features) = features.as_ref() {
+                cmd.push_str("--features");
+                cmd.push_str(features);
+                cmd.push(' ');
+            }
             cmd.push_str(&cargo);
             commands.push(cmd);
         }
@@ -48,7 +56,12 @@ pub fn set_commands(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches
 
     // Default to `cargo check`
     if commands.is_empty() {
-        commands.push("cargo check".into());
+        let mut cmd: String = "cargo check".into();
+        if let Some(features) = features.as_ref() {
+            cmd.push_str(" --features ");
+            cmd.push_str(&features);
+        }
+        commands.push(cmd);
     }
 
     if debug {
