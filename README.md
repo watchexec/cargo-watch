@@ -88,7 +88,7 @@ OPTIONS:
     -x, --exec <cmd>...         Cargo command(s) to execute on changes [default: check]
     -s, --shell <cmd>...        Shell command(s) to execute on changes
     -d, --delay <delay>         File updates debounce delay in seconds [default: 0.5]
-        --features <features>   Space-separated list of features passed to cargo invocations
+        --features <features>   List of features passed to cargo invocations
     -i, --ignore <pattern>...   Ignore a glob/gitignore-style pattern
     -w, --watch <watch>...      Watch specific file(s) or folder(s) [default: .]
 

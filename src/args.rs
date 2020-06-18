@@ -87,7 +87,7 @@ pub fn parse() -> ArgMatches<'static> {
                     Arg::with_name("features")
                         .long("features")
                         .takes_value(true)
-                        .help("Space-separated list of features passed to cargo invocations"),
+                        .help("List of features passed to cargo invocations"),
                 )
                 .arg(
                     Arg::with_name("quiet")
