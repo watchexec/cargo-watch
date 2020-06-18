@@ -37,12 +37,22 @@ pub fn set_commands(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches
     if matches.is_present("cmd:cargo") {
         for cargo in values_t!(matches, "cmd:cargo", String).unwrap_or_else(|e| e.exit()) {
             let mut cmd: String = "cargo ".into();
-            if let Some(features) = features.as_ref() {
-                cmd.push_str("--features");
-                cmd.push_str(features);
-                cmd.push(' ');
-            }
             cmd.push_str(&cargo);
+            if let Some(features) = features.as_ref() {
+                let cargo = cargo.trim_start();
+                // features are supported for the following
+                // (b)uild, bench, doc, (r)un, test, install
+                if cargo.starts_with("b")
+                    || cargo.starts_with("check")
+                    || cargo.starts_with("doc")
+                    || cargo.starts_with("r")
+                    || cargo.starts_with("test")
+                    || cargo.starts_with("install")
+                {
+                    cmd.push_str(" --features ");
+                    cmd.push_str(features);
+                }
+            }
             commands.push(cmd);
         }
     }
