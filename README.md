@@ -311,10 +311,15 @@ $ cargo watch -x 'test -- --color=always'
 The `--features` flag is recognized and passed to all cargo invocations.
 
 ```
-$ cargo watch --features feature1,feature2
+$ cargo watch --features foo,bar
 ```
 
-will run `cargo check --features feature1,feature2` on every watched change.
+will run `cargo check --features foo,bar` on every watched change.
+The `--features` will be passed to every supported `cargo` subcommand,
+```
+$ cargo watch -x "b" -x "doc" --features foo,bar
+```
+will run both `build` and `doc` with the `foo` and `bar` features.
 
 ### Something not covered above / I have a feature request
 
