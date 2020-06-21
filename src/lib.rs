@@ -30,18 +30,18 @@ pub fn change_dir() {
 pub fn set_commands(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches) {
     let mut commands: Vec<String> = Vec::new();
 
-    // --features are injected at start of every cargo invocation
+    // --features are injected just after applicable cargo subcommands
+    // and before the remaining arguments
     let features = value_t!(matches, "features", String).ok();
 
     // Cargo commands are in front of the rest
     if matches.is_present("cmd:cargo") {
         for cargo in values_t!(matches, "cmd:cargo", String).unwrap_or_else(|e| e.exit()) {
             let mut cmd: String = "cargo ".into();
-            cmd.push_str(&cargo);
+            let cargo = cargo.trim_start();
+            // features are supported for the following
+            // (b)uild, bench, doc, (r)un, test, install
             if let Some(features) = features.as_ref() {
-                let cargo = cargo.trim_start();
-                // features are supported for the following
-                // (b)uild, bench, doc, (r)un, test, install
                 if cargo.starts_with("b")
                     || cargo.starts_with("check")
                     || cargo.starts_with("doc")
@@ -49,9 +49,21 @@ pub fn set_commands(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches
                     || cargo.starts_with("test")
                     || cargo.starts_with("install")
                 {
+                    // Split command into words
+                    let mut words = cargo.split(|c: char| c.is_whitespace());
+                    let subcommand = words.next().unwrap();
+                    cmd.push_str(subcommand);
                     cmd.push_str(" --features ");
                     cmd.push_str(features);
+                    for arg in words {
+                        cmd.push(' ');
+                        cmd.push_str(arg);
+                    }
+                } else {
+                    cmd.push_str(&cargo);
                 }
+            } else {
+                cmd.push_str(&cargo);
             }
             commands.push(cmd);
         }

@@ -61,7 +61,7 @@ $ cargo watch -x 'run -- --some-arg'
 $ cargo watch -s 'echo Hello world'
 
 # Run with features passed to cargo
-$ cargo watch --features "feature1,feature2"
+$ cargo watch --features "foo,bar"
 ```
 
 There's a lot more you can do! Here's a copy of the help:
