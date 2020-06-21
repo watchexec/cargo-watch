@@ -49,16 +49,16 @@ pub fn set_commands(debug: bool, builder: &mut ArgsBuilder, matches: &ArgMatches
                     || cargo.starts_with("test")
                     || cargo.starts_with("install")
                 {
-                    // Split command into words
-                    let mut words = cargo.split(|c: char| c.is_whitespace());
-                    let subcommand = words.next().unwrap();
+                    // Split command into first word and the arguments
+                    let word_boundary = cargo
+                        .find(|c: char| c.is_whitespace())
+                        .unwrap_or(cargo.len());
+                    let (subcommand, args) = cargo.split_at(word_boundary);
                     cmd.push_str(subcommand);
                     cmd.push_str(" --features ");
                     cmd.push_str(features);
-                    for arg in words {
-                        cmd.push(' ');
-                        cmd.push_str(arg);
-                    }
+                    cmd.push(' ');
+                    cmd.push_str(args)
                 } else {
                     cmd.push_str(&cargo);
                 }
