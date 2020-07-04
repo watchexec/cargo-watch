@@ -84,6 +84,12 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("Ignore events emitted while the commands run"),
                 )
                 .arg(
+                    Arg::with_name("features")
+                        .long("features")
+                        .takes_value(true)
+                        .help("List of features passed to cargo invocations"),
+                )
+                .arg(
                     Arg::with_name("quiet")
                         .short("q")
                         .long("quiet")
