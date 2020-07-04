@@ -47,6 +47,9 @@ pub fn set_commands(builder: &mut ArgsBuilder, matches: &ArgMatches) {
                     let word_boundary = cargo
                         .find(|c: char| c.is_whitespace())
                         .unwrap_or(cargo.len());
+
+                    // Find returns the byte index, and split_at takes a byte offset.
+                    // This means the splitting is unicode-safe.
                     let (subcommand, args) = cargo.split_at(word_boundary);
                     cmd.push_str(subcommand);
                     cmd.push_str(" --features ");
