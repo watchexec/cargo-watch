@@ -308,17 +308,18 @@ $ cargo watch -x 'test -- --color=always'
 
 ### I want to compile my build with additional features
 
-The `--features` flag is recognized and passed to all cargo invocations.
-
 ```
 $ cargo watch --features foo,bar
 ```
 
 will run `cargo check --features foo,bar` on every watched change.
-The `--features` will be passed to every supported `cargo` subcommand,
+
+The `--features` will be passed to every supported `cargo` subcommand.
+
 ```
-$ cargo watch -x "b" -x "doc" --features foo,bar
+$ cargo watch --features foo,bar -x build -x doc
 ```
+
 will run both `build` and `doc` with the `foo` and `bar` features.
 
 ### Something not covered above / I have a feature request
