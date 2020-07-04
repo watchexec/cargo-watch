@@ -1,8 +1,6 @@
 ---
-created: "2019-01-27T05:34:49.196129039+00:00"
-creator: insta@0.5.2
-expression: std_to_string(&mut main.stderr)
 source: tests/echo.rs
+expression: std_to_string(&mut main.stderr)
 ---
-*** Polling for changes every 500 ms
+WARN - Polling for changes every 500 ms
 
