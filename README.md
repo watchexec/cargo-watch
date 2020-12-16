@@ -18,6 +18,8 @@ it will probably feel familiar.
 [guard]: http://guardgem.org/
 [watchman]: https://facebook.github.io/watchman/
 
+Maintenance status: [best-effort / passive](#troubleshooting).
+
 ## Install
 
 Pre-built binaries are available [on the Github Releases tab](https://github.com/passcod/cargo-watch/releases).
@@ -180,21 +182,16 @@ $ cargo watch --no-gitignore -w .trigger -x run
 The `--no-gitignore` flag ensures that you can safely add `.trigger` to your
 `.gitignore` file to avoid mistakenly committing it.
 
-## Contributing
-
-The Cargo Watch team enthusiastically welcomes contributions and project
-participation! There's a bunch of things you can do if you want to contribute!
-The [Contributor Guide](./CONTRIBUTING.md) has all the information you need for
-everything from reporting bugs to contributing entire new features. Please
-don't hesitate to jump in if you'd like to, or even ask us questions if
-something isn't clear. <sub>{[attribution](https://github.com/zkat/pacote#contributing)}</sub>
-
-You can also contribute financially with [Patreon] or [GitHub Sponsorship].
-
-[Patreon]: https://www.patreon.com/passcod
-[GitHub Sponsors]: https://github.com/users/passcod/sponsorship
-
 ## Troubleshooting
+
+**Please note** that this project (and its upstream, watchexec)'s
+maintainership is at a low. Response to issues is on a best-effort basis only.
+Feature and improvement work is stalled indefinitely. Pull requests will be
+reviewed and merged as time allows. If you wish to take on more active
+maintainership, even for a limited time, enquire within (open an issue or send
+me mail).
+
+---
 
 In all cases, start by checking your version with `cargo watch --version` and,
 if necessary, upgrading to [the latest one][releases].
