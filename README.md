@@ -143,15 +143,16 @@ folder` is needed for the same effect.
 
 ### Reloading servers seamlessly
 
-Cargo Watch pairs very well with [Catflap], a tool for Unixy platforms that
+Cargo Watch pairs very well with [systemfd]/[Catflap], tools for Unixy platforms that
 lets one spawn a socket before the watcher runs that Rust servers can then bind
 to, avoiding request-dropping and the infamous ADDRINUSE error. For example:
 
 ```
-$ catflap -- cargo watch -x run
+$ systemfd --no-pid -s http::5000 -- cargo watch -x run
 ```
 
 [Catflap]: https://github.com/passcod/catflap
+[systemfd]: https://github.com/mitsuhiko/systemfd
 
 Of course, if you don't need to guard against these issues or don't want to
 modify your program to grab sockets instead of ports, you can use Cargo Watch
