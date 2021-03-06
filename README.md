@@ -34,6 +34,12 @@ To upgrade:
 $ cargo install --force cargo-watch
 ```
 
+With [cargo-binstall](https://github.com/ryankurte/cargo-binstall):
+
+```
+$ cargo binstall cargo-watch
+```
+
 Or clone and build with `$ cargo build` then place in your $PATH.
 
 ## Usage

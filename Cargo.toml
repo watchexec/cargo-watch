@@ -16,6 +16,11 @@ repository = "https://github.com/passcod/cargo-watch"
 travis-ci = { repository = "passcod/cargo-watch" }
 maintenance = { status = "passively-maintained" }
 
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.tar.xz"
+bin-dir = "{ name }-v{ version }-{ target }/{ bin }{ format }"
+pkg-fmt = "txz"
+
 [profile.release]
 lto = true
 panic = "abort"
