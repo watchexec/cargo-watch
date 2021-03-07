@@ -6,6 +6,7 @@
 [![Build status](https://flat.badgen.net/travis/passcod/cargo-watch/master)](https://travis-ci.org/passcod/cargo-watch)
 [![MSRV: 1.38.0](https://flat.badgen.net/badge/MSRV/1.38.0/purple)](https://blog.rust-lang.org/2019/09/26/Rust-1.38.0.html)
 ![MSRV policy: bump is non-breaking](https://flat.badgen.net/badge/MSRV%20policy/non-breaking/orange)
+[![Uses Caretaker Maintainership](https://flat.badgen.net/badge/Caretaker/Maintainership%20👥%20/purple)][caretaker]
 
 Cargo Watch watches over your project's source for changes, and runs Cargo
 commands when they occur.
@@ -18,7 +19,12 @@ it will probably feel familiar.
 [guard]: http://guardgem.org/
 [watchman]: https://facebook.github.io/watchman/
 
-Maintenance status: [best-effort / passive](#troubleshooting).
+- In the public domain / licensed with CC0.
+- Maintenance status: [best-effort / passive](#troubleshooting).
+- Uses [Caretaker Maintainership][caretaker].
+- Minimum Supported Rust Version: 1.38.0.
+
+[caretaker]: ./CARETAKERS.md
 
 ## Install
 
