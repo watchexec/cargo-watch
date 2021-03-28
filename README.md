@@ -106,7 +106,12 @@ OPTIONS:
     -i, --ignore <pattern>...   Ignore a glob/gitignore-style pattern
     -w, --watch <watch>...      Watch specific file(s) or folder(s) [default: .]
 
-Cargo commands (-x) are always executed before shell commands (-s).
+ARGS:
+    <cmd:trail>...    Full command to run. -x and -s will be ignored!
+
+Cargo commands (-x) are always executed before shell commands (-s). You can use
+the `-- command` style instead, note you'll need to use full commands, it won't
+prefix `cargo` for you.
 
 By default, your entire project is watched, except for the target/ and .git/
 folders, and your .ignore and .gitignore files are used to filter paths.

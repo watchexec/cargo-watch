@@ -66,11 +66,16 @@ pub fn set_commands(builder: &mut ArgsBuilder, matches: &ArgMatches) {
         }
     }
 
-    // Shell/raw commands go last
+    // Shell commands go last
     if matches.is_present("cmd:shell") {
         for shell in values_t!(matches, "cmd:shell", String).unwrap_or_else(|e| e.exit()) {
             commands.push(shell);
         }
+    }
+
+    if matches.is_present("cmd:trail") {
+        debug!("trailing command is present, ignore all other command options");
+        commands = vec![value_t!(matches, "cmd:trail", String).unwrap_or_else(|e| e.exit())];
     }
 
     // Default to `cargo check`

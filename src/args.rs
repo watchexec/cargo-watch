@@ -2,7 +2,7 @@ use clap::{App, AppSettings, Arg, ArgMatches, ErrorKind, SubCommand};
 use std::{env, process};
 
 pub fn parse() -> ArgMatches<'static> {
-    let footnote = "Cargo commands (-x) are always executed before shell commands (-s).\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .ignore and .gitignore files are used to filter paths.".to_owned();
+    let footnote = "Cargo commands (-x) are always executed before shell commands (-s). You can use the `-- command` style instead, note you'll need to use full commands, it won't prefix `cargo` for you.\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .ignore and .gitignore files are used to filter paths.".to_owned();
 
     #[cfg(windows)] let footnote = format!("{}\n\nOn Windows, patterns given to -i have forward slashes (/) automatically converted to backward ones (\\) to ease command portability.", footnote);
 
@@ -163,6 +163,11 @@ pub fn parse() -> ArgMatches<'static> {
                         .number_of_values(1)
                         .default_value(".")
                         .help("Watch specific file(s) or folder(s)"),
+                )
+                .arg(
+                    Arg::with_name("cmd:trail")
+                        .raw(true)
+                        .help("Full command to run. -x and -s will be ignored!")
                 )
                 .after_help(footnote.as_str()),
         );
