@@ -30,6 +30,7 @@ clap = "2.33.1"
 log = "0.4.8"
 stderrlog = "0.4.3"
 watchexec = "=1.14.0"
+shell-escape = "0.1.5"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"

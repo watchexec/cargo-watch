@@ -75,7 +75,12 @@ pub fn set_commands(builder: &mut ArgsBuilder, matches: &ArgMatches) {
 
     if matches.is_present("cmd:trail") {
         debug!("trailing command is present, ignore all other command options");
-        commands = vec![value_t!(matches, "cmd:trail", String).unwrap_or_else(|e| e.exit())];
+        commands = vec![values_t!(matches, "cmd:trail", String)
+            .unwrap_or_else(|e| e.exit())
+            .into_iter()
+            .map(|arg| shell_escape::escape(arg.into()))
+            .collect::<Vec<_>>()
+            .join(" ")];
     }
 
     // Default to `cargo check`

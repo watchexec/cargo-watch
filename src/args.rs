@@ -167,7 +167,7 @@ pub fn parse() -> ArgMatches<'static> {
                 .arg(
                     Arg::with_name("cmd:trail")
                         .raw(true)
-                        .help("Full command to run. -x and -s will be ignored!")
+                        .help("Full command to run. -x and -s will be ignored!"),
                 )
                 .after_help(footnote.as_str()),
         );
