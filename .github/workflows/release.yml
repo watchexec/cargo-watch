@@ -39,12 +39,12 @@ jobs:
 
           - name: mac-x86-64
             os: macos-latest
-            target: x86-64-apple-darwin
+            target: x86_64-apple-darwin
             cross: false
 
           - name: windows-x86-64
             os: windows-latest
-            target: x86-64-pc-windows-msvc
+            target: x86_64-pc-windows-msvc
             cross: false
 
     name: Binaries for ${{ matrix.name }}
