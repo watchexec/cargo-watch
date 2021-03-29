@@ -13,7 +13,6 @@ readme = "README.md"
 repository = "https://github.com/passcod/cargo-watch"
 
 [badges]
-travis-ci = { repository = "passcod/cargo-watch" }
 maintenance = { status = "passively-maintained" }
 
 [package.metadata.binstall]

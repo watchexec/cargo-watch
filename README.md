@@ -3,7 +3,7 @@
 [![Crate release version](https://flat.badgen.net/crates/v/cargo-watch)](https://crates.io/crates/cargo-watch)
 [![Crate license: CC0 1.0](https://flat.badgen.net/github/license/passcod/cargo-watch)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![Crate download count](https://flat.badgen.net/crates/d/cargo-watch)](https://crates.io/crates/cargo-watch)
-[![Build status](https://flat.badgen.net/travis/passcod/cargo-watch/master)](https://travis-ci.org/passcod/cargo-watch)
+[![CI status](https://github.com/passcod/cargo-watch/actions/workflows/check.yml/badge.svg)](https://github.com/passcod/cargo-watch/actions/workflows/check.yml)
 [![MSRV: 1.51.0](https://flat.badgen.net/badge/MSRV/1.51.0/purple)](https://blog.rust-lang.org/2021/03/25/Rust-1.51.0.html)
 ![MSRV policy: bump is non-breaking](https://flat.badgen.net/badge/MSRV%20policy/non-breaking/orange)
 [![Uses Caretaker Maintainership](https://flat.badgen.net/badge/Caretaker/Maintainership%20👥%20/purple)][caretaker]
