@@ -1,6 +1,6 @@
 [package]
 name = "cargo-watch"
-version = "7.6.0"
+version = "7.6.1"
 edition = "2018"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
