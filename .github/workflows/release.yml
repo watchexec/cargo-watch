@@ -83,7 +83,7 @@ jobs:
           mkdir "$dst"
           strip "$bin" || true
           mv "$bin" "$dst/"
-          mv README.md LICENSE "$dst/"
+          mv README.md LICENSE completions cargo-watch.1 "$dst/"
       - name: Archive (tar)
         if: '! startsWith(matrix.name, ''windows-'')'
         shell: bash
@@ -101,8 +101,10 @@ jobs:
           dst="cargo-watch-${version}-${{ matrix.target }}"
           mkdir -p "deb/$dst"
           cd "deb/$dst"
-          mkdir -p DEBIAN usr/bin
+          mkdir -p DEBIAN usr/{bin,share/{man/man1,zsh/site-functions}}
           cp "../../$dst/cargo-watch" usr/bin/
+          cp "../../$dst/cargo-watch.1" usr/share/man/man1/
+          cp "../../$dst/completions/zsh" usr/share/zsh/site-functions/_cargo-watch
           cat <<-CONTROL > DEBIAN/control
           Package: cargo-watch
           Version: ${version/v/}
