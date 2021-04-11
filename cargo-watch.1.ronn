@@ -1,0 +1,112 @@
+cargo-watch(1) -- watches over your Cargo project's source
+==========================================================
+
+## SYNOPSIS
+
+cargo watch [`--exec` | `-x` <cargo subcommand>]... [`--shell` | `-s` <command>]... [`--ignore` | `-i` <pattern>]... [`--watch` | `-w` <path>]... [`--features` <list>] [`--no-restart`] [`--watch-when-idle`] [`--clear` | `-c`] [`--use-shell` <program>] [`--postpone`] [`--poll` <interval>] [`--delay` | `-d` <seconds>] [`--no-gitignore`] [`--no-ignore`] [`--ignore-nothing`] [`--debug` ] [`--why`] [`--quiet`] [`--version` | `-V`] [-- <command>...]
+
+## DESCRIPTION
+
+Watches over your project's source for changes, and runs Cargo commands when they occur.
+
+## COMMANDS
+
+* <cargo subcommand>:
+Cargo subcommand to run when watched files are modified, and at startup, unless `--postpone` is specified.
+
+This is essentially the same as `<command>` but with `cargo ` prepended, except that in addition, cargo-specific options are applied, such as `--features`.
+
+* <command>:
+Command to run when watched files are modified, and at startup, unless `--postpone` is specified.
+
+All commands passed are joined together with `&&`.
+
+Cargo commands (`-x`) are always executed before shell commands (`-s`).
+
+If a trailing command is given with `-- <command>`, it supersedes all other commands.
+
+## OPTIONS
+
+* `-h`, `--help`:
+Display this message.
+
+* `-V`, `--version`:
+Display version information.
+
+* `--debug`:
+Show debug output.
+
+* `--why`:
+Show paths that changed.
+
+* `-q`, `--quiet`:
+Suppress output from cargo-watch itself.
+
+* `-w`, `--watch` <watch>...:
+Watch specific file(s) or folder(s).
+
+By default, your entire project is watched, except for the target/ and .git/ folders, and your .ignore and .gitignore files are used to filter paths.
+
+* `-i`, `--ignore` <pattern>...:
+Ignore a glob/gitignore-style pattern.
+
+On Windows, patterns given to -i have forward slashes (/) automatically converted to backward ones (\) to ease command portability.
+
+* `--no-gitignore`:
+Don’t use .gitignore files.
+
+* `--no-ignore`:
+Don’t use .ignore files.
+
+* `--ignore-nothing`:
+Ignore nothing, not even target/ and .git/.
+
+* `-c`, `--clear`:
+Clear the screen before each run.
+
+* `--postpone`:
+Postpone first run until a file changes.
+
+* `--poll`:
+Force use of polling for file changes.
+
+* `-d`, `--delay` <delay>:
+File updates debounce delay in seconds (default: 0.5).
+
+* `--no-restart`:
+Don’t restart command while it’s still running.
+
+* `--watch-when-idle`:
+Ignore events emitted while the commands run. Will become default behaviour in 8.0.
+
+* `--features` <features>:
+List of features passed to cargo invocations.
+
+* `--use-shell` <use-shell>:
+Use a different shell. E.g. `--use-shell=bash`. On Windows, try `--use-shell=powershell`, which will become the default in 8.0.
+
+## EXAMPLES
+
+Run `cargo check` on file save:
+
+    $ cargo watch
+
+Run tests only:
+
+    $ cargo watch -x test
+
+Run check then tests:
+
+    $ cargo watch -x check -x test
+
+Run run with arguments:
+
+    $ cargo watch -x 'run -- --some-arg'
+
+Run an arbitrary command:
+
+    $ cargo watch -- echo Hello world
+
+Run with features passed to cargo:
+
+    $ cargo watch --features 'foo,bar'

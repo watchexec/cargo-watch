@@ -1,0 +1,2 @@
+#!/bin/sh
+exec ronn --roff cargo-watch.1.ronn
