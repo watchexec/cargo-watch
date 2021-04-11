@@ -45,7 +45,7 @@ sed -E -i "s/^version = \"$extver\"/version = \"$newver\"/" Cargo.toml
 cargo check
 
 git commit -am "$newver"
-git tag -sam "$newver" "$newver"
+git tag -sam "$newver" "v$newver"
 
 echo "Pushing to upstream"
 git push --follow-tags $upstream $mainbranch
