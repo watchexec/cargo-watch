@@ -20,7 +20,6 @@ it will probably feel familiar.
 [watchman]: https://facebook.github.io/watchman/
 
 - In the public domain / licensed with CC0.
-- Maintenance status: [best-effort / passive](#troubleshooting).
 - Uses [Caretaker Maintainership][caretaker].
 - Minimum Supported Rust Version: 1.51.0.
 
@@ -202,15 +201,6 @@ The `--no-gitignore` flag ensures that you can safely add `.trigger` to your
 
 ## Troubleshooting
 
-**Please note** that this project (and its upstream, watchexec)'s
-maintainership is at a low. Response to issues is on a best-effort basis only.
-Feature and improvement work is stalled indefinitely. Pull requests will be
-reviewed and merged as time allows. If you wish to take on more active
-maintainership, even for a limited time, enquire within (open an issue or send
-me mail).
-
----
-
 In all cases, start by checking your version with `cargo watch --version` and,
 if necessary, upgrading to [the latest one][releases].
 
@@ -342,15 +332,19 @@ will run both `build` and `doc` with the `foo` and `bar` features.
 Please [open an issue][watch-issues], or look through the existing ones. You
 may also want to look through [issues for the Notify library][notify-issues]
 this tool depends on, or the [issues for the Watchexec tool][watchexec-issues]
-that we use under the covers.
+that we use under the covers (where I am also a maintainer).
 
 If you want more verbose output, try running with the `--debug` flag. Note that
 this will also enable debug mode for watchexec. When filing an issue, **make
 sure to include a log with `--debug` enabled so problems can be diagnosed.**
 
+**If your issue is a watchexec issue, open it there directly.** If you're not
+sure, feel free to open it here, but if it _is_ a watchexec issue, it will get
+closed in favour of the upstream issue.
+
 [notify-issues]: https://github.com/passcod/notify/issues
 [watch-issues]: https://github.com/passcod/cargo-watch/issues
-[watchexec-issues]: https://github.com/mattgreen/watchexec/issues
+[watchexec-issues]: https://github.com/watchexec/watchexec/issues
 
 ### I want to embed Cargo Watch in my own (Rust) tool
 
