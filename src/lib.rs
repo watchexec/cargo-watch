@@ -6,8 +6,8 @@ extern crate clap;
 
 use clap::{ArgMatches, Error, ErrorKind};
 use log::debug;
-use std::{env::set_current_dir, path::MAIN_SEPARATOR};
-use watchexec::{Args, ArgsBuilder};
+use std::{env::set_current_dir, path::MAIN_SEPARATOR, time::Duration};
+use watchexec::{run::OnBusyUpdate, config::{Config, ConfigBuilder}};
 
 pub mod args;
 pub mod cargo;
@@ -21,7 +21,7 @@ pub fn change_dir() {
         });
 }
 
-pub fn set_commands(builder: &mut ArgsBuilder, matches: &ArgMatches) {
+pub fn set_commands(builder: &mut ConfigBuilder, matches: &ArgMatches) {
     let mut commands: Vec<String> = Vec::new();
 
     // --features are injected just after applicable cargo subcommands
@@ -36,17 +36,17 @@ pub fn set_commands(builder: &mut ArgsBuilder, matches: &ArgMatches) {
             // features are supported for the following
             // (b)uild, bench, doc, (r)un, test, install
             if let Some(features) = features.as_ref() {
-                if cargo.starts_with("b")
+                if cargo.starts_with('b')
                     || cargo.starts_with("check")
                     || cargo.starts_with("doc")
-                    || cargo.starts_with("r")
+                    || cargo.starts_with('r')
                     || cargo.starts_with("test")
                     || cargo.starts_with("install")
                 {
                     // Split command into first word and the arguments
                     let word_boundary = cargo
                         .find(|c: char| c.is_whitespace())
-                        .unwrap_or(cargo.len());
+                        .unwrap_or_else(|| cargo.len());
 
                     // Find returns the byte index, and split_at takes a byte offset.
                     // This means the splitting is unicode-safe.
@@ -97,7 +97,7 @@ pub fn set_commands(builder: &mut ArgsBuilder, matches: &ArgMatches) {
     builder.cmd(commands);
 }
 
-pub fn set_ignores(builder: &mut ArgsBuilder, matches: &ArgMatches) {
+pub fn set_ignores(builder: &mut ConfigBuilder, matches: &ArgMatches) {
     if matches.is_present("ignore-nothing") {
         debug!("Ignoring nothing");
 
@@ -151,20 +151,17 @@ pub fn set_ignores(builder: &mut ArgsBuilder, matches: &ArgMatches) {
     builder.ignores(list);
 }
 
-pub fn set_debounce(builder: &mut ArgsBuilder, matches: &ArgMatches) {
-    let d = if matches.is_present("delay") {
+pub fn set_debounce(builder: &mut ConfigBuilder, matches: &ArgMatches) {
+    if matches.is_present("delay") {
         let debounce = value_t!(matches, "delay", f32).unwrap_or_else(|e| e.exit());
         debug!("File updates debounce: {} seconds", debounce);
 
-        (debounce * 1000.0) as u32
-    } else {
-        500
-    };
-
-    builder.poll_interval(d).debounce(d);
+        let d = Duration::from_millis((debounce * 1000.0) as u64);
+        builder.poll_interval(d).debounce(d);
+    }
 }
 
-pub fn set_watches(builder: &mut ArgsBuilder, matches: &ArgMatches) {
+pub fn set_watches(builder: &mut ConfigBuilder, matches: &ArgMatches) {
     let mut opts = Vec::new();
     if matches.is_present("watch") {
         for watch in values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit()) {
@@ -180,15 +177,22 @@ pub fn set_watches(builder: &mut ArgsBuilder, matches: &ArgMatches) {
     builder.paths(opts);
 }
 
-pub fn get_options(matches: &ArgMatches) -> Args {
-    let mut builder = ArgsBuilder::default();
+pub fn get_options(matches: &ArgMatches) -> Config {
+    let mut builder = ConfigBuilder::default();
     builder
-        .restart(!matches.is_present("no-restart"))
         .poll(matches.is_present("poll"))
         .clear_screen(matches.is_present("clear"))
-        .watch_when_idle(matches.is_present("watch-when-idle"))
         .run_initially(!matches.is_present("postpone"))
         .no_environment(true);
+
+    // TODO: in next breaking, retire --watch-when-idle and switch --no-restart behaviour to DoNothing
+    builder.on_busy_update(if matches.is_present("no-restart") {
+        OnBusyUpdate::Queue
+    } else if matches.is_present("watch-when-idle") {
+        OnBusyUpdate::DoNothing
+    } else {
+        OnBusyUpdate::Restart
+    });
 
     set_ignores(&mut builder, &matches);
     set_debounce(&mut builder, &matches);

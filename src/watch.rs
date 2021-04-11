@@ -2,7 +2,7 @@ use watchexec::{
     error::Result,
     pathop::PathOp,
     run::{ExecHandler, Handler},
-    Args,
+    config::Config,
 };
 
 pub struct CwHandler {
@@ -13,7 +13,7 @@ pub struct CwHandler {
 }
 
 impl Handler for CwHandler {
-    fn args(&self) -> Args {
+    fn args(&self) -> Config {
         self.inner.args()
     }
 
@@ -33,7 +33,7 @@ impl Handler for CwHandler {
 }
 
 impl CwHandler {
-    pub fn new(mut args: Args, quiet: bool) -> Result<Self> {
+    pub fn new(mut args: Config, quiet: bool) -> Result<Self> {
         let cmd = args.cmd.join(" && ");
         let mut final_cmd = cmd.clone();
         if !quiet {

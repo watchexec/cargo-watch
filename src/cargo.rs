@@ -2,7 +2,7 @@
 
 use std::env;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
 
 /// How many parent folders are searched for a `Cargo.toml`
 const MAX_ANCESTORS: u32 = 10;
@@ -15,7 +15,7 @@ const MAX_ANCESTORS: u32 = 10;
 /// TODO: #52 Parse toml to get to workspace root
 pub fn root() -> Option<PathBuf> {
     /// Checks if the directory contains `Cargo.toml`
-    fn contains_manifest(path: &PathBuf) -> bool {
+    fn contains_manifest(path: impl AsRef<Path>) -> bool {
         fs::read_dir(path)
             .map(|entries| {
                 entries
