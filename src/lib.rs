@@ -1,13 +1,14 @@
 //! Watch files in a Cargo project and compile it when they change
 #![warn(clippy::all)]
 
-#[macro_use]
-extern crate clap;
-
-use clap::{ArgMatches, Error, ErrorKind};
-use log::debug;
+use clap::{value_t, values_t, ArgMatches, Error, ErrorKind};
+use log::{debug, warn};
 use std::{env::set_current_dir, path::MAIN_SEPARATOR, time::Duration};
-use watchexec::{run::OnBusyUpdate, config::{Config, ConfigBuilder}};
+use watchexec::{
+    config::{Config, ConfigBuilder},
+    run::OnBusyUpdate,
+    Shell,
+};
 
 pub mod args;
 pub mod cargo;
@@ -185,13 +186,29 @@ pub fn get_options(matches: &ArgMatches) -> Config {
         .run_initially(!matches.is_present("postpone"))
         .no_environment(true);
 
-    // TODO: in next breaking, retire --watch-when-idle and switch --no-restart behaviour to DoNothing
+    // TODO in 8.0: remove --watch-when-idle and switch --no-restart behaviour to DoNothing
     builder.on_busy_update(if matches.is_present("no-restart") {
         OnBusyUpdate::Queue
     } else if matches.is_present("watch-when-idle") {
         OnBusyUpdate::DoNothing
     } else {
         OnBusyUpdate::Restart
+    });
+
+    builder.shell(if let Some(s) = matches.value_of("shell") {
+        if s.eq_ignore_ascii_case("powershell") {
+            Shell::Powershell
+        } else if s.eq_ignore_ascii_case("none") {
+            warn!("--shell=none is non-sensical for cargo-watch, ignoring");
+            default_shell()
+        } else if s.eq_ignore_ascii_case("cmd") {
+            cmd_shell(s.into())
+        } else {
+            Shell::Unix(s.into())
+        }
+    } else {
+        // in 8.0, just rely on default watchexec behaviour
+        default_shell()
     });
 
     set_ignores(&mut builder, &matches);
@@ -204,4 +221,26 @@ pub fn get_options(matches: &ArgMatches) -> Config {
 
     debug!("Watchexec arguments: {:?}", args);
     args
+}
+
+// until 8.0
+#[cfg(windows)]
+fn default_shell() -> Shell {
+    Shell::Cmd
+}
+
+#[cfg(not(windows))]
+fn default_shell() -> Shell {
+    Shell::default()
+}
+
+// because Shell::Cmd is only on windows
+#[cfg(windows)]
+fn cmd_shell(_: String) -> Shell {
+    Shell::Cmd
+}
+
+#[cfg(not(windows))]
+fn cmd_shell(s: String) -> Shell {
+    Shell::Unix(s)
 }

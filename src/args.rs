@@ -81,7 +81,7 @@ pub fn parse() -> ArgMatches<'static> {
                 .arg(
                     Arg::with_name("watch-when-idle")
                         .long("watch-when-idle")
-                        .help("Ignore events emitted while the commands run"),
+                        .help("Ignore events emitted while the commands run. Will become default behaviour in 8.0."),
                 )
                 .arg(
                     Arg::with_name("features")
@@ -163,6 +163,16 @@ pub fn parse() -> ArgMatches<'static> {
                         .number_of_values(1)
                         .default_value(".")
                         .help("Watch specific file(s) or folder(s)"),
+                )
+                .arg(
+                    Arg::with_name("shell")
+                        .long("shell")
+                        .takes_value(true)
+                        .help(if cfg!(windows) {
+                            "Use a different shell. Try --shell=powershell, which will become the default in 8.0."
+                        } else {
+                            "Use a different shell. E.g. --shell=bash"
+                        }),
                 )
                 .arg(
                     Arg::with_name("cmd:trail")
