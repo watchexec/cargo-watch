@@ -11,13 +11,11 @@
 Cargo Watch watches over your project's source for changes, and runs Cargo
 commands when they occur.
 
-If you've used [nodemon], [gulp], [guard], [watchman], or similar others,
-it will probably feel familiar.
+If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 
 [nodemon]: http://nodemon.io/
-[gulp]: http://gulpjs.com/
+[entr]: https://github.com/eradman/entr
 [guard]: http://guardgem.org/
-[watchman]: https://facebook.github.io/watchman/
 
 - In the public domain / licensed with CC0.
 - Uses [Caretaker Maintainership][caretaker].
@@ -33,12 +31,6 @@ Pre-built binaries are available [on the Github Releases tab](https://github.com
 $ cargo install cargo-watch
 ```
 
-To upgrade:
-
-```
-$ cargo install --force cargo-watch
-```
-
 With [cargo-binstall](https://github.com/ryankurte/cargo-binstall):
 
 ```
@@ -49,14 +41,11 @@ Or clone and build with `$ cargo build` then place in your $PATH.
 
 ## Usage
 
-By default, it runs `check` (which is available [since Rust 1.16][st-check]).
-You can easily override this, though:
+By default, it runs `check`. You can easily override this, though:
 
 ```
 $ cargo watch [-x command]...
 ```
-
-[st-check]: https://blog.rust-lang.org/2017/03/16/Rust-1.16.html
 
 A few examples:
 
@@ -71,7 +60,7 @@ $ cargo watch -x check -x test
 $ cargo watch -x 'run -- --some-arg'
 
 # Run an arbitrary command
-$ cargo watch -s 'echo Hello world'
+$ cargo watch -- echo Hello world
 
 # Run with features passed to cargo
 $ cargo watch --features "foo,bar"
@@ -84,26 +73,41 @@ USAGE:
     cargo watch [FLAGS] [OPTIONS]
 
 FLAGS:
-    -c, --clear             Clear the screen before each run
-        --debug             Display debug output
-    -h, --help              Display this message
-        --ignore-nothing    Ignore nothing, not even target/ and .git/
-        --no-gitignore      Don’t use .gitignore files
-        --no-ignore         Don’t use .ignore files
-        --no-restart        Don’t restart command while it’s still running
-        --poll              Force use of polling for file changes
-        --postpone          Postpone first run until a file changes
-    -q, --quiet             Suppress output from cargo-watch itself
-    -V, --version           Display version information
-        --watch-when-idle   Ignore events emitted while the commands run
+    -c, --clear              Clear the screen before each run
+    -h, --help               Display this message
+        --ignore-nothing     Ignore nothing, not even target/ and .git/
+        --debug              Show debug output
+        --why                Show paths that changed
+    -q, --quiet              Suppress output from cargo-watch itself
+        --no-gitignore       Don’t use .gitignore files
+        --no-ignore          Don’t use .ignore files
+        --no-restart         Don’t restart command while it’s still running
+        --poll               Force use of polling for file changes
+        --postpone           Postpone first run until a file changes
+    -V, --version            Display version information
+        --watch-when-idle    Ignore events emitted while the commands run.
+                             Will become default behaviour in 8.0.
 
 OPTIONS:
-    -x, --exec <cmd>...         Cargo command(s) to execute on changes [default: check]
-    -s, --shell <cmd>...        Shell command(s) to execute on changes
-    -d, --delay <delay>         File updates debounce delay in seconds [default: 0.5]
-        --features <features>   List of features passed to cargo invocations
-    -i, --ignore <pattern>...   Ignore a glob/gitignore-style pattern
-    -w, --watch <watch>...      Watch specific file(s) or folder(s) [default: .]
+    -x, --exec <cmd>...
+            Cargo command(s) to execute on changes [default: check]
+
+    -s, --shell <cmd>...           Shell command(s) to execute on changes
+
+    -d, --delay <delay>
+            File updates debounce delay in seconds [default: 0.5]
+
+        --features <features>
+            List of features passed to cargo invocations
+
+    -i, --ignore <pattern>...      Ignore a glob/gitignore-style pattern
+
+        --use-shell <use-shell>
+            Use a different shell. E.g. --use-shell=bash. On Windows, try
+            --use-shell=powershell, which will become the default in 8.0.
+
+    -w, --watch <watch>...
+            Watch specific file(s) or folder(s) [default: .]
 
 ARGS:
     <cmd:trail>...    Full command to run. -x and -s will be ignored!
@@ -210,27 +214,15 @@ if necessary, upgrading to [the latest one][releases].
 
 Cargo builds (and checks, and clippy, and tests because the tests have to be
 built) take out a lock on the project so two cargo instances don't run at the
-same time. That may include language servers like RLS (and possibly RA)! So
-your editor might be fighting with cargo watch for the lock when you save.
+same time.
 
-There's not really a way around this. Either stop using cargo watch, or stop
-using RLS/RA, or accept that whenever you save there may be some slowdown for a
-little while. While I'm investigating ways to make this less of an issue,
-there's not going to be a quick fix anytime soon. Rust Analyzer is itself
-working on a different solution in conjunction with the compiler.
+However, Rust Analyzer is much better at this, so use that instead of RLS.
 
 ### On Windows 7 (or lower): "failed to add to job object: Access denied (OS Error 5)"
 
-Cargo Watch versions 5.0.0 and up (and Watchexec versions 1.3.0 and up) [do not
-support Windows 7 or lower][i-69]. There are no plans at the moment to add such
-support.
-
-You can downgrade to the last version which did support Windows 7 (and lower),
-but do keep in mind that many bug fixes and features are missing there:
-
-```
-$ cargo install --force --vers 4.0.3 cargo-watch
-```
+Cargo Watch versions 5.0.0 and up (and Watchexec versions 1.3.0 and up) **[do
+not support Windows 7 or lower][i-69].** Support _will not_ be added. Issues for
+Windows <=7 will be closed. If it works, lucky you, but that is not intentional.
 
 [i-69]: https://github.com/passcod/cargo-watch/issues/69
 
@@ -257,19 +249,21 @@ If that still doesn't work, and you're using an editor that does "safe saving",
 like IntelliJ / PyCharm, you may have to disable "safe saving" as that may
 prevent file notifications from being generated properly.
 
+Also try using the `--why` option to see if the paths you expect are changing.
+
 ### Linux: If it fails to watch some deep directories but not others / "No space left on device"
 
 You may have hit the inotify watch limit. [Here's a summary of what this means
 and how to increase it.][inotify limit]
 
-[inotify limit]: https://blog.passcod.name/2017/jun/25/inotify-watch-limit
+[inotify limit]: https://blog.passcod.name/2017/jun/25/inotify-watch-limit.html
 
 ### If you want to only recompile one Cargo workspace
 
 Cargo workspaces [are not natively supported yet][i-52].
 
-However, as you can run "arbitrary commands" with the `-s` option, you can
-write workspace-aware commands manually.
+However, as you can run "arbitrary commands" with the `-s` option or the
+`-- COMMAND` form, you can write workspace-aware commands manually.
 
 [i-52]: https://github.com/passcod/cargo-watch/issues/52
 
@@ -283,13 +277,13 @@ the target/ folder) and you're using `-w`, you might be confusing the
 target-folder-ignorer. Check your options and paths.
 
 You can also use the `--watch-when-idle` flag to ignore any event that happens
-while the command is running.
+while the command is running. **This will become the default in 8.0.**
 
 ### If it runs repeatedly only touching ignored files
 
 Make sure the files you ignored are the only ones being touched. Use the
-`--debug` option to see exactly which files were modified and triggered the
-restart (or were ignored). Some programs and libraries create temporary files
+`--why` option to see exactly which files were modified and triggered the
+restart. Some programs and libraries create temporary files
 that may not match a simple ignore pattern.
 
 As above, you can also use the `--watch-when-idle` flag to help.

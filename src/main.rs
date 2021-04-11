@@ -16,7 +16,13 @@ fn main() -> Result<()> {
 
     stderrlog::new()
         .quiet(quiet)
-        .verbosity(if debug { 3 } else if info { 2 } else { 1 })
+        .verbosity(if debug {
+            3
+        } else if info {
+            2
+        } else {
+            1
+        })
         .timestamp(if testing {
             Timestamp::Off
         } else {

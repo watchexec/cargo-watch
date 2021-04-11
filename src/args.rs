@@ -170,13 +170,13 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("Watch specific file(s) or folder(s)"),
                 )
                 .arg(
-                    Arg::with_name("shell")
-                        .long("shell")
+                    Arg::with_name("use-shell")
+                        .long("use-shell")
                         .takes_value(true)
                         .help(if cfg!(windows) {
-                            "Use a different shell. Try --shell=powershell, which will become the default in 8.0."
+                            "Use a different shell. Try --use-shell=powershell, which will become the default in 8.0."
                         } else {
-                            "Use a different shell. E.g. --shell=bash"
+                            "Use a different shell. E.g. --use-shell=bash"
                         }),
                 )
                 .arg(

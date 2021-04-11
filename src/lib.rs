@@ -195,11 +195,11 @@ pub fn get_options(matches: &ArgMatches) -> Config {
         OnBusyUpdate::Restart
     });
 
-    builder.shell(if let Some(s) = matches.value_of("shell") {
+    builder.shell(if let Some(s) = matches.value_of("use-shell") {
         if s.eq_ignore_ascii_case("powershell") {
             Shell::Powershell
         } else if s.eq_ignore_ascii_case("none") {
-            warn!("--shell=none is non-sensical for cargo-watch, ignoring");
+            warn!("--use-shell=none is non-sensical for cargo-watch, ignoring");
             default_shell()
         } else if s.eq_ignore_ascii_case("cmd") {
             cmd_shell(s.into())
