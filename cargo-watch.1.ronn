@@ -82,6 +82,12 @@ Ignore events emitted while the commands run. Will become default behaviour in 8
 * `--features` <features>:
 List of features passed to cargo invocations.
 
+The features will be passed to every supported cargo subcommand. For example, with this command:
+
+    $ cargo watch --features foo,bar -x clean -x build -x doc
+
+Both `build` and `doc` will be run with the `foo` and `bar` features, but `clean` won't.
+
 * `--use-shell` <use-shell>:
 Use a different shell. E.g. `--use-shell=bash`. On Windows, try `--use-shell=powershell`, which will become the default in 8.0.
 
@@ -110,3 +116,90 @@ Run an arbitrary command:
 Run with features passed to cargo:
 
     $ cargo watch --features 'foo,bar'
+
+## DETAILS
+
+### Ignore files
+
+`.gitignore` files are used by default to ignore paths to watch and trigger runs. To stop honouring them, pass `--no-gitignore`.
+
+`.ignore` files in the same syntax are also used by default. This file can be used to specify files that should be ignored by cargo watch but checked into git, without constantly adding `--ignore abc` options on the command-line. Do note that `.ignore` files may also be used by other programs, like ripgrep(1). To stop honouring these, pass `--no-ignore`.
+
+Cargo watch also has an internal list of default ignores on top of those specified in files, like `target/` and `.git/` and various other common types (logs, editor swap files, lockfiles, etc).
+
+To skip absolutely all ignores, use the `--ignore-nothing` flag.
+
+### Ignore syntax
+
+See the `glob::Pattern` docs[0] for a more detailed specification of the glob matching syntax used for `--ignore`.
+
+On Windows, patterns should be specified with Windows-style (`\\`) separators. Unix-style separators (`/`) would not match Windows paths, which could be confusing and give the appearance of commandline ignores not working. For convenience `/` in commandline ignores are automatically translated to `\\` when running on Windows, but one should still try to write the correct patterns for the platform, as there may be more subtle differences.
+
+[0]: https://doc.rust-lang.org/glob/glob/struct.Pattern.html
+
+## BUGS
+
+Please open an issue[1], or look through the existing ones.
+
+If you want more verbose output, try running with the `--debug` flag. Note that this will also enable debug mode for watchexec. When filing an issue, **make sure to include a log with `--debug` enabled so problems can be diagnosed**, as well as your `--version` and OS.
+
+**If your issue is a watchexec (our main upstream) issue, open it there[2] directly.** If you're not sure, feel free to open it on the cargo-watch issue tracker, but if it _is_ a watchexec issue, it will get closed in favour of the upstream issue.
+
+[1]: https://github.com/passcod/cargo-watch/issues
+[2]: https://github.com/watchexec/watchexec/issues
+
+## TROUBLESHOOTING
+
+Always start by checking your version with `cargo watch --version` and, if necessary, upgrading to the latest one by checking the website linked above.
+
+### RLS is slow while using cargo watch, or vice versa, or it's waiting for the project lock a lot
+
+Cargo builds (and checks, and clippy, and tests because the tests have to be
+built) take out a lock on the project so two cargo instances don't run at the
+same time.
+
+However, Rust Analyzer is much better at this, so use that instead of RLS.
+
+### File updates seems to never trigger
+
+Try using `--poll` to force the polling fallback.
+
+If that still doesn't work, and you're using an editor that does "safe saving", like IntelliJ / PyCharm, you may have to disable "safe saving" as that may prevent file notifications from being generated properly.
+
+Also try using the `--why` option to see if the paths you expect are changing.
+
+### It runs repeatedly without touching anything
+
+That can happen when watching files that are modified by the command you're running.
+
+If you're only running compiles or checks (i.e. any command that only affects the target/ folder) and you're using `-w`, you might be confusing the target-folder-ignorer. Check your options and paths.
+
+You can also use the `--watch-when-idle` flag to ignore any event that happens while the command is running. **This will become the default in 8.0.**
+
+### It runs repeatedly only touching ignored files
+
+Make sure the files you ignored are the only ones being touched. Use the `--why` option to see exactly which files were modified and triggered the restart. Some programs and libraries create temporary files that may not match a simple ignore pattern.
+
+As above, you can also use the `--watch-when-idle` flag to help.
+
+### I don't have colour in my cargo output / for cargo test
+
+This sometimes happens on some terminal configurations or for test harnesses. A quick workaround (instead of going down the rabbit hole of debugging your console settings) is to pass `--color=always` to the command. E.g.
+
+    $ cargo watch -x 'check --color=always'
+
+For test (and bench) commands, you'll need to pass the flag to the underlying program instead of cargo:
+
+    $ cargo watch -x 'test -- --color=always'
+
+## AUTHOR
+
+Written and maintained by Félix Saparelli.
+
+https://passcod.name
+
+Project homepage:
+
+https://github.com/passcod/cargo-watch
+
+Public domain.

@@ -110,6 +110,22 @@ Ignore events emitted while the commands run\. Will become default behaviour in 
 \fB\-\-features\fR \fIfeatures\fR
 List of features passed to cargo invocations\.
 .
+.P
+The features will be passed to every supported cargo subcommand\. For example, with this command:
+.
+.IP "" 4
+.
+.nf
+
+$ cargo watch \-\-features foo,bar \-x clean \-x build \-x doc
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Both \fBbuild\fR and \fBdoc\fR will be run with the \fBfoo\fR and \fBbar\fR features, but \fBclean\fR won\'t\.
+.
 .TP
 \fB\-\-use\-shell\fR \fIuse\-shell\fR
 Use a different shell\. E\.g\. \fB\-\-use\-shell=bash\fR\. On Windows, try \fB\-\-use\-shell=powershell\fR, which will become the default in 8\.0\.
@@ -191,4 +207,106 @@ $ cargo watch \-\-features \'foo,bar\'
 .fi
 .
 .IP "" 0
+.
+.SH "DETAILS"
+.
+.SS "Ignore files"
+\fB\.gitignore\fR files are used by default to ignore paths to watch and trigger runs\. To stop honouring them, pass \fB\-\-no\-gitignore\fR\.
+.
+.P
+\fB\.ignore\fR files in the same syntax are also used by default\. This file can be used to specify files that should be ignored by cargo watch but checked into git, without constantly adding \fB\-\-ignore abc\fR options on the command\-line\. Do note that \fB\.ignore\fR files may also be used by other programs, like ripgrep(1)\. To stop honouring these, pass \fB\-\-no\-ignore\fR\.
+.
+.P
+Cargo watch also has an internal list of default ignores on top of those specified in files, like \fBtarget/\fR and \fB\.git/\fR and various other common types (logs, editor swap files, lockfiles, etc)\.
+.
+.P
+To skip absolutely all ignores, use the \fB\-\-ignore\-nothing\fR flag\.
+.
+.SS "Ignore syntax"
+See the \fBglob::Pattern\fR docs0 \fIhttps://doc\.rust\-lang\.org/glob/glob/struct\.Pattern\.html\fR for a more detailed specification of the glob matching syntax used for \fB\-\-ignore\fR\.
+.
+.P
+On Windows, patterns should be specified with Windows\-style (\fB\e\e\fR) separators\. Unix\-style separators (\fB/\fR) would not match Windows paths, which could be confusing and give the appearance of commandline ignores not working\. For convenience \fB/\fR in commandline ignores are automatically translated to \fB\e\e\fR when running on Windows, but one should still try to write the correct patterns for the platform, as there may be more subtle differences\.
+.
+.SH "BUGS"
+Please open an issue1 \fIhttps://github\.com/passcod/cargo\-watch/issues\fR, or look through the existing ones\.
+.
+.P
+If you want more verbose output, try running with the \fB\-\-debug\fR flag\. Note that this will also enable debug mode for watchexec\. When filing an issue, \fBmake sure to include a log with \fB\-\-debug\fR enabled so problems can be diagnosed\fR, as well as your \fB\-\-version\fR and OS\.
+.
+.P
+\fBIf your issue is a watchexec (our main upstream) issue, open it there2 \fIhttps://github\.com/watchexec/watchexec/issues\fR directly\.\fR If you\'re not sure, feel free to open it on the cargo\-watch issue tracker, but if it \fIis\fR a watchexec issue, it will get closed in favour of the upstream issue\.
+.
+.SH "TROUBLESHOOTING"
+Always start by checking your version with \fBcargo watch \-\-version\fR and, if necessary, upgrading to the latest one by checking the website linked above\.
+.
+.SS "RLS is slow while using cargo watch, or vice versa, or it\'s waiting for the project lock a lot"
+Cargo builds (and checks, and clippy, and tests because the tests have to be built) take out a lock on the project so two cargo instances don\'t run at the same time\.
+.
+.P
+However, Rust Analyzer is much better at this, so use that instead of RLS\.
+.
+.SS "File updates seems to never trigger"
+Try using \fB\-\-poll\fR to force the polling fallback\.
+.
+.P
+If that still doesn\'t work, and you\'re using an editor that does "safe saving", like IntelliJ / PyCharm, you may have to disable "safe saving" as that may prevent file notifications from being generated properly\.
+.
+.P
+Also try using the \fB\-\-why\fR option to see if the paths you expect are changing\.
+.
+.SS "It runs repeatedly without touching anything"
+That can happen when watching files that are modified by the command you\'re running\.
+.
+.P
+If you\'re only running compiles or checks (i\.e\. any command that only affects the target/ folder) and you\'re using \fB\-w\fR, you might be confusing the target\-folder\-ignorer\. Check your options and paths\.
+.
+.P
+You can also use the \fB\-\-watch\-when\-idle\fR flag to ignore any event that happens while the command is running\. \fBThis will become the default in 8\.0\.\fR
+.
+.SS "It runs repeatedly only touching ignored files"
+Make sure the files you ignored are the only ones being touched\. Use the \fB\-\-why\fR option to see exactly which files were modified and triggered the restart\. Some programs and libraries create temporary files that may not match a simple ignore pattern\.
+.
+.P
+As above, you can also use the \fB\-\-watch\-when\-idle\fR flag to help\.
+.
+.SS "I don\'t have colour in my cargo output / for cargo test"
+This sometimes happens on some terminal configurations or for test harnesses\. A quick workaround (instead of going down the rabbit hole of debugging your console settings) is to pass \fB\-\-color=always\fR to the command\. E\.g\.
+.
+.IP "" 4
+.
+.nf
 
+$ cargo watch \-x \'check \-\-color=always\'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+For test (and bench) commands, you\'ll need to pass the flag to the underlying program instead of cargo:
+.
+.IP "" 4
+.
+.nf
+
+$ cargo watch \-x \'test \-\- \-\-color=always\'
+.
+.fi
+.
+.IP "" 0
+.
+.SH "AUTHOR"
+Written and maintained by Félix Saparelli\.
+.
+.P
+https://passcod\.name
+.
+.P
+Project homepage:
+.
+.P
+https://github\.com/passcod/cargo\-watch
+.
+.P
+Public domain\.
