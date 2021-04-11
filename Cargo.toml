@@ -37,3 +37,7 @@ assert_cmd = "1.0.1"
 insta = "0.16.1"
 predicates = "1.0.4"
 wait-timeout = "0.2.0"
+
+[build-dependencies]
+embed-resource = "1.6.1"
+
