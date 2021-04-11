@@ -1,29 +1,26 @@
 [package]
 name = "cargo-watch"
 version = "7.6.1"
-edition = "2018"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
-categories = ["command-line-utilities", "development-tools"]
-description = "Watches over your Cargo project’s source"
-homepage = "https://github.com/passcod/cargo-watch"
-keywords = ["cargo", "watch", "compile", "notify"]
 license = "CC0-1.0"
-readme = "README.md"
+description = "Watches over your Cargo project’s source"
+keywords = ["cargo", "watch", "compile", "notify"]
+categories = ["command-line-utilities", "development-tools"]
+
+documentation = "https://github.com/passcod/cargo-watch"
+homepage = "https://github.com/passcod/cargo-watch"
 repository = "https://github.com/passcod/cargo-watch"
+readme = "README.md"
+
+edition = "2018"
+exclude = ["/.github"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
 
-[package.metadata.binstall]
-pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.tar.xz"
-bin-dir = "{ name }-v{ version }-{ target }/{ bin }{ format }"
-pkg-fmt = "txz"
-
-[profile.release]
-lto = true
-panic = "abort"
-codegen-units = 1
+[[bin]]
+name = "cargo-watch"
 
 [dependencies]
 clap = "2.33.1"
@@ -41,3 +38,12 @@ wait-timeout = "0.2.0"
 [build-dependencies]
 embed-resource = "1.6.1"
 
+[profile.release]
+lto = true
+panic = "abort"
+codegen-units = 1
+
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.tar.xz"
+bin-dir = "{ name }-v{ version }-{ target }/{ bin }{ format }"
+pkg-fmt = "txz"
