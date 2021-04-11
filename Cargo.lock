@@ -78,7 +78,6 @@ version = "7.6.1"
 dependencies = [
  "assert_cmd",
  "clap",
- "embed-resource",
  "insta",
  "log",
  "predicates",
