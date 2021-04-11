@@ -39,6 +39,9 @@ $ cargo binstall cargo-watch
 
 Or clone and build with `$ cargo build` then place in your $PATH.
 
+This repository contains a [manual page](./cargo-watch.1) and
+[Zsh completions](./completions) that you may want to install.
+
 ## Usage
 
 By default, it runs `check`. You can easily override this, though:
