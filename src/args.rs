@@ -37,9 +37,14 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("Clear the screen before each run"),
                 )
                 .arg(
-                    Arg::with_name("debug")
+                    Arg::with_name("log:debug")
                         .long("debug")
                         .help("Show debug output"),
+                )
+                .arg(
+                    Arg::with_name("log:info")
+                        .long("why")
+                        .help("Show paths that changed"),
                 )
                 .arg(
                     Arg::with_name("ignore-nothing")
@@ -90,7 +95,7 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("List of features passed to cargo invocations"),
                 )
                 .arg(
-                    Arg::with_name("quiet")
+                    Arg::with_name("log:quiet")
                         .short("q")
                         .long("quiet")
                         .help("Suppress output from cargo-watch itself"),

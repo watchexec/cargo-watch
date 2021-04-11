@@ -9,13 +9,14 @@ fn main() -> Result<()> {
     let matches = args::parse();
     change_dir();
 
-    let debug = matches.is_present("debug");
-    let quiet = matches.is_present("quiet");
+    let debug = matches.is_present("log:debug");
+    let info = matches.is_present("log:info");
+    let quiet = matches.is_present("log:quiet");
     let testing = matches.is_present("once");
 
     stderrlog::new()
         .quiet(quiet)
-        .verbosity(if debug { 3 } else { 1 })
+        .verbosity(if debug { 3 } else if info { 2 } else { 1 })
         .timestamp(if testing {
             Timestamp::Off
         } else {
