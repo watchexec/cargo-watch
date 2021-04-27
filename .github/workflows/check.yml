@@ -7,7 +7,7 @@ on:
     tags-ignore:
       - v*.*.*
 
-name: Commit checks
+name: Checks & Tests
 
 jobs:
   check:
@@ -18,7 +18,7 @@ jobs:
           - windows
           - macos
 
-    name: Check on ${{ matrix.platform }}
+    name: On ${{ matrix.platform }}
     runs-on: "${{ matrix.platform }}-latest"
 
     steps:
@@ -33,6 +33,12 @@ jobs:
         with:
           command: check
       - uses: actions-rs/cargo@v1
+        if: matrix.platform != 'windows'
+        with:
+          command: install
+          args: --debug --path .
+      - uses: actions-rs/cargo@v1
+        if: matrix.platform != 'windows'
         with:
           command: test
       - uses: actions-rs/cargo@v1
