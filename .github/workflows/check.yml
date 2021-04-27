@@ -33,12 +33,12 @@ jobs:
         with:
           command: check
       - uses: actions-rs/cargo@v1
-        if: matrix.platform != 'windows'
+        if: matrix.platform == 'ubuntu'
         with:
           command: install
           args: --debug --path .
       - uses: actions-rs/cargo@v1
-        if: matrix.platform != 'windows'
+        if: matrix.platform == 'ubuntu'
         with:
           command: test
       - uses: actions-rs/cargo@v1
