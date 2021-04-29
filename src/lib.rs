@@ -1,6 +1,7 @@
 //! Watch files in a Cargo project and compile it when they change
 #![warn(clippy::all)]
 
+use cargo_metadata::MetadataCommand;
 use clap::{value_t, values_t, ArgMatches, Error, ErrorKind};
 use log::{debug, warn};
 use std::{env::set_current_dir, path::MAIN_SEPARATOR, time::Duration};
@@ -11,15 +12,14 @@ use watchexec::{
 };
 
 pub mod args;
-pub mod cargo;
 pub mod watch;
 
 pub fn change_dir() {
-    cargo::root()
-        .and_then(|p| set_current_dir(p).ok())
-        .unwrap_or_else(|| {
-            Error::with_description("Not a Cargo project, aborting.", ErrorKind::Io).exit();
-        });
+    MetadataCommand::new().exec().map_err(|err| err.to_string()).and_then(|meta| {
+        set_current_dir(meta.workspace_root).map_err(|err| err.to_string())
+    }).unwrap_or_else(|err| {
+        Error::with_description(&err, ErrorKind::Io).exit();
+    });
 }
 
 pub fn set_commands(builder: &mut ConfigBuilder, matches: &ArgMatches) {

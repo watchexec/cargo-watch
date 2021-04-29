@@ -23,6 +23,7 @@ maintenance = { status = "passively-maintained" }
 name = "cargo-watch"
 
 [dependencies]
+cargo_metadata = "0.13.1"
 clap = "2.33.1"
 log = "0.4.8"
 stderrlog = "0.4.3"
