@@ -1,28 +1,25 @@
-extern crate assert_cmd;
-extern crate cargo_watch;
 #[macro_use]
 extern crate insta;
-extern crate wait_timeout;
-extern crate watchexec;
 
 use assert_cmd::prelude::*;
 use std::{
     fs::OpenOptions,
-    io,
+    io::{self, Write},
     path::PathBuf,
     process::{Command, Stdio},
     thread::sleep,
-    time::Duration,
+    time::{Duration, Instant},
 };
 use wait_timeout::ChildExt;
 
 fn touch(n: u8) -> io::Result<()> {
     let path: PathBuf = format!("./tests/touchdata/{}.txt", n).into();
-    OpenOptions::new()
+    let mut file = OpenOptions::new()
         .create(true)
         .write(true)
-        .open(path)
-        .map(|_| ())
+        .open(path)?;
+
+    Ok(())
 }
 
 fn std_to_string<T: io::Read>(handle: &mut Option<T>) -> String {
@@ -54,7 +51,7 @@ fn without_poll() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(50));
+    sleep(Duration::from_millis(500));
     touch(0).unwrap();
 
     if main
@@ -86,7 +83,7 @@ fn with_poll() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(50));
+    sleep(Duration::from_millis(500));
     touch(1).unwrap();
 
     if main
@@ -118,7 +115,7 @@ fn with_announce() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(50));
+    sleep(Duration::from_millis(500));
     touch(2).unwrap();
 
     if main
@@ -152,7 +149,7 @@ fn without_announce() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(50));
+    sleep(Duration::from_millis(500));
     touch(3).unwrap();
 
     if main
@@ -188,7 +185,7 @@ fn with_error() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(50));
+    sleep(Duration::from_millis(500));
     touch(4).unwrap();
 
     if main
