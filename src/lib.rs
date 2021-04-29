@@ -16,6 +16,7 @@ pub mod watch;
 
 pub fn change_dir() {
     MetadataCommand::new().exec().map_err(|err| err.to_string()).and_then(|meta| {
+        debug!("change directory to cargo workspace root: {}", meta.workspace_root);
         set_current_dir(meta.workspace_root).map_err(|err| err.to_string())
     }).unwrap_or_else(|err| {
         Error::with_description(&err, ErrorKind::Io).exit();
