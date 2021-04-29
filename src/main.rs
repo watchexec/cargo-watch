@@ -16,6 +16,7 @@ fn main() -> Result<()> {
 
     stderrlog::new()
         .quiet(quiet)
+        .show_module_names(debug)
         .verbosity(if debug {
             3
         } else if info {
