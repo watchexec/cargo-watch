@@ -19,6 +19,7 @@ fn touch(n: u8) -> io::Result<()> {
         .write(true)
         .open(path)?;
 
+    writeln!(&mut file, "{:?}", Instant::now())?;
     Ok(())
 }
 
