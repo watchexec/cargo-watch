@@ -32,7 +32,7 @@ shell-escape = "0.1.5"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"
-insta = "0.16.1"
+insta = "1.7.1"
 predicates = "1.0.4"
 wait-timeout = "0.2.0"
 
