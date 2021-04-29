@@ -27,7 +27,7 @@ cargo_metadata = "0.13.1"
 clap = "2.33.1"
 log = "0.4.8"
 stderrlog = "0.4.3"
-watchexec = "=1.15.0"
+watchexec = "1.15.x"
 shell-escape = "0.1.5"
 
 [dev-dependencies]
