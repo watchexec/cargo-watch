@@ -7,7 +7,6 @@ use watchexec::{error::Result, run::watch};
 
 fn main() -> Result<()> {
     let matches = args::parse();
-    change_dir();
 
     let debug = matches.is_present("log:debug");
     let info = matches.is_present("log:info");
@@ -32,6 +31,7 @@ fn main() -> Result<()> {
         .init()
         .unwrap();
 
+    change_dir();
     let opts = get_options(&matches);
     let handler = CwHandler::new(opts, quiet)?;
     watch(&handler)
