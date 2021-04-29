@@ -52,7 +52,7 @@ fn without_poll() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(500));
+    sleep(Duration::from_secs(2));
     touch(0).unwrap();
 
     if main
@@ -84,7 +84,7 @@ fn with_poll() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(500));
+    sleep(Duration::from_secs(2));
     touch(1).unwrap();
 
     if main
@@ -116,7 +116,7 @@ fn with_announce() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(500));
+    sleep(Duration::from_secs(2));
     touch(2).unwrap();
 
     if main
@@ -150,7 +150,7 @@ fn without_announce() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(500));
+    sleep(Duration::from_secs(2));
     touch(3).unwrap();
 
     if main
@@ -186,7 +186,7 @@ fn with_error() {
         .spawn()
         .unwrap();
 
-    sleep(Duration::from_millis(500));
+    sleep(Duration::from_secs(2));
     touch(4).unwrap();
 
     if main
