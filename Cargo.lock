@@ -92,7 +92,7 @@ dependencies = [
 
 [[package]]
 name = "cargo-watch"
-version = "7.7.1"
+version = "7.7.2"
 dependencies = [
  "assert_cmd",
  "cargo_metadata",
