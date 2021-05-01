@@ -1,10 +1,10 @@
 //! Watch files in a Cargo project and compile it when they change
 #![warn(clippy::all)]
 
-use cargo_metadata::MetadataCommand;
+use camino::Utf8PathBuf;
 use clap::{value_t, values_t, ArgMatches, Error, ErrorKind};
 use log::{debug, warn};
-use std::{env::set_current_dir, path::MAIN_SEPARATOR, time::Duration};
+use std::{env::set_current_dir, path::MAIN_SEPARATOR, process::Command, time::Duration};
 use watchexec::{
     config::{Config, ConfigBuilder},
     run::OnBusyUpdate,
@@ -15,12 +15,25 @@ pub mod args;
 pub mod watch;
 
 pub fn change_dir() {
-    MetadataCommand::new().exec().map_err(|err| err.to_string()).and_then(|meta| {
-        debug!("change directory to cargo workspace root: {}", meta.workspace_root);
-        set_current_dir(meta.workspace_root).map_err(|err| err.to_string())
-    }).unwrap_or_else(|err| {
-        Error::with_description(&err, ErrorKind::Io).exit();
-    });
+    Command::new("cargo")
+        .arg("locate-project")
+        .arg("--message-format")
+        .arg("plain")
+        .output()
+        .map_err(|err| err.to_string())
+        .and_then(|out| String::from_utf8(out.stdout).map_err(|err| err.to_string()))
+        .map(Utf8PathBuf::from)
+        .and_then(|path| {
+            path.parent()
+                .ok_or_else(|| String::from("project root does not exist"))
+                .and_then(|project_root| {
+                    debug!("change directory to cargo project root: {}", project_root);
+                    set_current_dir(project_root).map_err(|err| err.to_string())
+                })
+        })
+        .unwrap_or_else(|err| {
+            Error::with_description(&err, ErrorKind::Io).exit();
+        })
 }
 
 pub fn set_commands(builder: &mut ConfigBuilder, matches: &ArgMatches) {
