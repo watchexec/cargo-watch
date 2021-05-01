@@ -16,6 +16,7 @@ args=(
   '(-s --shell)'{-s+,--shell=}'[Shell command to execute on changes]:command'
   '(-i --ignore)'{-i+,--ignore=}'[Ignore changes to paths matching the pattern]:pattern'
   '(-w --watch)'{-w+,--watch=}'[Watch a specific directory]:path:_path_files -/'
+  '(-C --workdir)'{-C+,--workdir=}'[Change working directory of command]:path:_path_files -/'
   '--no-ignore[Skip .ignore files]'
   '--no-gitignore[Skip .gitignore files]'
   '--ignore-nothing[Ignore nothing, not even target/ and .git/]'

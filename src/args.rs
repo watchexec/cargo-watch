@@ -180,6 +180,13 @@ pub fn parse() -> ArgMatches<'static> {
                         }),
                 )
                 .arg(
+                    Arg::with_name("workdir")
+                        .short("C")
+                        .long("workdir")
+                        .takes_value(true)
+                        .help("Change working directory before running command [default: crate root]"),
+                )
+                .arg(
                     Arg::with_name("cmd:trail")
                         .raw(true)
                         .help("Full command to run. -x and -s will be ignored!"),

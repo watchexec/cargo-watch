@@ -3,7 +3,7 @@ cargo-watch(1) -- watches over your Cargo project's source
 
 ## SYNOPSIS
 
-cargo watch [`--exec` | `-x` <cargo subcommand>]... [`--shell` | `-s` <command>]... [`--ignore` | `-i` <pattern>]... [`--watch` | `-w` <path>]... [`--features` <list>] [`--no-restart`] [`--watch-when-idle`] [`--clear` | `-c`] [`--use-shell` <program>] [`--postpone`] [`--poll` <interval>] [`--delay` | `-d` <seconds>] [`--no-gitignore`] [`--no-ignore`] [`--ignore-nothing`] [`--debug` ] [`--why`] [`--quiet`] [`--version` | `-V`] [-- <command>...]
+cargo watch [`--exec` | `-x` <cargo subcommand>]... [`--shell` | `-s` <command>]... [`--ignore` | `-i` <pattern>]... [`--watch` | `-w` <path>]... [`--features` <list>] [`--no-restart`] [`--watch-when-idle`] [`--clear` | `-c`] [`--use-shell` <program>] [`--workdir` | `-C` <path>] [`--postpone`] [`--poll` <interval>] [`--delay` | `-d` <seconds>] [`--no-gitignore`] [`--no-ignore`] [`--ignore-nothing`] [`--debug` ] [`--why`] [`--quiet`] [`--version` | `-V`] [-- <command>...]
 
 ## DESCRIPTION
 
@@ -63,6 +63,11 @@ Ignore nothing, not even target/ and .git/.
 
 * `-c`, `--clear`:
 Clear the screen before each run.
+
+* `-C`, `--workdir` <path>:
+Change the working directory to the <path> given.
+
+The default is the crate root, as found by `cargo locate-project`.
 
 * `--postpone`:
 Postpone first run until a file changes.
@@ -147,6 +152,12 @@ If you want more verbose output, try running with the `--debug` flag. Note that 
 
 [1]: https://github.com/passcod/cargo-watch/issues
 [2]: https://github.com/watchexec/watchexec/issues
+
+### KNOWN BUGS
+
+In 7.8.0, the `--workdir` option changes the directory before any other options are processed, so e.g. `--watch` paths may not work as expected. This has to be fixed upstream, see [watchexec#188].
+
+[watchexec#188]: https://github.com/watchexec/watchexec/issues/188#issuecomment-829138116
 
 ## TROUBLESHOOTING
 

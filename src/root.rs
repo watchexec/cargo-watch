@@ -1,9 +1,9 @@
 use camino::Utf8PathBuf;
 use clap::{Error, ErrorKind};
-use log::{debug};
+use log::debug;
 use std::{env::set_current_dir, process::Command};
 
-pub fn project_root() -> Result<Utf8PathBuf, Error> {
+pub fn project_root() -> Utf8PathBuf {
     Command::new("cargo")
         .arg("locate-project")
         .arg("--message-format")
@@ -17,15 +17,11 @@ pub fn project_root() -> Result<Utf8PathBuf, Error> {
                 .ok_or_else(|| String::from("project root does not exist"))
                 .map(ToOwned::to_owned)
         })
-        .map_err(|err| Error::with_description(&err, ErrorKind::Io))
+        .unwrap_or_else(|err| Error::with_description(&err, ErrorKind::Io).exit())
 }
 
-pub fn change_dir() {
-    project_root()
-        .and_then(|project_root| {
-            debug!("change directory to cargo project root: {}", project_root);
-            set_current_dir(project_root)
-                .map_err(|err| Error::with_description(&err.to_string(), ErrorKind::Io))
-        })
-        .unwrap_or_else(|err| err.exit())
+pub fn change_dir(dir: Utf8PathBuf) {
+    debug!("change directory to: {}", dir);
+    set_current_dir(dir)
+        .unwrap_or_else(|err| Error::with_description(&err.to_string(), ErrorKind::Io).exit())
 }

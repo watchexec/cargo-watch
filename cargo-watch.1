@@ -1,13 +1,13 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "CARGO\-WATCH" "1" "April 2021" "" ""
+.TH "CARGO\-WATCH" "1" "May 2021" "" ""
 .
 .SH "NAME"
 \fBcargo\-watch\fR \- watches over your Cargo project\'s source
 .
 .SH "SYNOPSIS"
-cargo watch [\fB\-\-exec\fR | \fB\-x\fR \fIcargo subcommand\fR]\.\.\. [\fB\-\-shell\fR | \fB\-s\fR \fIcommand\fR]\.\.\. [\fB\-\-ignore\fR | \fB\-i\fR \fIpattern\fR]\.\.\. [\fB\-\-watch\fR | \fB\-w\fR \fIpath\fR]\.\.\. [\fB\-\-features\fR \fIlist\fR] [\fB\-\-no\-restart\fR] [\fB\-\-watch\-when\-idle\fR] [\fB\-\-clear\fR | \fB\-c\fR] [\fB\-\-use\-shell\fR \fIprogram\fR] [\fB\-\-postpone\fR] [\fB\-\-poll\fR \fIinterval\fR] [\fB\-\-delay\fR | \fB\-d\fR \fIseconds\fR] [\fB\-\-no\-gitignore\fR] [\fB\-\-no\-ignore\fR] [\fB\-\-ignore\-nothing\fR] [\fB\-\-debug\fR ] [\fB\-\-why\fR] [\fB\-\-quiet\fR] [\fB\-\-version\fR | \fB\-V\fR] [\-\- \fIcommand\fR\.\.\.]
+cargo watch [\fB\-\-exec\fR | \fB\-x\fR \fIcargo subcommand\fR]\.\.\. [\fB\-\-shell\fR | \fB\-s\fR \fIcommand\fR]\.\.\. [\fB\-\-ignore\fR | \fB\-i\fR \fIpattern\fR]\.\.\. [\fB\-\-watch\fR | \fB\-w\fR \fIpath\fR]\.\.\. [\fB\-\-features\fR \fIlist\fR] [\fB\-\-no\-restart\fR] [\fB\-\-watch\-when\-idle\fR] [\fB\-\-clear\fR | \fB\-c\fR] [\fB\-\-use\-shell\fR \fIprogram\fR] [\fB\-\-workdir\fR | \fB\-C\fR \fIpath\fR] [\fB\-\-postpone\fR] [\fB\-\-poll\fR \fIinterval\fR] [\fB\-\-delay\fR | \fB\-d\fR \fIseconds\fR] [\fB\-\-no\-gitignore\fR] [\fB\-\-no\-ignore\fR] [\fB\-\-ignore\-nothing\fR] [\fB\-\-debug\fR ] [\fB\-\-why\fR] [\fB\-\-quiet\fR] [\fB\-\-version\fR | \fB\-V\fR] [\-\- \fIcommand\fR\.\.\.]
 .
 .SH "DESCRIPTION"
 Watches over your project\'s source for changes, and runs Cargo commands when they occur\.
@@ -85,6 +85,13 @@ Ignore nothing, not even target/ and \.git/\.
 .TP
 \fB\-c\fR, \fB\-\-clear\fR
 Clear the screen before each run\.
+.
+.TP
+\fB\-C\fR, \fB\-\-workdir\fR \fIpath\fR
+Change the working directory to the \fIpath\fR given\.
+.
+.P
+The default is the crate root, as found by \fBcargo locate\-project\fR\.
 .
 .TP
 \fB\-\-postpone\fR
@@ -236,6 +243,9 @@ If you want more verbose output, try running with the \fB\-\-debug\fR flag\. Not
 .
 .P
 \fBIf your issue is a watchexec (our main upstream) issue, open it there2 \fIhttps://github\.com/watchexec/watchexec/issues\fR directly\.\fR If you\'re not sure, feel free to open it on the cargo\-watch issue tracker, but if it \fIis\fR a watchexec issue, it will get closed in favour of the upstream issue\.
+.
+.SS "KNOWN BUGS"
+In 7\.8\.0, the \fB\-\-workdir\fR option changes the directory before any other options are processed, so e\.g\. \fB\-\-watch\fR paths may not work as expected\. This has to be fixed upstream, see watchexec#188 \fIhttps://github\.com/watchexec/watchexec/issues/188#issuecomment\-829138116\fR\.
 .
 .SH "TROUBLESHOOTING"
 Always start by checking your version with \fBcargo watch \-\-version\fR and, if necessary, upgrading to the latest one by checking the website linked above\.

@@ -1,9 +1,6 @@
+use camino::Utf8PathBuf;
 use stderrlog::Timestamp;
 use watchexec::{error::Result, run::watch};
-
-use options::get_options;
-use root::change_dir;
-use watch::CwHandler;
 
 mod args;
 mod options;
@@ -36,8 +33,14 @@ fn main() -> Result<()> {
         .init()
         .unwrap();
 
-    change_dir();
-    let opts = get_options(&matches);
-    let handler = CwHandler::new(opts, quiet)?;
+    root::change_dir(
+        matches
+            .value_of("workdir")
+            .map(Utf8PathBuf::from)
+            .unwrap_or_else(root::project_root),
+    );
+
+    let opts = options::get_options(&matches);
+    let handler = watch::CwHandler::new(opts, quiet)?;
     watch(&handler)
 }

@@ -112,6 +112,9 @@ OPTIONS:
     -w, --watch <watch>...
             Watch specific file(s) or folder(s) [default: .]
 
+    -C, --workdir <workdir>
+            Change working directory before running command [default: crate root]
+
 ARGS:
     <cmd:trail>...    Full command to run. -x and -s will be ignored!
 
