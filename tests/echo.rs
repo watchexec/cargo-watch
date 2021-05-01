@@ -24,7 +24,7 @@ fn std_to_string<T: io::Read>(handle: &mut Option<T>) -> String {
     if let Some(ref mut handle) = handle {
         let mut buf = String::with_capacity(1024);
         handle.read_to_string(&mut buf).unwrap();
-        buf
+        buf.replace("\r", "")
     } else {
         unreachable!()
     }
