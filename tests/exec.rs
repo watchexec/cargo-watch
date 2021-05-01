@@ -1,9 +1,3 @@
-extern crate assert_cmd;
-extern crate cargo_watch;
-extern crate predicates;
-extern crate wait_timeout;
-extern crate watchexec;
-
 use assert_cmd::prelude::*;
 use predicates::str::is_match;
 use std::{

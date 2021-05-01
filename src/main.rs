@@ -1,9 +1,14 @@
-//! Watch files in a Cargo project and compile it when they change
-#![warn(clippy::all)]
-
-use cargo_watch::{args, change_dir, get_options, watch::CwHandler};
 use stderrlog::Timestamp;
 use watchexec::{error::Result, run::watch};
+
+use options::get_options;
+use root::change_dir;
+use watch::CwHandler;
+
+mod args;
+mod options;
+mod root;
+mod watch;
 
 fn main() -> Result<()> {
     let matches = args::parse();
