@@ -97,9 +97,7 @@ jobs:
         run: |
           set -euxo pipefail
 
-          ext=""
-          [[ "${{ matrix.name }}" == windows-* ]] && ext=".exe"
-          version=$("target/${{ matrix.target }}/release/cargo-watch${ext}" --version | cut -d\  -f2)
+          version=$(grep -m1 -F 'version =' Cargo.toml | cut -d\" -f2)
 
           if [[ -z "$version" ]]; then
             echo "Error: no version :("
@@ -211,11 +209,11 @@ jobs:
           set -u
           echo "$RELEASE_KEY" > release.key
           set -x
-          version=$(ls cargo-watch-v*.tar.xz | head -n1 | grep -oP 'v[\d.]+')
+          version=$(grep -m1 -F 'version =' Cargo.toml | cut -d\" -f2)
           echo | rsign sign \
             -p .github/workflows/release.pub \
             -s release.key \
-            -t "cargo-watch $version signed with automated key" \
+            -t "cargo-watch v$version signed with automated key" \
             -c 'see README.md for signing information' \
             -x CHECKSUMS.auto.minisig \
             CHECKSUMS
