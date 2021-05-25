@@ -208,16 +208,19 @@ jobs:
         env:
           RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
         run: |
+          set -u
+          echo "$RELEASE_KEY" > release.key
+          set -x
           version=$(ls cargo-watch-*.tar.xz | head -n1 | grep -oP 'v[\d.]+')
-          echo "$SUPER_SECRET" > release.key
           echo | rsign sign \
             -p .github/workflows/release.pub \
             -s release.key \
             -t "cargo-watch $version signed with automated key" \
             -c 'see README.md for signing information' \
+            -x CHECKSUMS.auto.minisig \
             CHECKSUMS
           rm release.key
-          cat CHECKSUMS.minisig
+          cat CHECKSUMS.auto.minisig
 
       # - uses: softprops/action-gh-release@v1
       #   with:
@@ -226,6 +229,6 @@ jobs:
       #       cargo-watch-*.deb
       #       cargo-watch-*.zip
       #       CHECKSUMS
-      #       CHECKSUMS.minisig
+      #       CHECKSUMS.auto.minisig
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
