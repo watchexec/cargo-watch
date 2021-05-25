@@ -116,7 +116,7 @@ jobs:
           [[ "${{ matrix.name }}" == windows-* ]] && ext=".exe"
           bin="target/${{ matrix.target }}/release/cargo-watch${ext}"
           version=$(cat VERSION)
-          dst="cargo-watch-${version}-${{ matrix.target }}"
+          dst="cargo-watch-v${version}-${{ matrix.target }}"
           mkdir "$dst"
           strip "$bin" || true
           mv "$bin" "$dst/"
@@ -128,7 +128,7 @@ jobs:
         run: |
           set -euxo pipefail
           version=$(cat VERSION)
-          dst="cargo-watch-${version}-${{ matrix.target }}"
+          dst="cargo-watch-v${version}-${{ matrix.target }}"
           tar cavf "$dst.tar.xz" "$dst"
       - name: Archive (deb)
         if: startsWith(matrix.name, 'linux-')
@@ -136,7 +136,7 @@ jobs:
         run: |
           set -euxo pipefail
           version=$(cat VERSION)
-          dst="cargo-watch-${version}-${{ matrix.target }}"
+          dst="cargo-watch-v${version}-${{ matrix.target }}"
           mkdir -p "deb/$dst"
           cd "deb/$dst"
           mkdir -p DEBIAN usr/{bin,share/{man/man1,zsh/site-functions}}
@@ -163,7 +163,7 @@ jobs:
         run: |
           set -euxo pipefail
           version=$(cat VERSION)
-          dst="cargo-watch-${version}-${{ matrix.target }}"
+          dst="cargo-watch-v${version}-${{ matrix.target }}"
           7z a "$dst.zip" "$dst"
 
       - uses: actions/upload-artifact@v2
@@ -171,9 +171,9 @@ jobs:
           name: builds
           retention-days: 1
           path: |
-            cargo-watch-*.tar.xz
-            cargo-watch-*.deb
-            cargo-watch-*.zip
+            cargo-watch-v*.tar.xz
+            cargo-watch-v*.deb
+            cargo-watch-v*.zip
 
   sign:
     needs: build
@@ -198,10 +198,10 @@ jobs:
           name: builds
 
       - name: Checksums with BLAKE3
-        run: b3sum cargo-watch-* | tee -a CHECKSUMS
+        run: b3sum cargo-watch-v* | tee -a CHECKSUMS
 
       - name: Checksums with SHA512
-        run: sha512sum cargo-watch-* | tee -a CHECKSUMS
+        run: sha512sum cargo-watch-v* | tee -a CHECKSUMS
 
       - name: Sign checksums
         shell: bash
@@ -211,7 +211,7 @@ jobs:
           set -u
           echo "$RELEASE_KEY" > release.key
           set -x
-          version=$(ls cargo-watch-*.tar.xz | head -n1 | grep -oP 'v[\d.]+')
+          version=$(ls cargo-watch-v*.tar.xz | head -n1 | grep -oP 'v[\d.]+')
           echo | rsign sign \
             -p .github/workflows/release.pub \
             -s release.key \
@@ -225,9 +225,9 @@ jobs:
       # - uses: softprops/action-gh-release@v1
       #   with:
       #     files: |
-      #       cargo-watch-*.tar.xz
-      #       cargo-watch-*.deb
-      #       cargo-watch-*.zip
+      #       cargo-watch-v*.tar.xz
+      #       cargo-watch-v*.deb
+      #       cargo-watch-v*.zip
       #       CHECKSUMS
       #       CHECKSUMS.auto.minisig
       #   env:
