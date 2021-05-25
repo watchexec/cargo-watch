@@ -77,22 +77,37 @@ jobs:
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('Cargo.lock') }}
-      - uses: actions/cache@v1
-        with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('Cargo.lock') }}
+
       - uses: actions-rs/toolchain@v1
         with:
           target: ${{ matrix.target }}
           toolchain: stable
           profile: minimal
           override: true
+
       - uses: actions-rs/cargo@v1
         name: Build
         with:
           use-cross: ${{ matrix.cross }}
           command: build
           args: --release --locked --target ${{ matrix.target }}
+
+      - name: Extract version
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          ext=""
+          [[ "${{ matrix.name }}" == windows-* ]] && ext=".exe"
+          version=$("target/${{ matrix.target }}/release/cargo-watch${ext}" --version | cut -d\  -f2)
+
+          if [[ -z "$version" ]]; then
+            echo "Error: no version :("
+            exit 1
+          fi
+
+          echo "$version" > VERSION
+
       - name: Package
         shell: bash
         run: |
@@ -100,18 +115,19 @@ jobs:
           ext=""
           [[ "${{ matrix.name }}" == windows-* ]] && ext=".exe"
           bin="target/${{ matrix.target }}/release/cargo-watch${ext}"
-          version=$(echo "${{ github.ref }}" | cut -d/ -f3)
+          version=$(cat VERSION)
           dst="cargo-watch-${version}-${{ matrix.target }}"
           mkdir "$dst"
           strip "$bin" || true
           mv "$bin" "$dst/"
           mv README.md LICENSE completions cargo-watch.1 "$dst/"
+
       - name: Archive (tar)
         if: '! startsWith(matrix.name, ''windows-'')'
         shell: bash
         run: |
           set -euxo pipefail
-          version=$(echo "${{ github.ref }}" | cut -d/ -f3)
+          version=$(cat VERSION)
           dst="cargo-watch-${version}-${{ matrix.target }}"
           tar cavf "$dst.tar.xz" "$dst"
       - name: Archive (deb)
@@ -119,7 +135,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          version=$(echo "${{ github.ref }}" | cut -d/ -f3)
+          version=$(cat VERSION)
           dst="cargo-watch-${version}-${{ matrix.target }}"
           mkdir -p "deb/$dst"
           cd "deb/$dst"
@@ -146,14 +162,70 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          version=$(echo "${{ github.ref }}" | cut -d/ -f3)
+          version=$(cat VERSION)
           dst="cargo-watch-${version}-${{ matrix.target }}"
           7z a "$dst.zip" "$dst"
-      - uses: softprops/action-gh-release@v1
+
+      - uses: actions/upload-artifact@v2
         with:
-          files: |
+          name: builds
+          retention-days: 1
+          path: |
             cargo-watch-*.tar.xz
             cargo-watch-*.deb
             cargo-watch-*.zip
+
+  sign:
+    needs: build
+
+    name: Checksum and sign
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cargo/bin
+          key: sign-tools-${{ hashFiles('.github/workflows/release.yml') }}
+
+      - name: Build rsign2
+        run: rsign --version | grep -xF 'rsign2 0.5.7' || cargo install rsign2 --version 0.5.7
+      - name: Build b3sum
+        run: b3sum --version | grep -xF 'b3sum 0.3.7' || cargo install b3sum --version 0.3.7
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: builds
+
+      - name: Checksums with BLAKE3
+        run: b3sum cargo-watch-* | tee -a CHECKSUMS
+
+      - name: Checksums with SHA512
+        run: sha512sum cargo-watch-* | tee -a CHECKSUMS
+
+      - name: Sign checksums
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+        run: |
+          version=$(ls cargo-watch-*.tar.xz | head -n1 | grep -oP 'v[\d.]+')
+          echo "$SUPER_SECRET" > release.key
+          echo | rsign sign \
+            -p .github/workflows/release.pub \
+            -s release.key \
+            -t "cargo-watch $version signed with automated key" \
+            -c 'see README.md for signing information' \
+            CHECKSUMS
+          rm release.key
+          cat CHECKSUMS.minisig
+
+      # - uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: |
+      #       cargo-watch-*.tar.xz
+      #       cargo-watch-*.deb
+      #       cargo-watch-*.zip
+      #       CHECKSUMS
+      #       CHECKSUMS.minisig
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
