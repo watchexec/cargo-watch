@@ -26,6 +26,7 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 ## Install
 
 Pre-built binaries are available [on the Github Releases tab](https://github.com/passcod/cargo-watch/releases).
+- Builds since 7.8.0 are signed with minisig: see [Signing](#signing) for details.
 
 ```
 $ cargo install cargo-watch
@@ -378,6 +379,39 @@ business.
 When asking questions and/or filing bugs, keep in mind that Cargo Watch and
 Watchexec share the same maintainer at the moment (but Notify does not,
 anymore)!
+
+## Signing
+
+Releases are built by Github Actions, checksummed using SHA-512 and BLAKE3 (the
+latter is preferred, the former provided for if you don’t have the b3sum tool),
+and then the `CHECKSUMS` file is signed using minisign / rsign2.
+
+The file is signed twice:
+
+1. Automatically by Github Actions using [this public key](./.github/workflows/release.pub).
+   This signature authenticates the builds as coming from this repo, built using
+   Github Actions. However, it is applied automatically, so its trust should not
+   be considered high.
+
+2. Manually by a maintainer, after verifying the release. Maintainers public
+   keys are listed below, and may be available on their website/on request too.
+   Maintainer signatures may lag the release by some time as it’s a manual
+   process and they may be otherwise busy.
+
+- Key for Félix Saparelli / @passcod / https://passcod.name/:
+  * `RWSWvKVhwsjgpEbt1xe7GB+YKblec/1eKhjjEy/NlBZYEgPFehMkRvqH`
+
+To verify signatures, use [a minisign implementation](https://jedisct1.github.io/minisign/):
+
+```bash
+# With minisign:
+minisign -Vm CHECKSUMS -x CHECKSUMS.auto.minisig -p release.pub
+minisign -Vm CHECKSUMS -x CHECKSUMS.maintainer.minisig -p maintainer.pub
+
+# With rsign2:
+rsign verify -x CHECKSUMS.auto.minisig -p release.pub CHECKSUMS
+rsign verify -x CHECKSUMS.maintainer.minisig -p maintainer.pub  CHECKSUMS
+```
 
 ## About
 
