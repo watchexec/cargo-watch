@@ -12,12 +12,12 @@ jobs:
       matrix:
         name:
           - linux-amd64-gnu
-          # - linux-amd64-musl
-          # - linux-armhf-gnu
-          # - linux-arm64-gnu
-          # - mac-x86-64
-          # - mac-arm64
-          # - windows-x86-64
+          - linux-amd64-musl
+          - linux-armhf-gnu
+          - linux-arm64-gnu
+          - mac-x86-64
+          - mac-arm64
+          - windows-x86-64
         include:
           - name: linux-amd64-gnu
             os: ubuntu-latest
@@ -25,47 +25,47 @@ jobs:
             cross: false
             experimental: false
 
-          # - name: linux-amd64-musl
-          #   os: ubuntu-latest
-          #   target: x86_64-unknown-linux-musl
-          #   cross: true
-          #   experimental: false
+          - name: linux-amd64-musl
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            cross: true
+            experimental: false
 
-          # - name: linux-armhf-gnu
-          #   os: ubuntu-latest
-          #   target: armv7-unknown-linux-gnueabihf
-          #   cross: true
-          #   experimental: false
+          - name: linux-armhf-gnu
+            os: ubuntu-latest
+            target: armv7-unknown-linux-gnueabihf
+            cross: true
+            experimental: false
 
-          # - name: linux-arm64-gnu
-          #   os: ubuntu-latest
-          #   target: aarch64-unknown-linux-gnu
-          #   cross: true
-          #   experimental: false
+          - name: linux-arm64-gnu
+            os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            cross: true
+            experimental: false
 
-          # - name: mac-x86-64
-          #   os: macos-latest
-          #   target: x86_64-apple-darwin
-          #   cross: false
-          #   experimental: false
+          - name: mac-x86-64
+            os: macos-latest
+            target: x86_64-apple-darwin
+            cross: false
+            experimental: false
 
-          # - name: mac-arm64
-          #   os: macos-11.0
-          #   target: aarch64-apple-darwin
-          #   cross: true
-          #   experimental: true
+          - name: mac-arm64
+            os: macos-11.0
+            target: aarch64-apple-darwin
+            cross: true
+            experimental: true
 
-          # - name: windows-x86-64
-          #   os: windows-latest
-          #   target: x86_64-pc-windows-msvc
-          #   cross: false
-          #   experimental: false
+          - name: windows-x86-64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            cross: false
+            experimental: false
 
-          # - name: windows-arm64
-          #   os: windows-latest
-          #   target: aarch64-pc-windows-msvc
-          #   cross: true
-          #   experimental: true
+          - name: windows-arm64
+            os: windows-latest
+            target: aarch64-pc-windows-msvc
+            cross: true
+            experimental: true
 
     name: Binaries for ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -222,13 +222,13 @@ jobs:
           rm release.key
           cat CHECKSUMS.auto.minisig
 
-      # - uses: softprops/action-gh-release@v1
-      #   with:
-      #     files: |
-      #       cargo-watch-v*.tar.xz
-      #       cargo-watch-v*.deb
-      #       cargo-watch-v*.zip
-      #       CHECKSUMS
-      #       CHECKSUMS.auto.minisig
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            cargo-watch-v*.tar.xz
+            cargo-watch-v*.deb
+            cargo-watch-v*.zip
+            CHECKSUMS
+            CHECKSUMS.auto.minisig
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
