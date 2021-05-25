@@ -6,3 +6,5 @@
 *.zip
 /tests/touchdata
 /tests/snapshots/*.new
+
+CHECKSUMS*

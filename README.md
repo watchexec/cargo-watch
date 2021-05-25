@@ -398,9 +398,6 @@ The file is signed twice:
    Maintainer signatures may lag the release by some time as it’s a manual
    process and they may be otherwise busy.
 
-- Key for Félix Saparelli / @passcod / https://passcod.name/:
-  * `RWSWvKVhwsjgpEbt1xe7GB+YKblec/1eKhjjEy/NlBZYEgPFehMkRvqH`
-
 To verify signatures, use [a minisign implementation](https://jedisct1.github.io/minisign/):
 
 ```bash
@@ -412,6 +409,12 @@ minisign -Vm CHECKSUMS -x CHECKSUMS.maintainer.minisig -p maintainer.pub
 rsign verify -x CHECKSUMS.auto.minisig -p release.pub CHECKSUMS
 rsign verify -x CHECKSUMS.maintainer.minisig -p maintainer.pub  CHECKSUMS
 ```
+
+- Key for Félix Saparelli / @passcod / https://passcod.name/:
+  ```
+  untrusted comment: minisign public key: 2264BBE425DA952E
+  RWQuldol5LtkIrx0khfo4Z7Y8SixwG2K8OagJSvsJNBcuLgB2oVNJFFv
+  ```
 
 ## About
 

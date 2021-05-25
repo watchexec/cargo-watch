@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if ! which rsign >/dev/null; then
+    echo "Requires rsign2 tool: $ cargo install rsign2"
+    exit 2
+fi
+
+if [[ ! -f CHECKSUMS || ! -f CHECKSUMS.auto.minisig ]]; then
+    echo "Usage: bin/sign [rsign options...]"
+    echo "You must first download the relevant CHECKSUMS and CHECKSUMS.auto.minisig files."
+    exit 1
+fi
+
+echo "Verifying CHECKSUMS.auto.minisig:"
+rsign verify \
+    -p "$(dirname $BASH_SOURCE)/../.github/workflows/release.pub" \
+    -x CHECKSUMS.auto.minisig \
+    CHECKSUMS
+
+version=$(grep -m1 -oP 'cargo-watch-v[\d.]+' CHECKSUMS | cut -d- -f3)
+ownsig="CHECKSUMS.$(whoami).minisig"
+
+echo "Signing CHECKSUMS with your key to $ownsig:"
+rsign sign \
+    -t "cargo-watch $version signed by maintainer: $(whoami)" \
+    -c 'see README.md for signing information' \
+    -x "$ownsig" \
+    $@ \
+    CHECKSUMS
+
+echo "Done; please upload $ownsig to Github release $version!"
