@@ -7,27 +7,37 @@ if ! which rsign >/dev/null; then
     exit 2
 fi
 
-if [[ ! -f CHECKSUMS || ! -f CHECKSUMS.auto.minisig ]]; then
+missing=""
+for f in {B3,SHA512}SUMS{,.auto.minisig}; do
+    [[ ! -f "$f" ]] && missing="$missing $f"
+done
+
+if [[ ! -z "$missing" ]]; then
     echo "Usage: bin/sign [rsign options...]"
-    echo "You must first download the relevant CHECKSUMS and CHECKSUMS.auto.minisig files."
+    echo "You must first download the relevant sums and minisig files."
+    echo "Missing: $missing"
     exit 1
 fi
 
-echo "Verifying CHECKSUMS.auto.minisig:"
-rsign verify \
-    -p "$(dirname $BASH_SOURCE)/../.github/workflows/release.pub" \
-    -x CHECKSUMS.auto.minisig \
-    CHECKSUMS
+sigs=""
+for algo in B3 SHA512; do
+    echo "Verifying ${algo}SUMS.auto.minisig:"
+    rsign verify \
+        -p "$(dirname $BASH_SOURCE)/../.github/workflows/release.pub" \
+        -x "${algo}SUMS.auto.minisig" \
+        "${algo}SUMS"
 
-version=$(grep -m1 -oP 'cargo-watch-v[\d.]+' CHECKSUMS | cut -d- -f3)
-ownsig="CHECKSUMS.$(whoami).minisig"
+    version=$(grep -m1 -oP 'cargo-watch-v[\d.]+' "${algo}SUMS" | cut -d- -f3)
+    ownsig="${algo}SUMS.$(whoami).minisig"
+    sigs="$sigs $ownsigs"
 
-echo "Signing CHECKSUMS with your key to $ownsig:"
-rsign sign \
-    -t "cargo-watch $version signed by maintainer: $(whoami)" \
-    -c 'see README.md for signing information' \
-    -x "$ownsig" \
-    $@ \
-    CHECKSUMS
+    echo "Signing ${algo}SUMS with your key to $ownsig:"
+    rsign sign \
+        -t "cargo-watch $version signed by maintainer: $(whoami)" \
+        -c 'see README.md for signing information' \
+        -x "$ownsig" \
+        $@ \
+        "${algo}SUMS"
+done
 
-echo "Done; please upload $ownsig to Github release $version!"
+echo "Done; please upload $sigs to Github release $version!"

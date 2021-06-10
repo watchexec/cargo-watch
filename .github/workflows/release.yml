@@ -196,10 +196,10 @@ jobs:
           name: builds
 
       - name: Checksums with BLAKE3
-        run: b3sum cargo-watch-v* | tee -a CHECKSUMS
+        run: b3sum cargo-watch-v* | tee -a B3SUMS
 
       - name: Checksums with SHA512
-        run: sha512sum cargo-watch-v* | tee -a CHECKSUMS
+        run: sha512sum cargo-watch-v* | tee -a SHA512SUMS
 
       - name: Sign checksums
         shell: bash
@@ -210,15 +210,17 @@ jobs:
           echo "$RELEASE_KEY" > release.key
           set -x
           version=$(grep -m1 -F 'version =' Cargo.toml | cut -d\" -f2)
-          echo | rsign sign \
-            -p .github/workflows/release.pub \
-            -s release.key \
-            -t "cargo-watch v$version signed with automated key" \
-            -c 'see README.md for signing information' \
-            -x CHECKSUMS.auto.minisig \
-            CHECKSUMS
+          for algo in B3 SHA512; do
+            echo | rsign sign \
+              -p .github/workflows/release.pub \
+              -s release.key \
+              -t "cargo-watch v$version signed with automated key" \
+              -c 'see README.md for signing information' \
+              -x "${algo}SUMS.auto.minisig" \
+              "${algo}SUMS"
+          done
           rm release.key
-          cat CHECKSUMS.auto.minisig
+          cat {B3,SHA512}SUMS.auto.minisig
 
       - uses: softprops/action-gh-release@v1
         with:
@@ -226,7 +228,6 @@ jobs:
             cargo-watch-v*.tar.xz
             cargo-watch-v*.deb
             cargo-watch-v*.zip
-            CHECKSUMS
-            CHECKSUMS.auto.minisig
+            *SUMS*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

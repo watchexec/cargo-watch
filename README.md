@@ -384,9 +384,9 @@ anymore)!
 
 Releases are built by Github Actions, checksummed using SHA-512 and BLAKE3 (the
 latter is preferred, the former provided for if you don’t have the b3sum tool),
-and then the `CHECKSUMS` file is signed using minisign / rsign2.
+and then the `B3SUMS` and `SHA512SUMS` files are signed using minisign / rsign2.
 
-The file is signed twice:
+Both files are signed twice:
 
 1. Automatically by Github Actions using [this public key](./.github/workflows/release.pub).
    This signature authenticates the builds as coming from this repo, built using
@@ -402,12 +402,12 @@ To verify signatures, use [a minisign implementation](https://jedisct1.github.io
 
 ```bash
 # With minisign:
-minisign -Vm CHECKSUMS -x CHECKSUMS.auto.minisig -p release.pub
-minisign -Vm CHECKSUMS -x CHECKSUMS.maintainer.minisig -p maintainer.pub
+minisign -Vm B3SUMS -x B3SUMS.auto.minisig -p release.pub
+minisign -Vm B3SUMS -x B3SUMS.maintainer.minisig -p maintainer.pub
 
 # With rsign2:
-rsign verify -x CHECKSUMS.auto.minisig -p release.pub CHECKSUMS
-rsign verify -x CHECKSUMS.maintainer.minisig -p maintainer.pub  CHECKSUMS
+rsign verify -x B3SUMS.auto.minisig -p release.pub B3SUMS
+rsign verify -x B3SUMS.maintainer.minisig -p maintainer.pub  B3SUMS
 ```
 
 - Key for Félix Saparelli / @passcod / https://passcod.name/:
