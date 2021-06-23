@@ -1,9 +1,9 @@
 # $ cargo watch
 
 [![Crate release version](https://flat.badgen.net/crates/v/cargo-watch)](https://crates.io/crates/cargo-watch)
-[![Crate license: CC0 1.0](https://flat.badgen.net/github/license/passcod/cargo-watch)](https://creativecommons.org/publicdomain/zero/1.0/)
+[![Crate license: CC0 1.0](https://flat.badgen.net/github/license/watchexec/cargo-watch)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![Crate download count](https://flat.badgen.net/crates/d/cargo-watch)](https://crates.io/crates/cargo-watch)
-[![CI status](https://github.com/passcod/cargo-watch/actions/workflows/check.yml/badge.svg)](https://github.com/passcod/cargo-watch/actions/workflows/check.yml)
+[![CI status](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml/badge.svg)](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml)
 [![MSRV: 1.51.0](https://flat.badgen.net/badge/MSRV/1.51.0/purple)](https://blog.rust-lang.org/2021/03/25/Rust-1.51.0.html)
 ![MSRV policy: bump is non-breaking](https://flat.badgen.net/badge/MSRV%20policy/non-breaking/orange)
 [![Uses Caretaker Maintainership](https://flat.badgen.net/badge/Caretaker/Maintainership%20👥%20/purple)][caretaker]
@@ -19,14 +19,14 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 
 - In the public domain / licensed with CC0.
 - Uses [Caretaker Maintainership][caretaker].
+- Website and more documentation: **[watchexec.github.io](https://watchexec.github.io)**.
 - Minimum Supported Rust Version: 1.51.0.
 
 [caretaker]: ./CARETAKERS.md
 
 ## Install
 
-Pre-built binaries are available [on the Github Releases tab](https://github.com/passcod/cargo-watch/releases).
-- Builds since 7.8.0 are signed with minisig: see [Signing](#signing) for details.
+Pre-built binaries are available **[from the website](https://watchexec.github.io/downloads/cargo-watch/)** or alternatively [on the Github Releases tab](https://github.com/watchexec/cargo-watch/releases). Since 7.8.0, checksums and signatures are also provided; see [the website](https://watchexec.github.io/downloads/) for details.
 
 ```
 $ cargo install cargo-watch
@@ -178,7 +178,7 @@ to, avoiding request-dropping and the infamous ADDRINUSE error. For example:
 $ systemfd --no-pid -s http::5000 -- cargo watch -x run
 ```
 
-[Catflap]: https://github.com/passcod/catflap
+[Catflap]: https://github.com/watchexec/catflap
 [systemfd]: https://github.com/mitsuhiko/systemfd
 
 Of course, if you don't need to guard against these issues or don't want to
@@ -187,7 +187,7 @@ as-is: it will happily just restart your server normally.
 
 ### Restarting an application only if the build/check succeeds
 
-[Brought up by @LeDominik](https://github.com/passcod/cargo-watch/issues/75),
+[Brought up by @LeDominik](https://github.com/watchexec/cargo-watch/issues/75),
 here's a pattern that may be very useful: you're working on a server or app,
 but want it to keep running while you're writing a new feature or fixing a bug,
 potentially causing the code not to compile anymore in the meantime.
@@ -215,7 +215,7 @@ The `--no-gitignore` flag ensures that you can safely add `.trigger` to your
 In all cases, start by checking your version with `cargo watch --version` and,
 if necessary, upgrading to [the latest one][releases].
 
-[releases]: https://github.com/passcod/cargo-watch/releases
+[releases]: https://github.com/watchexec/cargo-watch/releases
 
 ### RLS is slow while using cargo watch, or vice versa, or it's waiting for the project lock a lot
 
@@ -231,7 +231,7 @@ Cargo Watch versions 5.0.0 and up (and Watchexec versions 1.3.0 and up) **[do
 not support Windows 7 or lower][i-69].** Support _will not_ be added. Issues for
 Windows <=7 will be closed. If it works, lucky you, but that is not intentional.
 
-[i-69]: https://github.com/passcod/cargo-watch/issues/69
+[i-69]: https://github.com/watchexec/cargo-watch/issues/69
 
 ### I want to run cargo-watch directly, without going through cargo
 
@@ -272,7 +272,7 @@ Cargo workspaces [are not natively supported yet][i-52].
 However, as you can run "arbitrary commands" with the `-s` option or the
 `-- COMMAND` form, you can write workspace-aware commands manually.
 
-[i-52]: https://github.com/passcod/cargo-watch/issues/52
+[i-52]: https://github.com/watchexec/cargo-watch/issues/52
 
 ### If it runs repeatedly without touching anything
 
@@ -343,8 +343,8 @@ sure to include a log with `--debug` enabled so problems can be diagnosed.**
 sure, feel free to open it here, but if it _is_ a watchexec issue, it will get
 closed in favour of the upstream issue.
 
-[notify-issues]: https://github.com/passcod/notify/issues
-[watch-issues]: https://github.com/passcod/cargo-watch/issues
+[notify-issues]: https://github.com/notify-rs/notify/issues
+[watch-issues]: https://github.com/watchexec/cargo-watch/issues
 [watchexec-issues]: https://github.com/watchexec/watchexec/issues
 
 ### I want to embed Cargo Watch in my own (Rust) tool
@@ -365,8 +365,8 @@ is itself built on [Notify], and both of these can be used as Rust libraries.
   to run commands, or does so in a way that is not well-supported by Watchexec,
   then **Notify** is your ticket.
 
-[Notify]: https://github.com/passcod/notify
-[Watchexec]: https://github.com/mattgreen/watchexec
+[Notify]: https://github.com/notify-rs/notify
+[Watchexec]: https://watchexec.github.io
 
 ### Wait, is this just a wrapper on top of watchexec?
 
@@ -420,5 +420,5 @@ rsign verify -x B3SUMS.maintainer.minisig -p maintainer.pub  B3SUMS
 
 Created by [Félix Saparelli][passcod] and [awesome contributors][contributors].
 
-[contributors]: https://github.com/passcod/cargo-watch/network/members
+[contributors]: https://github.com/watchexec/cargo-watch/network/members
 [passcod]: https://passcod.name

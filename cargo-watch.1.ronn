@@ -148,9 +148,9 @@ Please open an issue[1], or look through the existing ones.
 
 If you want more verbose output, try running with the `--debug` flag. Note that this will also enable debug mode for watchexec. When filing an issue, **make sure to include a log with `--debug` enabled so problems can be diagnosed**, as well as your `--version` and OS.
 
-**If your issue is a watchexec (our main upstream) issue, open it there[2] directly.** If you're not sure, feel free to open it on the cargo-watch issue tracker, but if it _is_ a watchexec issue, it will get closed in favour of the upstream issue.
+**If your issue is a watchexec (our main upstream) issue, open it there[2] directly.** If you're not sure, feel free to open it on the cargo-watch issue tracker, but if it _is_ a watchexec issue, it will transferred over anyway.
 
-[1]: https://github.com/passcod/cargo-watch/issues
+[1]: https://github.com/watchexec/cargo-watch/issues
 [2]: https://github.com/watchexec/watchexec/issues
 
 ### KNOWN BUGS
@@ -211,6 +211,6 @@ https://passcod.name
 
 Project homepage:
 
-https://github.com/passcod/cargo-watch
+https://watchexec.github.io/#cargo-watch
 
 Public domain.

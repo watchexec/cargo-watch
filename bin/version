@@ -4,7 +4,7 @@ set -euo pipefail
 
 app="cargo-watch"
 mainbranch="main"
-upstream_rx="passcod/"
+upstream_rx="watchexec/"
 
 curbranch=$(git rev-parse --abbrev-ref HEAD)
 if [[ "$curbranch" != "$mainbranch" ]]; then

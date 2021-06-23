@@ -236,13 +236,13 @@ See the \fBglob::Pattern\fR docs0 \fIhttps://doc\.rust\-lang\.org/glob/glob/stru
 On Windows, patterns should be specified with Windows\-style (\fB\e\e\fR) separators\. Unix\-style separators (\fB/\fR) would not match Windows paths, which could be confusing and give the appearance of commandline ignores not working\. For convenience \fB/\fR in commandline ignores are automatically translated to \fB\e\e\fR when running on Windows, but one should still try to write the correct patterns for the platform, as there may be more subtle differences\.
 .
 .SH "BUGS"
-Please open an issue1 \fIhttps://github\.com/passcod/cargo\-watch/issues\fR, or look through the existing ones\.
+Please open an issue1 \fIhttps://github\.com/watchexec/cargo\-watch/issues\fR, or look through the existing ones\.
 .
 .P
 If you want more verbose output, try running with the \fB\-\-debug\fR flag\. Note that this will also enable debug mode for watchexec\. When filing an issue, \fBmake sure to include a log with \fB\-\-debug\fR enabled so problems can be diagnosed\fR, as well as your \fB\-\-version\fR and OS\.
 .
 .P
-\fBIf your issue is a watchexec (our main upstream) issue, open it there2 \fIhttps://github\.com/watchexec/watchexec/issues\fR directly\.\fR If you\'re not sure, feel free to open it on the cargo\-watch issue tracker, but if it \fIis\fR a watchexec issue, it will get closed in favour of the upstream issue\.
+\fBIf your issue is a watchexec (our main upstream) issue, open it there2 \fIhttps://github\.com/watchexec/watchexec/issues\fR directly\.\fR If you\'re not sure, feel free to open it on the cargo\-watch issue tracker, but if it \fIis\fR a watchexec issue, it will get transferred over anyway\.
 .
 .SS "KNOWN BUGS"
 In 7\.8\.0, the \fB\-\-workdir\fR option changes the directory before any other options are processed, so e\.g\. \fB\-\-watch\fR paths may not work as expected\. This has to be fixed upstream, see watchexec#188 \fIhttps://github\.com/watchexec/watchexec/issues/188#issuecomment\-829138116\fR\.
@@ -316,7 +316,7 @@ https://passcod\.name
 Project homepage:
 .
 .P
-https://github\.com/passcod/cargo\-watch
+https://github\.com/watchexec/cargo\-watch
 .
 .P
 Public domain\.
