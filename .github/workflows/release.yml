@@ -170,7 +170,9 @@ jobs:
           retention-days: 1
           path: |
             cargo-watch-v*.tar.xz
+            cargo-watch-v*.tar.zst
             cargo-watch-v*.deb
+            cargo-watch-v*.rpm
             cargo-watch-v*.zip
 
   sign:
@@ -186,20 +188,20 @@ jobs:
           path: ~/.cargo/bin
           key: sign-tools-${{ hashFiles('.github/workflows/release.yml') }}
 
-      - name: Build rsign2
-        run: rsign --version | grep -xF 'rsign2 0.5.7' || cargo install rsign2 --version 0.5.7
-      - name: Build b3sum
-        run: b3sum --version | grep -xF 'b3sum 0.3.7' || cargo install b3sum --version 0.3.7
+      - name: Install rsign2
+        run: cargo install rsign2 --version 0.5.7
+      - name: Install b3sum
+        run: cargo install b3sum --version 0.3.7
 
       - uses: actions/download-artifact@v2
         with:
           name: builds
 
       - name: Checksums with BLAKE3
-        run: b3sum cargo-watch-v* | tee -a B3SUMS
+        run: b3sum cargo-watch-v* | tee B3SUMS
 
       - name: Checksums with SHA512
-        run: sha512sum cargo-watch-v* | tee -a SHA512SUMS
+        run: sha512sum cargo-watch-v* | tee SHA512SUMS
 
       - name: Sign checksums
         shell: bash
@@ -215,7 +217,7 @@ jobs:
               -p .github/workflows/release.pub \
               -s release.key \
               -t "cargo-watch v$version signed with automated key" \
-              -c 'see README.md for signing information' \
+              -c 'see website for signing information' \
               -x "${algo}SUMS.auto.minisig" \
               "${algo}SUMS"
           done
@@ -226,7 +228,9 @@ jobs:
         with:
           files: |
             cargo-watch-v*.tar.xz
+            cargo-watch-v*.tar.zst
             cargo-watch-v*.deb
+            cargo-watch-v*.rpm
             cargo-watch-v*.zip
             *SUMS*
         env:
