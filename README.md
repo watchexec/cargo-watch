@@ -148,6 +148,11 @@ specified in files, like `target/` and `.git/` and various other common types
 
 To skip absolutely all ignores, use the `--ignore-nothing` flag.
 
+`.git/info/exclude` and the global `$HOME/.gitignore` and similar ignore files
+[are not supported yet][w-58].
+
+[w-58]: https://github.com/watchexec/watchexec/issues/58
+
 ### Ignore syntax
 
 See the [`glob::Pattern` docs][glob::Pattern] for a more detailed
