@@ -161,7 +161,7 @@ To skip absolutely all ignores, use the `--ignore-nothing` flag.
 
 ### Ignore syntax
 
-See the [`glob::Pattern` docs][glob::Pattern] for a more detailed
+See the [`globset` docs][globset] for a more detailed
 specification of the glob matching syntax used for `--ignore`.
 
 On Windows, patterns should be specified with Windows-style (`\\`) separators.
@@ -177,7 +177,7 @@ experience with directory matching. Previously, ignoring a folder would need
 unyieldy `-i folder/**` patterns; now that is handled internally, and only `-i
 folder` is needed for the same effect.
 
-[glob::Pattern]: https://doc.rust-lang.org/glob/glob/struct.Pattern.html
+[globset]: https://docs.rs/globset/*/globset/#syntax
 
 ### Reloading servers seamlessly
 
