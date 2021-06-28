@@ -274,13 +274,17 @@ and how to increase it.][inotify limit]
 
 [inotify limit]: https://watchexec.github.io/docs/inotify-limits.html
 
+### If you want to only recompile one Cargo workspace member crate
 
-### If you want to only recompile one Cargo workspace
+Watching one or more specific workspace member [is not natively supported yet][i-52],
+although you can use `-w folder` to approximate it.
 
-Cargo workspaces [are not natively supported yet][i-52].
+Watching the entire workspace and running a command in one member is done via
+the usual `-p` option _on the child command_:
 
-However, as you can run "arbitrary commands" with the `-s` option or the
-`-- COMMAND` form, you can write workspace-aware commands manually.
+```
+$ cargo watch -x 'build -p subcrate'
+```
 
 [i-52]: https://github.com/watchexec/cargo-watch/issues/52
 
