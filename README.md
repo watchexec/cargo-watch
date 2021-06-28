@@ -26,7 +26,13 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 
 ## Install
 
-Pre-built binaries are available **[from the website](https://watchexec.github.io/downloads/cargo-watch/)** or alternatively [on the Github Releases tab](https://github.com/watchexec/cargo-watch/releases). Since 7.8.0, checksums and signatures are also provided; see [the website](https://watchexec.github.io/downloads/) for details.
+Pre-built binaries are available **[from the website][cw-downloads]** or
+alternatively [on the Github Releases tab][releases]. Since 7.8.0, checksums and
+signatures are also provided; see [download documentation][downloads] for details.
+
+[cw-downloads]: https://watchexec.github.io/downloads/cargo-watch
+[downloads]: https://watchexec.github.io/downloads/
+[releases]: https://github.com/watchexec/cargo-watch/releases
 
 ```
 $ cargo install cargo-watch
@@ -218,9 +224,7 @@ The `--no-gitignore` flag ensures that you can safely add `.trigger` to your
 ## Troubleshooting
 
 In all cases, start by checking your version with `cargo watch --version` and,
-if necessary, upgrading to [the latest one][releases].
-
-[releases]: https://github.com/watchexec/cargo-watch/releases
+if necessary, upgrading to [the latest one][cw-downloads].
 
 ### RLS is slow while using cargo watch, or vice versa, or it's waiting for the project lock a lot
 
