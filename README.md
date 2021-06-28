@@ -272,7 +272,8 @@ Also try using the `--why` option to see if the paths you expect are changing.
 You may have hit the inotify watch limit. [Here's a summary of what this means
 and how to increase it.][inotify limit]
 
-[inotify limit]: https://blog.passcod.name/2017/jun/25/inotify-watch-limit.html
+[inotify limit]: https://watchexec.github.io/docs/inotify-limits.html
+
 
 ### If you want to only recompile one Cargo workspace
 
