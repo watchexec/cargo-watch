@@ -394,42 +394,6 @@ When asking questions and/or filing bugs, keep in mind that Cargo Watch and
 Watchexec share the same maintainer at the moment (but Notify does not,
 anymore)!
 
-## Signing
-
-Releases are built by Github Actions, checksummed using SHA-512 and BLAKE3 (the
-latter is preferred, the former provided for if you don’t have the b3sum tool),
-and then the `B3SUMS` and `SHA512SUMS` files are signed using minisign / rsign2.
-
-Both files are signed twice:
-
-1. Automatically by Github Actions using [this public key](./.github/workflows/release.pub).
-   This signature authenticates the builds as coming from this repo, built using
-   Github Actions. However, it is applied automatically, so its trust should not
-   be considered high.
-
-2. Manually by a maintainer, after verifying the release. Maintainers public
-   keys are listed below, and may be available on their website/on request too.
-   Maintainer signatures may lag the release by some time as it’s a manual
-   process and they may be otherwise busy.
-
-To verify signatures, use [a minisign implementation](https://jedisct1.github.io/minisign/):
-
-```bash
-# With minisign:
-minisign -Vm B3SUMS -x B3SUMS.auto.minisig -p release.pub
-minisign -Vm B3SUMS -x B3SUMS.maintainer.minisig -p maintainer.pub
-
-# With rsign2:
-rsign verify -x B3SUMS.auto.minisig -p release.pub B3SUMS
-rsign verify -x B3SUMS.maintainer.minisig -p maintainer.pub  B3SUMS
-```
-
-- Key for Félix Saparelli / @passcod / https://passcod.name/:
-  ```
-  untrusted comment: minisign public key: 2264BBE425DA952E
-  RWQuldol5LtkIrx0khfo4Z7Y8SixwG2K8OagJSvsJNBcuLgB2oVNJFFv
-  ```
-
 ## About
 
 Created by [Félix Saparelli][passcod] and [awesome contributors][contributors].
