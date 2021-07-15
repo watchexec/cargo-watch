@@ -29,7 +29,7 @@ for algo in B3 SHA512; do
 
     version=$(grep -m1 -oP 'cargo-watch-v[\d.]+' "${algo}SUMS" | cut -d- -f3)
     ownsig="${algo}SUMS.$(whoami).minisig"
-    sigs="$sigs $ownsigs"
+    sigs="$sigs $ownsig"
 
     echo "Signing ${algo}SUMS with your key to $ownsig:"
     rsign sign \
