@@ -161,23 +161,25 @@ To skip absolutely all ignores, use the `--ignore-nothing` flag.
 
 ### Ignore syntax
 
-See the [`globset` docs][globset] for a more detailed
-specification of the glob matching syntax used for `--ignore`.
+See the [Glob patterns page][globdoc] for a description of how they work in the
+context of this tool. That’s the syntax used for the `--ignore` option.
 
-On Windows, patterns should be specified with Windows-style (`\\`) separators.
+Additionally, some specific quirks and behaviours:
+
+- On Windows, patterns should be specified with Windows-style (`\\`) separators.
 Unix-style separators (`/`) would not match Windows paths, which could be
 confusing and give the appearance of commandline ignores not working.
 
-From Cargo Watch 7.0.0, `/` in commandline ignores are automatically translated
+- From Cargo Watch 7.0.0, `/` in commandline ignores are automatically translated
 to `\\` when running on Windows, but one should still try to write the correct
 patterns for the platform, as there may be more subtle differences.
 
-From Cargo Watch 7.3.0, `--ignore` patterns were fixed to provide better
+- From Cargo Watch 7.3.0, `--ignore` patterns were fixed to provide better
 experience with directory matching. Previously, ignoring a folder would need
 unyieldy `-i folder/**` patterns; now that is handled internally, and only `-i
 folder` is needed for the same effect.
 
-[globset]: https://docs.rs/globset/*/globset/#syntax
+[globdoc]: https://watchexec.github.io/docs/glob-patterns.html
 
 ### Reloading servers seamlessly
 
