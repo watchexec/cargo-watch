@@ -25,7 +25,7 @@ clap = "2.33.1"
 log = "0.4.8"
 shell-escape = "0.1.5"
 stderrlog = "0.5.1"
-watchexec = "1.16.0"
+watchexec = "1.16.1"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"
