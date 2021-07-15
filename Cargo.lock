@@ -74,7 +74,7 @@ checksum = "d4648c6d00a709aa069a236adcaae4f605a6241c72bf5bee79331a4b625921a9"
 
 [[package]]
 name = "cargo-watch"
-version = "7.8.0"
+version = "7.8.1"
 dependencies = [
  "assert_cmd",
  "camino",
