@@ -8,7 +8,7 @@ description = "Watches over your Cargo project’s source"
 keywords = ["cargo", "watch", "compile", "notify"]
 categories = ["command-line-utilities", "development-tools"]
 
-documentation = "https://watchexec.github.io/docs/cargo-watch/"
+documentation = "https://watchexec.github.io/docs/#cargo-watch"
 homepage = "https://watchexec.github.io/#cargo-watch"
 repository = "https://github.com/watchexec/cargo-watch"
 readme = "README.md"
