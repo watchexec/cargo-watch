@@ -113,12 +113,17 @@ jobs:
           ext=""
           [[ "${{ matrix.name }}" == windows-* ]] && ext=".exe"
           bin="target/${{ matrix.target }}/release/cargo-watch${ext}"
+          strip "$bin" || true
+
           version=$(cat VERSION)
           dst="cargo-watch-v${version}-${{ matrix.target }}"
           mkdir "$dst"
-          strip "$bin" || true
-          mv "$bin" "$dst/"
-          mv README.md LICENSE completions cargo-watch.1 "$dst/"
+
+          mkdir -p "target/release"
+          cp "$bin" "target/release/" # workaround for cargo-deb silliness with targets
+
+          cp "$bin" "$dst/"
+          cp -r README.md LICENSE completions cargo-watch.1 "$dst/"
 
       - name: Archive (tar)
         if: '! startsWith(matrix.name, ''windows-'')'
@@ -134,27 +139,18 @@ jobs:
         run: |
           set -euxo pipefail
           version=$(cat VERSION)
-          dst="cargo-watch-v${version}-${{ matrix.target }}"
-          mkdir -p "deb/$dst"
-          cd "deb/$dst"
-          mkdir -p DEBIAN usr/{bin,share/{man/man1,zsh/site-functions}}
-          cp "../../$dst/cargo-watch" usr/bin/
-          cp "../../$dst/cargo-watch.1" usr/share/man/man1/
-          cp "../../$dst/completions/zsh" usr/share/zsh/site-functions/_cargo-watch
-          cat <<-CONTROL > DEBIAN/control
-          Package: cargo-watch
-          Version: ${version/v/}
-          Architecture: $(echo "${{ matrix.name }}" | cut -d- -f2)
-          Maintainer: Félix Saparelli <aur@passcod.name>
-          Installed-Size: $(du -d1 usr | tail -n1 | cut -d\t -f1)
-          Homepage: https://github.com/passcod/cargo-watch
-          Description: Watches over your Cargo project's source.
-           Cargo Watch watches over your project's source for changes, and runs Cargo commands when they occur.
-          CONTROL
-          cd ..
-          fakeroot dpkg -b "$dst"
-          mv "$dst.deb" ../
-          cd ..
+          dst="cargo-watch-${version}-${{ matrix.target }}"
+          cargo deb --no-build --no-strip --target ${{ matrix.target }} --output "$dst.deb"
+      - name: Archive (rpm)
+        if: startsWith(matrix.name, 'linux-')
+        shell: bash
+        run: |
+          set -euxo pipefail
+          shopt -s globstar
+          version=$(cat VERSION)
+          dst="cargo-watch-${version}-${{ matrix.target }}"
+          cargo generate-rpm --target "${{ matrix.target }}" --target-dir "target/${{ matrix.target }}"
+          mv target/**/*.rpm "$dst.rpm"
       - name: Archive (zip)
         if: startsWith(matrix.name, 'windows-')
         shell: bash
