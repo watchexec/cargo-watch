@@ -151,7 +151,7 @@ jobs:
         run: |
           set -euxo pipefail
           version=$(cat VERSION)
-          dst="cargo-watch-${version}-${{ matrix.target }}"
+          dst="cargo-watch-v${version}-${{ matrix.target }}"
           cargo deb --no-build --no-strip --target ${{ matrix.target }} --output "$dst.deb"
       # - name: Archive (rpm)
       #   if: startsWith(matrix.name, 'linux-')
@@ -160,7 +160,7 @@ jobs:
       #     set -euxo pipefail
       #     shopt -s globstar
       #     version=$(cat VERSION)
-      #     dst="cargo-watch-${version}-${{ matrix.target }}"
+      #     dst="cargo-watch-v${version}-${{ matrix.target }}"
       #     cargo generate-rpm --target "${{ matrix.target }}" --target-dir "target/${{ matrix.target }}"
       #     mv target/**/*.rpm "$dst.rpm"
       - name: Archive (zip)
