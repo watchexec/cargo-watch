@@ -1,3 +1,5 @@
+use log::warn;
+use notify_rust::Notification;
 use watchexec::{
     config::Config,
     error::Result,
@@ -9,6 +11,7 @@ pub struct CwHandler {
     cmd: String,
     once: bool,
     quiet: bool,
+    notify: bool,
     inner: ExecHandler,
 }
 
@@ -28,12 +31,25 @@ impl Handler for CwHandler {
 
     fn on_update(&self, ops: &[PathOp]) -> Result<bool> {
         self.start();
-        self.inner.on_update(ops)
+        self.inner.on_update(ops).map(|o| {
+            if self.notify {
+                Notification::new()
+                    .summary("Cargo Watch observed a change")
+                    .body("Cargo Watch has seen a change, the command may have restarted.")
+                    .show()
+                    .map(drop)
+                    .unwrap_or_else(|err| {
+                        warn!("Failed to send desktop notification: {}", err);
+                    });
+            }
+
+            o
+        })
     }
 }
 
 impl CwHandler {
-    pub fn new(mut args: Config, quiet: bool) -> Result<Self> {
+    pub fn new(mut args: Config, quiet: bool, notify: bool) -> Result<Self> {
         let cmd = args.cmd.join(" && ");
         let mut final_cmd = cmd.clone();
         if !quiet {
@@ -53,6 +69,7 @@ impl CwHandler {
             cmd,
             inner: ExecHandler::new(args)?,
             quiet,
+            notify,
         })
     }
 

@@ -41,6 +41,6 @@ fn main() -> Result<()> {
     );
 
     let opts = options::get_options(&matches);
-    let handler = watch::CwHandler::new(opts, quiet)?;
+    let handler = watch::CwHandler::new(opts, quiet, matches.is_present("notif"))?;
     watch(&handler)
 }

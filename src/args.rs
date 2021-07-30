@@ -187,6 +187,12 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("Change working directory before running command [default: crate root]"),
                 )
                 .arg(
+                    Arg::with_name("notif")
+                        .help("Send a desktop notification when watchexec notices a change (experimental, behaviour may change)")
+                        .short("N")
+                        .long("notify")
+                )
+                .arg(
                     Arg::with_name("cmd:trail")
                         .raw(true)
                         .help("Full command to run. -x and -s will be ignored!"),
