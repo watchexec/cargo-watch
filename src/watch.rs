@@ -54,11 +54,11 @@ impl CwHandler {
         let mut final_cmd = cmd.clone();
         if !quiet {
             #[cfg(unix)]
-            final_cmd.push_str("; echo [Finished running. Exit status: $?]");
+            final_cmd.push_str(r#"; echo "[Finished running. Exit status: $?]""#);
             #[cfg(windows)]
-            final_cmd.push_str(" & echo [Finished running. Exit status: %ERRORLEVEL%]");
+            final_cmd.push_str(r#" & echo "[Finished running. Exit status: %ERRORLEVEL%]""#);
             #[cfg(not(any(unix, windows)))]
-            final_cmd.push_str(" ; echo [Finished running]");
+            final_cmd.push_str(r#" ; echo "[Finished running]""#);
             // ^ could be wrong depending on the platform, to be fixed on demand
         }
 
