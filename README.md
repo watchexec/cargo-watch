@@ -112,6 +112,10 @@ OPTIONS:
 
     -i, --ignore <pattern>...      Ignore a glob/gitignore-style pattern
 
+    -B <rust-backtrace>
+            Inject RUST_BACKTRACE=VALUE (generally you want to set it to 1)
+            into the environment
+
         --use-shell <use-shell>
             Use a different shell. E.g. --use-shell=bash. On Windows, try
             --use-shell=powershell, which will become the default in 8.0.

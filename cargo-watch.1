@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "CARGO\-WATCH" "1" "May 2021" "" ""
+.TH "CARGO\-WATCH" "1" "September 2021" "" ""
 .
 .SH "NAME"
 \fBcargo\-watch\fR \- watches over your Cargo project\'s source
@@ -85,6 +85,13 @@ Ignore nothing, not even target/ and \.git/\.
 .TP
 \fB\-c\fR, \fB\-\-clear\fR
 Clear the screen before each run\.
+.
+.TP
+\fB\-B\fR \fIvalue\fR
+Inject \fBRUST_BACKTRACE=<value>\fR into the environment\.
+.
+.P
+This is useful when panics are handled and you want a backtrace to be printed: usually you’d have to add \fBRUST_BACKTRACE=1\fR yourself, this shortens it to \fB\-B1\fR!
 .
 .TP
 \fB\-C\fR, \fB\-\-workdir\fR \fIpath\fR
@@ -242,7 +249,7 @@ Please open an issue1 \fIhttps://github\.com/watchexec/cargo\-watch/issues\fR, o
 If you want more verbose output, try running with the \fB\-\-debug\fR flag\. Note that this will also enable debug mode for watchexec\. When filing an issue, \fBmake sure to include a log with \fB\-\-debug\fR enabled so problems can be diagnosed\fR, as well as your \fB\-\-version\fR and OS\.
 .
 .P
-\fBIf your issue is a watchexec (our main upstream) issue, open it there2 \fIhttps://github\.com/watchexec/watchexec/issues\fR directly\.\fR If you\'re not sure, feel free to open it on the cargo\-watch issue tracker, but if it \fIis\fR a watchexec issue, it will get transferred over anyway\.
+\fBIf your issue is a watchexec (our main upstream) issue, open it there2 \fIhttps://github\.com/watchexec/watchexec/issues\fR directly\.\fR If you\'re not sure, feel free to open it on the cargo\-watch issue tracker, but if it \fIis\fR a watchexec issue, it will transferred over anyway\.
 .
 .SS "KNOWN BUGS"
 In 7\.8\.0, the \fB\-\-workdir\fR option changes the directory before any other options are processed, so e\.g\. \fB\-\-watch\fR paths may not work as expected\. This has to be fixed upstream, see watchexec#188 \fIhttps://github\.com/watchexec/watchexec/issues/188#issuecomment\-829138116\fR\.
@@ -316,7 +323,7 @@ https://passcod\.name
 Project homepage:
 .
 .P
-https://github\.com/watchexec/cargo\-watch
+https://watchexec\.github\.io/#cargo\-watch
 .
 .P
 Public domain\.

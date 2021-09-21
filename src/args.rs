@@ -193,6 +193,12 @@ pub fn parse() -> ArgMatches<'static> {
                         .long("notify")
                 )
                 .arg(
+                    Arg::with_name("rust-backtrace")
+                        .help("Inject RUST_BACKTRACE=VALUE (generally you want to set it to 1) into the environment")
+                        .short("B")
+                        .takes_value(true)
+                )
+                .arg(
                     Arg::with_name("cmd:trail")
                         .raw(true)
                         .help("Full command to run. -x and -s will be ignored!"),

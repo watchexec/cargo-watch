@@ -40,6 +40,10 @@ fn main() -> Result<()> {
             .unwrap_or_else(root::project_root),
     );
 
+    if let Some(b) = matches.value_of("rust-backtrace") {
+        std::env::set_var("RUST_BACKTRACE", b);
+    }
+
     let opts = options::get_options(&matches);
     let handler = watch::CwHandler::new(opts, quiet, matches.is_present("notif"))?;
     watch(&handler)
