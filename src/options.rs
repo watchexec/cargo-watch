@@ -44,10 +44,10 @@ pub fn set_commands(builder: &mut ConfigBuilder, matches: &ArgMatches) {
                     cmd.push(' ');
                     cmd.push_str(args)
                 } else {
-                    cmd.push_str(&cargo);
+                    cmd.push_str(cargo);
                 }
             } else {
-                cmd.push_str(&cargo);
+                cmd.push_str(cargo);
             }
             commands.push(cmd);
         }
@@ -75,7 +75,7 @@ pub fn set_commands(builder: &mut ConfigBuilder, matches: &ArgMatches) {
         let mut cmd: String = "cargo check".into();
         if let Some(features) = features.as_ref() {
             cmd.push_str(" --features ");
-            cmd.push_str(&features);
+            cmd.push_str(features);
         }
         commands.push(cmd);
     }
@@ -197,10 +197,10 @@ pub fn get_options(matches: &ArgMatches) -> Config {
         default_shell()
     });
 
-    set_ignores(&mut builder, &matches);
-    set_debounce(&mut builder, &matches);
-    set_watches(&mut builder, &matches);
-    set_commands(&mut builder, &matches);
+    set_ignores(&mut builder, matches);
+    set_debounce(&mut builder, matches);
+    set_watches(&mut builder, matches);
+    set_commands(&mut builder, matches);
 
     let mut args = builder.build().unwrap();
     args.once = matches.is_present("once");
