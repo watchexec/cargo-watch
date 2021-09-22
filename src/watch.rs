@@ -1,5 +1,3 @@
-use log::warn;
-use notify_rust::Notification;
 use watchexec::{
     config::Config,
     error::Result,
@@ -32,14 +30,15 @@ impl Handler for CwHandler {
     fn on_update(&self, ops: &[PathOp]) -> Result<bool> {
         self.start();
         self.inner.on_update(ops).map(|o| {
+            #[cfg(not(target_os="freebsd"))]
             if self.notify {
-                Notification::new()
+                notify_rust::Notification::new()
                     .summary("Cargo Watch observed a change")
                     .body("Cargo Watch has seen a change, the command may have restarted.")
                     .show()
                     .map(drop)
                     .unwrap_or_else(|err| {
-                        warn!("Failed to send desktop notification: {}", err);
+                        log::warn!("Failed to send desktop notification: {}", err);
                     });
             }
 

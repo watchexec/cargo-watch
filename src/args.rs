@@ -191,6 +191,7 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("Send a desktop notification when watchexec notices a change (experimental, behaviour may change)")
                         .short("N")
                         .long("notify")
+                        .hidden(cfg!(target_os="freebsd"))
                 )
                 .arg(
                     Arg::with_name("rust-backtrace")

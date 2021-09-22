@@ -24,10 +24,12 @@ name = "cargo-watch"
 camino = "1.0.4"
 clap = "2.33.1"
 log = "0.4.14"
-notify-rust = "4.5.2"
 shell-escape = "0.1.5"
 stderrlog = "0.5.1"
 watchexec = "1.16.1"
+
+[target.'cfg(not(target_os="freebsd"))'.dependencies]
+notify-rust = "4.5.2"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"
