@@ -55,15 +55,15 @@ section = "devel"
 assets = [
   ["target/release/cargo-watch", "usr/bin/", "755"],
   ["README.md", "usr/share/doc/cargo-watch/README", "644"],
-  ["cargo-watch.1", "usr/share/man/man1/cargo-watch.1.html", "644"],
+  ["cargo-watch.1", "usr/share/man/man1/cargo-watch.1", "644"],
   ["logo.svg", "usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", "644"],
 ]
 
 [package.metadata.generate-rpm]
 assets = [
   { source = "target/release/cargo-watch", dest = "/usr/bin/", mode = "755" },
-  { source = "cli/README.md", dest = "/usr/share/doc/cargo-watch/README", mode = "644", doc = true },
-  { source = "doc/cargo-watch.1", dest = "/usr/share/man/man1/cargo-watch.1.html", mode = "644" },
-  { source = "doc/logo.svg", dest = "/usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", mode = "644" },
+  { source = "README.md", dest = "/usr/share/doc/cargo-watch/README", mode = "644", doc = true },
+  { source = "cargo-watch.1", dest = "/usr/share/man/man1/cargo-watch.1.html", mode = "644" },
+  { source = "logo.svg", dest = "/usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", mode = "644" },
   # set conf = true for config file when that lands
 ]
