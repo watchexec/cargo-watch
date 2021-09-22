@@ -77,7 +77,6 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
           override: true
-          cross: true
       - uses: actions-rs/cargo@v1
         with:
           command: check
