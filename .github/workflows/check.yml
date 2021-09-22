@@ -28,18 +28,23 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - run: rustup component add clippy
-      - uses: actions-rs/cargo@v1
+      - name: Add clippy
+        run: rustup component add clippy
+      - name: Check
+        uses: actions-rs/cargo@v1
         with:
           command: check
-      - uses: actions-rs/cargo@v1
+      - name: Install
+        uses: actions-rs/cargo@v1
         with:
           command: install
           args: --debug --path .
-      - uses: actions-rs/cargo@v1
+      - name: Test
+        uses: actions-rs/cargo@v1
         with:
           command: test
-      - uses: actions-rs/cargo@v1
+      - name: Clippy
+        uses: actions-rs/cargo@v1
         with:
           command: clippy
 
@@ -77,7 +82,8 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
           override: true
-      - uses: actions-rs/cargo@v1
+      - name: Check
+        uses: actions-rs/cargo@v1
         with:
           command: check
           args: --target ${{ matrix.target }}
@@ -92,7 +98,8 @@ jobs:
           profile: minimal
           toolchain: 1.51.0
           override: true
-      - uses: actions-rs/cargo@v1
+      - name: Check
+        uses: actions-rs/cargo@v1
         with:
           command: check
 
