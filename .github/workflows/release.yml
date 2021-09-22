@@ -169,7 +169,7 @@ jobs:
           shopt -s globstar
           version=$(cat VERSION)
           dst="cargo-watch-v${version}-${{ matrix.target }}"
-          cargo generate-rpm --target "${{ matrix.target }}" --target-dir "target/${{ matrix.target }}"
+          cargo generate-rpm --target "${{ matrix.target }}"
           mv target/**/*.rpm "$dst.rpm"
       - name: Archive (zip)
         if: startsWith(matrix.name, 'windows-')
