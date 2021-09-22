@@ -11,7 +11,6 @@ jobs:
     strategy:
       matrix:
         name:
-          - freebsd-x86-64
           - linux-x86-64-gnu
           - linux-x86-64-musl
           - linux-armhf-gnu
@@ -21,12 +20,6 @@ jobs:
           - windows-x86-64
           - windows-arm64
         include:
-          - name: freebsd-x86-64
-            os: ubuntu-latest
-            target: x86_64-unknown-freebsd
-            cross: true
-            experimental: true
-
           - name: linux-x86-64-gnu
             os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
