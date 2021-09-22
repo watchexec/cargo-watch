@@ -11,21 +11,29 @@ jobs:
     strategy:
       matrix:
         name:
-          - linux-amd64-gnu
-          - linux-amd64-musl
+          - freebsd-x86-64
+          - linux-x86-64-gnu
+          - linux-x86-64-musl
           - linux-armhf-gnu
           - linux-arm64-gnu
           - mac-x86-64
           - mac-arm64
           - windows-x86-64
+          - windows-arm64
         include:
-          - name: linux-amd64-gnu
+          - name: freebsd-x86-64
+            os: ubuntu-latest
+            target: x86_64-unknown-freebsd
+            cross: true
+            experimental: true
+
+          - name: linux-x86-64-gnu
             os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             cross: false
             experimental: false
 
-          - name: linux-amd64-musl
+          - name: linux-x86-64-musl
             os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             cross: true
