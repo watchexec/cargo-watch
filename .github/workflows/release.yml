@@ -86,16 +86,19 @@ jobs:
         if: startsWith(matrix.name, 'linux-')
         run: cargo install cargo-generate-rpm --version 0.6.0 --force
 
+      - name: Add musl tools
+        run: sudo apt install -y musl musl-dev musl-tools
+        if: endsWith(matrix.target, '-musl')
+      - name: Add aarch-gnu tools
+        run: sudo apt install -y gcc-aarch64-linux-gnu
+        if: startsWith(matrix.target, 'aarch64-unknown-linux')
+
       - uses: actions-rs/toolchain@v1
         with:
           target: ${{ matrix.target }}
           toolchain: stable
           profile: minimal
           override: true
-
-      - name: Add musl tools
-        run: sudo apt install -y musl musl-dev musl-tools
-        if: endsWith(matrix.target, '-musl')
 
       - uses: actions-rs/cargo@v1
         name: Build
