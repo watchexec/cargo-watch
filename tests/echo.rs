@@ -29,6 +29,7 @@ fn std_to_string<T: io::Read>(handle: &mut Option<T>) -> String {
 
 // fsevents has trouble
 #[cfg(not(target_os = "macos"))]
+#[ignore]
 #[test]
 fn without_poll() {
 	let mut main = Command::cargo_bin("cargo-watch")
@@ -36,6 +37,7 @@ fn without_poll() {
 		.stderr(Stdio::piped())
 		.stdout(Stdio::piped())
 		.args(&[
+			"watch", // TODO: can that be omitted?
 			"--testing-only--once",
 			"--no-gitignore",
 			"-w",
@@ -61,12 +63,14 @@ fn without_poll() {
 }
 
 #[test]
+#[ignore]
 fn with_poll() {
 	let mut main = Command::cargo_bin("cargo-watch")
 		.unwrap()
 		.stderr(Stdio::piped())
 		.stdout(Stdio::piped())
 		.args(&[
+			"watch",
 			"--testing-only--once",
 			"--no-gitignore",
 			"--poll",
@@ -93,6 +97,7 @@ fn with_poll() {
 }
 
 #[test]
+#[ignore]
 #[cfg(not(windows))] // annoyingly, there’s some kind of encoding or extra bytes getting added here, needs debugging
 fn with_announce() {
 	let mut main = Command::cargo_bin("cargo-watch")
@@ -100,6 +105,7 @@ fn with_announce() {
 		.stderr(Stdio::piped())
 		.stdout(Stdio::piped())
 		.args(&[
+			"watch",
 			"--testing-only--once",
 			"--no-gitignore",
 			"--poll",
@@ -127,12 +133,14 @@ fn with_announce() {
 }
 
 #[test]
+#[ignore]
 fn without_announce() {
 	let mut main = Command::cargo_bin("cargo-watch")
 		.unwrap()
 		.stderr(Stdio::piped())
 		.stdout(Stdio::piped())
 		.args(&[
+			"watch",
 			"--testing-only--once",
 			"--no-gitignore",
 			"--quiet",
@@ -161,6 +169,7 @@ fn without_announce() {
 }
 
 #[cfg(unix)]
+#[ignore]
 #[test]
 fn with_error() {
 	let mut main = Command::cargo_bin("cargo-watch")
@@ -168,6 +177,7 @@ fn with_error() {
 		.stderr(Stdio::piped())
 		.stdout(Stdio::piped())
 		.args(&[
+			"watch",
 			"--testing-only--once",
 			"--no-gitignore",
 			"--poll",
