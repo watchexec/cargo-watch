@@ -82,6 +82,9 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
           override: true
+      - name: Add musl tools
+        run: sudo apt install -y musl-gcc
+        if: endsWith(matrix.target, '-musl')
       - name: Check
         uses: actions-rs/cargo@v1
         with:
@@ -96,7 +99,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: 1.51.0
+          toolchain: 1.58.0
           override: true
       - name: Check
         uses: actions-rs/cargo@v1
