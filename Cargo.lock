@@ -241,6 +241,8 @@ dependencies = [
  "argfile",
  "assert_cmd",
  "clap",
+ "clap_complete",
+ "clap_complete_fig",
  "console-subscriber",
  "dunce",
  "embed-resource",
@@ -307,6 +309,25 @@ dependencies = [
  "strsim",
  "termcolor",
  "textwrap",
+]
+
+[[package]]
+name = "clap_complete"
+version = "3.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d044e9db8cd0f68191becdeb5246b7462e4cf0c069b19ae00d1bf3fa9889498d"
+dependencies = [
+ "clap",
+]
+
+[[package]]
+name = "clap_complete_fig"
+version = "3.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "29cc003d824770d10072f4aa4a958e66d33d74a9cb7339595ac2a445d80d50a0"
+dependencies = [
+ "clap",
+ "clap_complete",
 ]
 
 [[package]]

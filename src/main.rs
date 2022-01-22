@@ -20,7 +20,7 @@ async fn main() -> Result<()> {
 		tracing_subscriber::fmt::init();
 	}
 
-	let args = args::get_args();
+	let args = config::get_args();
 
 	{
 		// TODO

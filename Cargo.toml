@@ -71,9 +71,17 @@ embed-resource = "1.6.1"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"
+clap_complete = "3.0.4"
+clap_complete_fig = "3.0.2"
 insta = "1.7.1"
 predicates = "2.0.0"
 wait-timeout = "0.2.0"
+
+[dev-dependencies.clap]
+version = "3.0.10"
+features = [
+	"derive",
+]
 
 [features]
 dev-console = ["console-subscriber"]
@@ -94,17 +102,25 @@ license-file = ["LICENSE", "0"]
 section = "devel"
 # conf-files = [] # look me up when config file lands
 assets = [
-  ["target/release/cargo-watch", "usr/bin/", "755"],
-  ["README.md", "usr/share/doc/cargo-watch/README", "644"],
-  ["cargo-watch.1", "usr/share/man/man1/cargo-watch.1", "644"],
-  ["logo.svg", "usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", "644"],
+	["target/release/cargo-watch", "usr/bin/", "755"],
+	["README.md", "usr/share/doc/cargo-watch/README", "644"],
+	["cargo-watch.1", "usr/share/man/man1/cargo-watch.1", "644"],
+	["logo.svg", "usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", "644"],
+	["completions/cargo-watch.bash", "usr/share/bash-completion/completions/cargo-watch", "644"],
+	["completions/cargo-watch.elv", "usr/share/elvish/lib/cargo-watch.elv", "644"],
+	["completions/cargo-watch.fish", "usr/share/fish/completions/cargo-watch.fish", "644"],
+	["completions/_cargo-watch.zsh", "usr/share/zsh/site-functions/_cargo-watch", "644"],
 ]
 
 [package.metadata.generate-rpm]
 assets = [
-  { source = "target/release/cargo-watch", dest = "/usr/bin/", mode = "755" },
-  { source = "README.md", dest = "/usr/share/doc/cargo-watch/README", mode = "644", doc = true },
-  { source = "cargo-watch.1", dest = "/usr/share/man/man1/cargo-watch.1.html", mode = "644" },
-  { source = "logo.svg", dest = "/usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", mode = "644" },
-  # set conf = true for config file when that lands
+	{ source = "target/release/cargo-watch", dest = "/usr/bin/", mode = "755" },
+	{ source = "README.md", dest = "/usr/share/doc/cargo-watch/README", mode = "644", doc = true },
+	{ source = "cargo-watch.1", dest = "/usr/share/man/man1/cargo-watch.1.html", mode = "644" },
+	{ source = "logo.svg", dest = "/usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", mode = "644" },
+	{ source = "completions/cargo-watch.bash", dest = "usr/share/bash-completion/completions/cargo-watch", mode = "644" },
+	{ source = "completions/cargo-watch.elv", dest = "/usr/share/elvish/lib/cargo-watch.elv", mode = "644" },
+	{ source = "completions/cargo-watch.fish", dest = "/usr/share/fish/completions/cargo-watch.fish", mode = "644" },
+	{ source = "completions/_cargo-watch.zsh", dest = "/usr/share/zsh/site-functions/_cargo-watch", mode = "644" },
+	# set conf = true for config file when that lands
 ]

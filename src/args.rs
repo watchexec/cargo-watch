@@ -12,14 +12,14 @@ const OPTSET_WORKSPACES: &str = "WORKSPACES";
 
 #[derive(Debug, Clone, Parser)]
 #[clap(name = "cargo-watch", bin_name = "cargo", version)]
-struct App {
+pub struct App {
 	#[clap(subcommand)]
-	command: Command,
+	pub command: Command,
 }
 
 #[derive(Debug, Clone, clap::Subcommand)]
 #[clap(name = "cargo-watch", bin_name = "cargo", version)]
-enum Command {
+pub enum Command {
 	#[clap(name = "watch")]
 	Watch(Args),
 }
@@ -220,13 +220,4 @@ pub struct Args {
 	/// Full command to run. -x and -s will be ignored!
 	#[clap(raw = true, value_name = "trailing command", help_heading = OPTSET_COMMAND)]
 	pub cmd_trail: Option<OsString>,
-}
-
-pub fn get_args() -> Args {
-	let args = wild::args_os();
-	let args = argfile::expand_args_from(args, argfile::parse_fromfile, argfile::PREFIX).unwrap();
-
-	let app = App::parse_from(args);
-	let Command::Watch(args) = app.command;
-	args
 }

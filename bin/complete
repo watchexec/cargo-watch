@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+cargo run --example completions
+cd completions
+mv _cargo-watch{,.zsh}
+mv cargo-watch{,.fig}.ts

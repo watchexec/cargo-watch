@@ -1,6 +1,8 @@
 # Cargo Watch Usage Guide
 
-The `--help` page is always useful locally, as is the manpage on supported systems.
+Compact help is available with `-h`, and longer descriptions with `--help`. On
+supported systems, a manual page is also available. Shell completions should be
+installed for Bash, Elvish, Fig, Fish, Powershell, and Zsh.
 
 ## Ignore files
 
