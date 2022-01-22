@@ -27,39 +27,54 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 <a href="https://repology.org/project/cargo-watch/versions"><img align="right" src="https://repology.org/badge/vertical-allrepos/cargo-watch.svg" alt="Packaging status"></a>
 
 Pre-built binaries are available **[from the website][cw-downloads]** or
-alternatively [on the Github Releases tab][releases]. Since 7.8.0, checksums and
-signatures are also provided; see [download documentation][downloads] for details.
+alternatively [on the Github Releases tab][releases].
 
 [cw-downloads]: https://watchexec.github.io/downloads/cargo-watch
-[downloads]: https://watchexec.github.io/downloads/
 [releases]: https://github.com/watchexec/cargo-watch/releases
-
-```
-$ cargo install cargo-watch
-```
 
 With [cargo-binstall](https://github.com/ryankurte/cargo-binstall):
 
-```
+```bash
 $ cargo binstall cargo-watch
 ```
 
-Or clone and build with `$ cargo build` then place in your $PATH.
+With cargo:
+
+```bash
+$ cargo install cargo-watch
+```
+
+From source:
+
+```bash
+# clone:
+$ git clone https://github.com/watchexec/cargo-watch
+$ cd cargo-watch
+
+# build:
+$ cargo build --release
+$ target/release/cargo-watch -h
+
+# or install:
+$ cargo install --path .
+$ cargo watch -h
+```
 
 This repository contains a [manual page](./cargo-watch.1) and
-[Zsh completions](./completions) that you may want to install.
+[shell completions](./completions) that you may want to install; the
+pre-built packages also include these.
 
 ## Usage
 
 By default, it runs `check`. You can easily override this, though:
 
-```
+```bash
 $ cargo watch [-x command]...
 ```
 
 A few examples:
 
-```
+```bash
 # Run tests only
 $ cargo watch -x test
 
