@@ -3,7 +3,7 @@ name = "cargo-watch"
 version = "8.1.2"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
-license = "CC0-1.0"
+license = "Apache-2.0"
 description = "Watches over your Cargo project’s source"
 keywords = ["cargo", "watch", "compile", "notify"]
 categories = ["command-line-utilities", "development-tools"]

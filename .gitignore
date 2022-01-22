@@ -8,3 +8,5 @@
 /tests/snapshots/*.new
 
 CHECKSUMS*
+
+/oldsrc

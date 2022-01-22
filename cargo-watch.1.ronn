@@ -218,4 +218,4 @@ Project homepage:
 
 https://watchexec.github.io/#cargo-watch
 
-Public domain.
+Apache 2.0.

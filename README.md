@@ -1,7 +1,7 @@
 # $ cargo watch
 
 [![Crate release version](https://flat.badgen.net/crates/v/cargo-watch)](https://crates.io/crates/cargo-watch)
-[![Crate license: CC0 1.0](https://flat.badgen.net/github/license/watchexec/cargo-watch)](https://creativecommons.org/publicdomain/zero/1.0/)
+[![Crate license: Apache 2.0](https://flat.badgen.net/github/license/watchexec/cargo-watch)][license]
 [![Crate download count](https://flat.badgen.net/crates/d/cargo-watch)](https://crates.io/crates/cargo-watch)
 [![CI status](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml/badge.svg)](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml)
 [![MSRV: 1.58.0](https://flat.badgen.net/badge/MSRV/1.58.0/purple)](https://blog.rust-lang.org/2022/01/13/Rust-1.58.0.html)
@@ -16,12 +16,11 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 [entr]: https://github.com/eradman/entr
 [guard]: http://guardgem.org/
 
-- In the public domain / licensed with CC0.
-- Uses [Caretaker Maintainership][caretaker].
+- License: [Apache 2.0][license].
 - Website and more documentation: **[watchexec.github.io](https://watchexec.github.io)**.
 - Minimum Supported Rust Version: 1.58.0.
 
-[caretaker]: ./CARETAKERS.md
+[license]: https://www.apache.org/licenses/LICENSE-2.0.html
 
 ## Install
 
