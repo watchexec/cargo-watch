@@ -104,6 +104,8 @@ section = "devel"
 assets = [
 	["target/release/cargo-watch", "usr/bin/", "755"],
 	["README.md", "usr/share/doc/cargo-watch/README", "644"],
+	["USAGE.md", "usr/share/doc/cargo-watch/USAGE", "644"],
+	["TROUBLESHOOT.md", "usr/share/doc/cargo-watch/TROUBLESHOOT", "644"],
 	["cargo-watch.1", "usr/share/man/man1/cargo-watch.1", "644"],
 	["logo.svg", "usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", "644"],
 	["completions/cargo-watch.bash", "usr/share/bash-completion/completions/cargo-watch", "644"],
@@ -116,6 +118,8 @@ assets = [
 assets = [
 	{ source = "target/release/cargo-watch", dest = "/usr/bin/", mode = "755" },
 	{ source = "README.md", dest = "/usr/share/doc/cargo-watch/README", mode = "644", doc = true },
+	{ source = "USAGE.md", dest = "/usr/share/doc/cargo-watch/USAGE", mode = "644", doc = true },
+	{ source = "TROUBLESHOOT.md", dest = "/usr/share/doc/cargo-watch/TROUBLESHOOT", mode = "644", doc = true },
 	{ source = "cargo-watch.1", dest = "/usr/share/man/man1/cargo-watch.1.html", mode = "644" },
 	{ source = "logo.svg", dest = "/usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", mode = "644" },
 	{ source = "completions/cargo-watch.bash", dest = "usr/share/bash-completion/completions/cargo-watch", mode = "644" },

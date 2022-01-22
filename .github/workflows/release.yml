@@ -131,7 +131,7 @@ jobs:
           cp "$bin" "target/release/" # workaround for cargo-deb silliness with targets
 
           cp "$bin" "$dst/"
-          cp -r README.md LICENSE completions cargo-watch.1 "$dst/"
+          cp -r README.md USAGE.md TROUBLESHOOT.md LICENSE completions cargo-watch.1 "$dst/"
 
       - name: Archive (tar)
         if: '! startsWith(matrix.name, ''windows-'')'
