@@ -2,7 +2,7 @@
 
 Compact help is available with `-h`, and longer descriptions with `--help`. On
 supported systems, a manual page is also available. Shell completions should be
-installed for Bash, Elvish, Fig, Fish, Powershell, and Zsh.
+installed for Bash, Elvish, Fish, Powershell, and Zsh.
 
 ## Ignore files
 
