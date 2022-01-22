@@ -94,7 +94,7 @@ jobs:
           override: true
 
       - name: Add musl tools
-        run: sudo apt install -y musl-gcc
+        run: sudo apt install -y musl musl-dev musl-tools
         if: endsWith(matrix.target, '-musl')
 
       - uses: actions-rs/cargo@v1
