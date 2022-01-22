@@ -17,7 +17,7 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 [guard]: http://guardgem.org/
 
 - License: [Apache 2.0][license].
-- Website and more documentation: **[watchexec.github.io](https://watchexec.github.io)**.
+- Website: **[watchexec.github.io](https://watchexec.github.io)**.
 - Minimum Supported Rust Version: 1.58.0.
 
 [license]: https://www.apache.org/licenses/LICENSE-2.0.html
