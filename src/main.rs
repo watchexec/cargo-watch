@@ -20,10 +20,11 @@ async fn main() -> Result<()> {
 		tracing_subscriber::fmt::init();
 	}
 
-	let args = args::get_args()?;
+	let args = args::get_args();
 
 	{
-		let verbosity = args.occurrences_of("verbose");
+		// TODO
+		let verbosity = if args.debug { 2 } else { 0 };
 		let mut builder = tracing_subscriber::fmt().with_env_filter(match verbosity {
 			0 => "cargo-watch=warn",
 			1 => "watchexec=debug,cargo-watch=debug",
@@ -49,7 +50,7 @@ async fn main() -> Result<()> {
 
 	let wx = Watchexec::new(init, runtime)?;
 
-	if !args.is_present("postpone") {
+	if !args.postpone {
 		wx.send_event(Event::default()).await?;
 	}
 

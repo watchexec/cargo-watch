@@ -1,7 +1,6 @@
-use std::{convert::Infallible, env::current_dir, path::Path, str::FromStr, time::Duration};
+use std::{convert::Infallible, time::Duration};
 
-use clap::ArgMatches;
-use miette::{IntoDiagnostic, Result};
+use miette::{Report, Result};
 use notify_rust::Notification;
 use watchexec::{
 	action::{Action, Outcome, PostSpawn, PreSpawn},
@@ -11,43 +10,38 @@ use watchexec::{
 	fs::Watcher,
 	handler::SyncFnHandler,
 	paths::summarise_events_to_env,
-	signal::{process::SubSignal, source::MainSignal},
+	signal::source::MainSignal,
 };
 
-pub fn runtime(args: &ArgMatches) -> Result<RuntimeConfig> {
+use crate::args::Args;
+
+pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
 	let mut config = RuntimeConfig::default();
 
-	config.command(
-		args.values_of_lossy("command")
-			.expect("(clap) Bug: command is not present")
-			.iter(),
-	);
+	// TODO: command jiggery
+	// config.command(args...);
 
-	config.pathset(match args.values_of_os("paths") {
-		Some(paths) => paths.map(|os| Path::new(os).to_owned()).collect(),
-		None => vec![current_dir().into_diagnostic()?],
-	});
+	config.pathset(&args.watch);
 
-	config.action_throttle(Duration::from_millis(
-		args.value_of("debounce")
-			.unwrap_or("50")
-			.parse()
-			.into_diagnostic()?,
-	));
-
-	if let Some(interval) = args.value_of("poll") {
-		config.file_watcher(Watcher::Poll(Duration::from_millis(
-			interval.parse().into_diagnostic()?,
-		)));
+	let delay = (args.delay * 1000.0).round();
+	if delay.is_infinite() || delay.is_nan() || delay.is_sign_negative() {
+		return Err(Report::msg("delay must be finite and non-negative"));
+	}
+	if delay >= 1000.0 {
+		return Err(Report::msg("delay must be less than 1000 seconds"));
 	}
 
-	if args.is_present("no-process-group") {
-		config.command_grouped(false);
+	// SAFETY: delay is finite, not nan, non-negative, and less than 1000
+	let delay = Duration::from_millis(unsafe { delay.to_int_unchecked() });
+	config.action_throttle(delay);
+
+	if args.poll {
+		config.file_watcher(Watcher::Poll(delay));
 	}
 
-	config.command_shell(if args.is_present("no-shell") {
-		Shell::None
-	} else if let Some(s) = args.value_of("shell") {
+	// config.command_grouped(args.process_group);
+
+	config.command_shell(if let Some(s) = &args.shell {
 		if s.eq_ignore_ascii_case("powershell") {
 			Shell::Powershell
 		} else if s.eq_ignore_ascii_case("none") {
@@ -61,34 +55,24 @@ pub fn runtime(args: &ArgMatches) -> Result<RuntimeConfig> {
 		default_shell()
 	});
 
-	let clear = args.is_present("clear");
-	let notif = args.is_present("notif");
-	let mut on_busy = args
-		.value_of("on-busy-update")
-		.unwrap_or("queue")
-		.to_owned();
+	let clear = args.clear;
+	let notif = args.notif;
+	let on_busy = if args.no_restart {
+		"do-nothing"
+	} else {
+		"restart"
+	};
 
-	if args.is_present("restart") {
-		on_busy = "restart".into();
-	}
+	// TODO: add using SubSignal in Args directly
+	// let mut signal = args
+	// 	.signal
+	// 	.map(SubSignal::from_str)
+	// 	.transpose()
+	// 	.into_diagnostic()?
+	// 	.unwrap_or(SubSignal::Terminate);
 
-	if args.is_present("watch-when-idle") {
-		on_busy = "do-nothing".into();
-	}
-
-	let mut signal = args
-		.value_of("signal")
-		.map(SubSignal::from_str)
-		.transpose()
-		.into_diagnostic()?
-		.unwrap_or(SubSignal::Terminate);
-
-	if args.is_present("kill") {
-		signal = SubSignal::ForceStop;
-	}
-
-	let print_events = args.is_present("print-events");
-	let once = args.is_present("once");
+	let print_events = args.why;
+	let once = args.once;
 
 	config.on_action(move |action: Action| {
 		let fut = async { Ok::<(), Infallible>(()) };
@@ -173,15 +157,15 @@ pub fn runtime(args: &ArgMatches) -> Result<RuntimeConfig> {
 			}
 		}
 
-		let when_running = match (clear, on_busy.as_str()) {
+		let when_running = match (clear, on_busy) {
 			(_, "do-nothing") => Outcome::DoNothing,
 			(true, "restart") => {
 				Outcome::both(Outcome::Stop, Outcome::both(Outcome::Clear, Outcome::Start))
 			}
 			(false, "restart") => Outcome::both(Outcome::Stop, Outcome::Start),
-			(_, "signal") => Outcome::Signal(signal),
-			(true, "queue") => Outcome::wait(Outcome::both(Outcome::Clear, Outcome::Start)),
-			(false, "queue") => Outcome::wait(Outcome::Start),
+			// (_, "signal") => Outcome::Signal(signal),
+			// (true, "queue") => Outcome::wait(Outcome::both(Outcome::Clear, Outcome::Start)),
+			// (false, "queue") => Outcome::wait(Outcome::Start),
 			_ => Outcome::DoNothing,
 		};
 
@@ -196,13 +180,13 @@ pub fn runtime(args: &ArgMatches) -> Result<RuntimeConfig> {
 		fut
 	});
 
-	let no_env = args.is_present("no-environment");
+	let no_env = false; // args.is_present("no-environment");
 	config.on_pre_spawn(move |prespawn: PreSpawn| async move {
 		if !no_env {
 			let envs = summarise_events_to_env(prespawn.events.iter());
 			if let Some(mut command) = prespawn.command().await {
 				for (k, v) in envs {
-					command.env(format!("WATCHEXEC_{}_PATH", k), v);
+					command.env(format!("CARGO_WATCH_{}_PATH", k), v);
 				}
 			}
 		}
@@ -213,7 +197,7 @@ pub fn runtime(args: &ArgMatches) -> Result<RuntimeConfig> {
 	config.on_post_spawn(SyncFnHandler::from(move |postspawn: PostSpawn| {
 		if notif {
 			Notification::new()
-				.summary("Watchexec: change detected")
+				.summary("Cargo Watch: change detected")
 				.body(&format!("Running `{}`", postspawn.command.join(" ")))
 				.show()
 				.map(drop)
@@ -228,10 +212,9 @@ pub fn runtime(args: &ArgMatches) -> Result<RuntimeConfig> {
 	Ok(config)
 }
 
-// until 2.0, then Powershell
 #[cfg(windows)]
 fn default_shell() -> Shell {
-	Shell::Cmd
+	Shell::Powershell
 }
 
 #[cfg(not(windows))]
