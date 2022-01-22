@@ -7,12 +7,12 @@ use std::io::Error;
 mod args;
 
 fn main() -> Result<(), Error> {
-		gen_help(Bash)?;
-		gen_help(Elvish)?;
-		gen_help(Fig)?;
-		gen_help(Fish)?;
-		gen_help(PowerShell)?;
-		gen_help(Zsh)?;
+	gen_help(Bash)?;
+	gen_help(Elvish)?;
+	gen_help(Fig)?;
+	gen_help(Fish)?;
+	gen_help(PowerShell)?;
+	gen_help(Zsh)?;
 
 	Ok(())
 }

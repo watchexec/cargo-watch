@@ -1,7 +1,6 @@
 use std::{convert::Infallible, time::Duration};
 
 use miette::{IntoDiagnostic, Report, Result};
-use notify_rust::Notification;
 use watchexec::{
 	action::{Action, Outcome, PostSpawn, PreSpawn},
 	command::Shell,
@@ -12,6 +11,9 @@ use watchexec::{
 	paths::summarise_events_to_env,
 	signal::source::MainSignal,
 };
+
+#[cfg(not(target_os = "freebsd"))]
+use notify_rust::Notification;
 
 use crate::args::Args;
 
@@ -150,6 +152,7 @@ pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
 					eprintln!("[[{}]]", msg);
 				}
 
+				#[cfg(not(target_os = "freebsd"))]
 				if notif {
 					Notification::new()
 						.summary("Watchexec: command ended")
@@ -204,6 +207,7 @@ pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
 	});
 
 	config.on_post_spawn(SyncFnHandler::from(move |postspawn: PostSpawn| {
+		#[cfg(not(target_os = "freebsd"))]
 		if notif {
 			Notification::new()
 				.summary("Cargo Watch: change detected")
