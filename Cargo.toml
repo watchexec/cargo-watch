@@ -1,6 +1,6 @@
 [package]
 name = "cargo-watch"
-version = "7.8.1"
+version = "8.1.2"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
 license = "CC0-1.0"
@@ -8,12 +8,13 @@ description = "Watches over your Cargo project’s source"
 keywords = ["cargo", "watch", "compile", "notify"]
 categories = ["command-line-utilities", "development-tools"]
 
-documentation = "https://watchexec.github.io/docs/cargo-watch/"
+documentation = "https://watchexec.github.io/docs/#cargo-watch"
 homepage = "https://watchexec.github.io/#cargo-watch"
 repository = "https://github.com/watchexec/cargo-watch"
 readme = "README.md"
 
 edition = "2018"
+rust-version = "1.51.1"
 exclude = ["/.github"]
 
 [[bin]]
@@ -22,10 +23,13 @@ name = "cargo-watch"
 [dependencies]
 camino = "1.0.4"
 clap = "2.33.1"
-log = "0.4.8"
+log = "0.4.14"
 shell-escape = "0.1.5"
 stderrlog = "0.5.1"
 watchexec = "1.16.1"
+
+[target.'cfg(not(target_os="freebsd"))'.dependencies]
+notify-rust = "4.5.2"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"
@@ -42,3 +46,24 @@ codegen-units = 1
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.tar.xz"
 bin-dir = "{ name }-v{ version }-{ target }/{ bin }{ format }"
 pkg-fmt = "txz"
+
+[package.metadata.deb]
+maintainer = "Félix Saparelli <felix@passcod.name>"
+license-file = ["LICENSE", "0"]
+section = "devel"
+# conf-files = [] # look me up when config file lands
+assets = [
+  ["target/release/cargo-watch", "usr/bin/", "755"],
+  ["README.md", "usr/share/doc/cargo-watch/README", "644"],
+  ["cargo-watch.1", "usr/share/man/man1/cargo-watch.1", "644"],
+  ["logo.svg", "usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", "644"],
+]
+
+[package.metadata.generate-rpm]
+assets = [
+  { source = "target/release/cargo-watch", dest = "/usr/bin/", mode = "755" },
+  { source = "README.md", dest = "/usr/share/doc/cargo-watch/README", mode = "644", doc = true },
+  { source = "cargo-watch.1", dest = "/usr/share/man/man1/cargo-watch.1.html", mode = "644" },
+  { source = "logo.svg", dest = "/usr/share/icons/hicolor/scalable/apps/cargo-watch.svg", mode = "644" },
+  # set conf = true for config file when that lands
+]

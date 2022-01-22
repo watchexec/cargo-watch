@@ -10,7 +10,7 @@ on:
 name: Checks & Tests
 
 jobs:
-  check:
+  check-and-test:
     strategy:
       matrix:
         platform:
@@ -28,20 +28,65 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - run: rustup component add clippy
-      - uses: actions-rs/cargo@v1
+      - name: Add clippy
+        run: rustup component add clippy
+      - name: Check
+        uses: actions-rs/cargo@v1
         with:
           command: check
-      - uses: actions-rs/cargo@v1
+      - name: Install
+        uses: actions-rs/cargo@v1
         with:
           command: install
           args: --debug --path .
-      - uses: actions-rs/cargo@v1
+      - name: Test
+        uses: actions-rs/cargo@v1
         with:
           command: test
-      - uses: actions-rs/cargo@v1
+      - name: Clippy
+        uses: actions-rs/cargo@v1
         with:
           command: clippy
+
+  check-only:
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-freebsd
+          - x86_64-unknown-linux-musl
+          - armv7-unknown-linux-gnueabihf
+          - aarch64-unknown-linux-gnu
+          - aarch64-apple-darwin
+          - aarch64-pc-windows-msvc
+        include:
+          - target: x86_64-unknown-freebsd
+            platform: ubuntu-latest
+          - target: x86_64-unknown-linux-musl
+            platform: ubuntu-latest
+          - target: armv7-unknown-linux-gnueabihf
+            platform: ubuntu-latest
+          - target: aarch64-unknown-linux-gnu
+            platform: ubuntu-latest
+          - target: aarch64-apple-darwin
+            platform: macos-11.0
+          - target: aarch64-pc-windows-msvc
+            platform: windows-latest
+
+    name: Check only for ${{ matrix.target }}
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      - name: Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --target ${{ matrix.target }}
 
   msrv:
     name: Check on MSRV
@@ -53,7 +98,8 @@ jobs:
           profile: minimal
           toolchain: 1.51.0
           override: true
-      - uses: actions-rs/cargo@v1
+      - name: Check
+        uses: actions-rs/cargo@v1
         with:
           command: check
 

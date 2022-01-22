@@ -26,6 +26,8 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 
 ## Install
 
+<a href="https://repology.org/project/cargo-watch/versions"><img align="right" src="https://repology.org/badge/vertical-allrepos/cargo-watch.svg" alt="Packaging status"></a>
+
 Pre-built binaries are available **[from the website][cw-downloads]** or
 alternatively [on the Github Releases tab][releases]. Since 7.8.0, checksums and
 signatures are also provided; see [download documentation][downloads] for details.
@@ -111,6 +113,10 @@ OPTIONS:
             List of features passed to cargo invocations
 
     -i, --ignore <pattern>...      Ignore a glob/gitignore-style pattern
+
+    -B <rust-backtrace>
+            Inject RUST_BACKTRACE=VALUE (generally you want to set it to 1)
+            into the environment
 
         --use-shell <use-shell>
             Use a different shell. E.g. --use-shell=bash. On Windows, try
