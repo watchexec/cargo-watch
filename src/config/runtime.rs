@@ -1,6 +1,6 @@
 use std::{convert::Infallible, time::Duration};
 
-use miette::{Report, Result};
+use miette::{IntoDiagnostic, Report, Result};
 use notify_rust::Notification;
 use watchexec::{
 	action::{Action, Outcome, PostSpawn, PreSpawn},
@@ -23,20 +23,29 @@ pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
 
 	config.pathset(&args.watch);
 
-	let delay = (args.delay * 1000.0).round();
-	if delay.is_infinite() || delay.is_nan() || delay.is_sign_negative() {
-		return Err(Report::msg("delay must be finite and non-negative"));
-	}
-	if delay >= 1000.0 {
-		return Err(Report::msg("delay must be less than 1000 seconds"));
-	}
+	if let Some(delay) = &args.delay {
+		let delay = if delay.ends_with("ms") {
+			let d: u64 = delay.trim_end_matches("ms").parse().into_diagnostic()?;
+			Duration::from_millis(d)
+		} else {
+			let d: f64 = delay.parse().into_diagnostic()?;
+			let delay = (d * 1000.0).round();
+			if delay.is_infinite() || delay.is_nan() || delay.is_sign_negative() {
+				return Err(Report::msg("delay must be finite and non-negative"));
+			}
+			if delay >= 1000.0 {
+				return Err(Report::msg("delay must be less than 1000 seconds"));
+			}
 
-	// SAFETY: delay is finite, not nan, non-negative, and less than 1000
-	let delay = Duration::from_millis(unsafe { delay.to_int_unchecked() });
-	config.action_throttle(delay);
+			// SAFETY: delay is finite, not nan, non-negative, and less than 1000
+			Duration::from_millis(unsafe { delay.to_int_unchecked() })
+		};
+
+		config.action_throttle(delay);
+	}
 
 	if args.poll {
-		config.file_watcher(Watcher::Poll(delay));
+		config.file_watcher(Watcher::Poll(config.action.throttle));
 	}
 
 	// config.command_grouped(args.process_group);

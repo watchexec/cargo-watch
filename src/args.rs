@@ -2,11 +2,13 @@ use std::{ffi::OsString, path::PathBuf};
 
 use clap::Parser;
 
-const OPTSET_FILTERING: &str = "Filtering options:";
-const OPTSET_COMMAND: &str = "Command options:";
-const OPTSET_DEBUGGING: &str = "Debugging options:";
-const OPTSET_OUTPUT: &str = "Output options:";
-const OPTSET_BEHAVIOUR: &str = "Behaviour options:";
+const OPTSET_FILTERING: &str = "FILTERING";
+const OPTSET_COMMAND: &str = "COMMAND";
+const OPTSET_ENVIRONMENT: &str = "ENVIRONMENT";
+const OPTSET_DEBUGGING: &str = "DEBUGGING";
+const OPTSET_OUTPUT: &str = "OUTPUT";
+const OPTSET_BEHAVIOUR: &str = "BEHAVIOUR";
+const OPTSET_WORKSPACES: &str = "WORKSPACES";
 
 #[derive(Debug, Clone, Parser)]
 #[clap(name = "cargo-watch", bin_name = "cargo", version)]
@@ -22,6 +24,8 @@ enum Command {
 	Watch(Args),
 }
 
+// --watch-when-idle is now default
+
 #[derive(Debug, Clone, clap::Args)]
 #[clap(author, version, about, long_about = None)]
 pub struct Args {
@@ -29,55 +33,62 @@ pub struct Args {
 	pub once: bool,
 
 	/// Clear the screen before each run
-	#[clap(short = 'c', long = "clear")]
+	#[clap(short = 'c', long = "clear", help_heading = OPTSET_OUTPUT)]
 	pub clear: bool,
 
 	/// Show debug output
-	#[clap(long = "debug")]
+	#[clap(long = "debug", help_heading = OPTSET_DEBUGGING)]
 	pub debug: bool,
 
 	/// Show paths that changed
-	#[clap(long = "why")]
+	#[clap(long = "why", help_heading = OPTSET_DEBUGGING)]
 	pub why: bool,
 
 	/// Ignore nothing, not even target/ and .git/
-	#[clap(long = "ignore-nothing")]
+	#[clap(long = "ignore-nothing", help_heading = OPTSET_FILTERING)]
 	pub ignore_nothing: bool,
 
 	/// Don’t use .gitignore files
-	#[clap(long = "no-gitignore")]
+	#[clap(long = "no-gitignore", help_heading = OPTSET_FILTERING)]
 	pub no_gitignore: bool,
 
 	/// Don’t use .ignore files
-	#[clap(long = "no-ignore")]
+	#[clap(long = "no-ignore", help_heading = OPTSET_FILTERING)]
 	pub no_ignore: bool,
 
 	/// Don’t restart command while it’s still running
-	#[clap(long = "no-restart")]
+	#[clap(long = "no-restart", help_heading = OPTSET_BEHAVIOUR)]
 	pub no_restart: bool,
 
 	/// Reserves for workspace support
-	#[clap(long = "all", hide = true)]
+	#[clap(long = "all", hide = true, help_heading = OPTSET_WORKSPACES)]
 	pub packages_all: bool,
 
 	/// Force use of polling for file changes
-	#[clap(long = "poll")]
+	#[clap(long = "poll", help_heading = OPTSET_BEHAVIOUR)]
 	pub poll: bool,
 
 	/// Postpone first run until a file changes
-	#[clap(long = "postpone")]
+	#[clap(long = "postpone", help_heading = OPTSET_BEHAVIOUR)]
 	pub postpone: bool,
 
-	// --watch-when-idle is now default
-	/// List of features passed to cargo invocations
-	#[clap(long = "features")]
+	/// Feature(s) passed to cargo invocations
+	///
+	/// This is passed to cargo commands specified with `-x` only, and
+	/// which start with `b`, `check`, `doc`, `r`, `test`, or `install`.
+	#[clap(long = "features", help_heading = OPTSET_COMMAND)]
 	pub features: Vec<String>,
 
-	/// Suppress output from cargo-watch itself
-	#[clap(short = 'q', long = "quiet")]
+	/// Suppress output from cargo watch itself
+	///
+	/// By default, cargo watch will print a message to stderr when the
+	/// command starts and finishes.
+	#[clap(short = 'q', long = "quiet", help_heading = OPTSET_OUTPUT)]
 	pub quiet: bool,
 
-	/// Cargo command(s) to execute on changes [default: check]
+	/// Cargo command(s) to execute on changes
+	///
+	/// By default, `cargo check` is run.
 	#[clap(
 		short = 'x',
 		long = "exec",
@@ -85,11 +96,15 @@ pub struct Args {
 		value_name = "cmd",
 		forbid_empty_values = true,
 		min_values = 1,
-		number_of_values = 1
+		number_of_values = 1,
+		help_heading = OPTSET_COMMAND
 	)]
 	pub cmd_cargo: Vec<String>,
 
 	/// Shell command(s) to execute on changes
+	///
+	/// This may not necessarily be run in a shell, e.g. with
+	/// `--use-shell=none`.
 	#[clap(
 		short = 's',
 		long = "shell",
@@ -97,28 +112,43 @@ pub struct Args {
 		value_name = "cmd",
 		forbid_empty_values = true,
 		min_values = 1,
-		number_of_values = 1
+		number_of_values = 1,
+		help_heading = OPTSET_COMMAND
 	)]
 	pub cmd_shell: Vec<String>,
 
-	/// File updates debounce delay in seconds
+	/// File updates debounce delay
+	///
+	/// During this time, incoming change events are accumulated and
+	/// only once the delay has passed, is an action taken. Note that
+	/// this does not mean a command will be started: if --no-restart is
+	/// given and a command is already running, the outcome of the
+	/// action will be to do nothing.
+	///
+	/// Defaults to 50ms. Parses as decimal seconds by default, but
+	/// using an integer with the `ms` suffix may be more convenient.
+	/// When using --poll mode, you'll want a larger duration, or risk
+	/// overloading disk I/O.
 	#[clap(
 		short = 'd',
 		long = "delay",
-		default_value = "0.05",
-		forbid_empty_values = true
+		forbid_empty_values = true,
+		help_heading = OPTSET_BEHAVIOUR
 	)]
-	pub delay: f32,
+	pub delay: Option<String>,
 
-	/// Ignore a glob/gitignore-style pattern
+	/// Ignore a path pattern
+	///
+	/// This is in gitignore or glob format. Use a leading `!` for
+	/// allowlisting.
 	#[clap(
 		short = 'i',
 		long = "ignore",
 		value_name = "pattern",
-		multiple_occurrences = true,
 		forbid_empty_values = true,
 		min_values = 1,
-		number_of_values = 1
+		number_of_values = 1,
+		help_heading = OPTSET_FILTERING
 	)]
 	pub ignores: Vec<String>,
 
@@ -127,60 +157,68 @@ pub struct Args {
 		short = 'p',
 		long = "package",
 		value_name = "spec",
-		multiple_occurrences = true,
 		forbid_empty_values = true,
 		min_values = 1,
 		number_of_values = 1,
-		hide = true
+		hide = true,
+		help_heading = OPTSET_WORKSPACES
 	)]
 	pub packages_specs: Vec<String>,
 
 	/// Watch specific file(s) or folder(s)
+	///
+	/// By default, the entire crate/workspace is watched.
 	#[clap(
 		short = 'w',
 		long = "watch",
 		value_name = "path",
-		multiple_occurrences = true,
 		forbid_empty_values = true,
 		min_values = 1,
 		number_of_values = 1,
-		default_value = "."
+		help_heading = OPTSET_FILTERING
 	)]
 	pub watch: Vec<PathBuf>,
 
-	/// Shell to use
+	/// Shell to use for the command, or `none` for direct execution
 	#[cfg_attr(
 		windows,
-		clap(
-			help = "Use a different shell. Defaults to Powershell, use --use-shell=cmd to use cmd.exe"
-		)
+		doc = "\n\nDefaults to Powershell. Examples: --use-shell=cmd, --use-shell=gitbash.exe"
 	)]
 	#[cfg_attr(
 		unix,
-		clap(help = "Use a different shell. Defaults to $SHELL. E.g. --use-shell=sh")
+		doc = "\n\nDefaults to $SHELL. Examples: --use-shell=sh, --use-shell=fish"
 	)]
-	#[clap(long = "use-shell", value_name = "shell")]
+	#[clap(long = "use-shell", value_name = "shell", help_heading = OPTSET_ENVIRONMENT)]
 	pub shell: Option<String>,
 
-	/// Change working directory before running shell command [default: crate root]
-	#[clap(short = 'C', long = "workdir", value_name = "path")]
+	/// Change working directory of the command
+	///
+	/// This defaults to the crate or workspace root.
+	#[clap(short = 'C', long = "workdir", value_name = "path", help_heading = OPTSET_ENVIRONMENT)]
 	pub workdir: Option<PathBuf>,
 
-	/// Send a desktop notification when watchexec starts and ends the command
-	#[clap(short = 'N', long = "notify")]
+	/// Send a desktop notification on command start and end
+	///
+	/// The message will include success or failure, with the exit code
+	/// returned by the command.
+	#[clap(short = 'N', long = "notify", help_heading = OPTSET_OUTPUT)]
 	#[cfg_attr(target_os = "freebsd", clap(hide = true))]
 	pub notif: bool,
 
-	/// Inject RUST_BACKTRACE=value (generally you want to set it to 1) into the command's environment
-	#[clap(short = 'B')]
+	/// Inject RUST_BACKTRACE=value into the command's environment
+	///
+	/// Examples: -B=1, -B=full
+	#[clap(short = 'B', help_heading = OPTSET_ENVIRONMENT)]
 	pub env_backtrace: bool,
 
-	/// Inject RUST_LOG=value (e.g. debug, trace) into the command's environment
-	#[clap(short = 'L')]
+	/// Inject RUST_LOG=value into the command's environment
+	///
+	/// Examples: -L=debug, -L=info,cratename::module=debug
+	#[clap(short = 'L', help_heading = OPTSET_ENVIRONMENT)]
 	pub env_log: bool,
 
 	/// Full command to run. -x and -s will be ignored!
-	#[clap(raw = true)]
+	#[clap(raw = true, value_name = "trailing command", help_heading = OPTSET_COMMAND)]
 	pub cmd_trail: Option<OsString>,
 }
 
