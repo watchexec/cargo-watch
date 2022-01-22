@@ -121,7 +121,7 @@ jobs:
           ext=""
           [[ "${{ matrix.name }}" == windows-* ]] && ext=".exe"
           bin="target/${{ matrix.target }}/release/cargo-watch${ext}"
-          strip "$bin" || true
+          objcopy --compress-debug-sections "$bin" || strip "$bin" || true
 
           version=$(cat VERSION)
           dst="cargo-watch-v${version}-${{ matrix.target }}"
