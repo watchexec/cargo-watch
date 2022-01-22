@@ -1,238 +1,225 @@
-use clap::{App, AppSettings, Arg, ArgMatches, ErrorKind, SubCommand};
-use std::{env, process};
+use std::{
+	env,
+	ffi::OsString,
+	fs::File,
+	io::{BufRead, BufReader},
+	path::Path,
+};
 
-pub fn parse() -> ArgMatches<'static> {
-	let footnote = "You can use the `-- command` style instead, note you'll need to use full commands, it won't prefix `cargo` for you.\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .ignore and .gitignore files are used to filter paths.".to_owned();
+use clap::{crate_version, App, Arg, ArgMatches};
+use miette::{Context, IntoDiagnostic, Result};
 
-	#[cfg(windows)] let footnote = format!("{}\n\nOn Windows, patterns given to -i have forward slashes (/) automatically converted to backward ones (\\) to ease command portability.", footnote);
+trait Clap3Compat {
+	/// Does nothing for clap2, but remove this trait for clap3, and get cool new option groups!
+	fn help_heading(self, _heading: impl Into<Option<&'static str>>) -> Self
+	where
+		Self: Sized,
+	{
+		self
+	}
+}
 
-	let mut app = App::new(env!("CARGO_PKG_NAME"))
-        .bin_name("cargo")
-        .version(env!("CARGO_PKG_VERSION"))
-        .help_message("")
-        .version_message("")
-        .setting(AppSettings::ArgsNegateSubcommands)
-        .setting(AppSettings::DisableHelpSubcommand)
-        .setting(AppSettings::DontCollapseArgsInUsage)
-        .setting(AppSettings::GlobalVersion)
-        .setting(AppSettings::StrictUtf8)
-        .setting(AppSettings::SubcommandRequired)
-        .setting(AppSettings::SubcommandRequiredElseHelp)
-        .subcommand(
-            SubCommand::with_name("watch")
-                .author(env!("CARGO_PKG_HOMEPAGE"))
-                .about(env!("CARGO_PKG_DESCRIPTION"))
-                .usage("cargo watch [FLAGS] [OPTIONS]")
-                .help_message("Display this message")
-                .version_message("Display version information")
-                .arg(
-                    Arg::with_name("once")
-                        .long("testing-only--once")
-                        .hidden(true),
-                )
-                .arg(
-                    Arg::with_name("clear")
-                        .short("c")
-                        .long("clear")
-                        .help("Clear the screen before each run"),
-                )
-                .arg(
-                    Arg::with_name("log:debug")
-                        .long("debug")
-                        .help("Show debug output"),
-                )
-                .arg(
-                    Arg::with_name("log:info")
-                        .long("why")
-                        .help("Show paths that changed"),
-                )
-                .arg(
-                    Arg::with_name("ignore-nothing")
-                        .long("ignore-nothing")
-                        .help("Ignore nothing, not even target/ and .git/"),
-                )
-                .arg(
-                    Arg::with_name("no-gitignore")
-                        .long("no-gitignore")
-                        .help("Don’t use .gitignore files"),
-                )
-                .arg(
-                    Arg::with_name("no-ignore")
-                        .long("no-ignore")
-                        .help("Don’t use .ignore files"),
-                )
-                .arg(
-                    Arg::with_name("no-restart")
-                        .long("no-restart")
-                        .help("Don’t restart command while it’s still running"),
-                )
-                .arg(
-                    Arg::with_name("packages:all")
-                        .long("all")
-                        .conflicts_with("packages:one")
-                        .hidden(true)
-                        .help("Reserved for workspace support"),
-                )
-                .arg(
-                    Arg::with_name("poll")
-                        .long("poll")
-                        .help("Force use of polling for file changes"),
-                )
-                .arg(
-                    Arg::with_name("postpone")
-                        .long("postpone")
-                        .help("Postpone first run until a file changes"),
-                )
-                .arg(
-                    Arg::with_name("watch-when-idle")
-                        .long("watch-when-idle")
-                        .help("Ignore events emitted while the commands run. Will become default behaviour in 8.0."),
-                )
-                .arg(
-                    Arg::with_name("features")
-                        .long("features")
-                        .takes_value(true)
-                        .help("List of features passed to cargo invocations"),
-                )
-                .arg(
-                    Arg::with_name("log:quiet")
-                        .short("q")
-                        .long("quiet")
-                        .help("Suppress output from cargo-watch itself"),
-                )
-                .arg(
-                    Arg::with_name("cmd:cargo")
-                        .short("x")
-                        .long("exec")
-                        .takes_value(true)
-                        .value_name("cmd")
-                        .multiple(true)
-                        .empty_values(false)
-                        .min_values(1)
-                        .number_of_values(1)
-                        .help("Cargo command(s) to execute on changes [default: check]"),
-                )
-                .arg(
-                    Arg::with_name("cmd:shell")
-                        .short("s")
-                        .long("shell")
-                        .takes_value(true)
-                        .value_name("cmd")
-                        .multiple(true)
-                        .empty_values(false)
-                        .min_values(1)
-                        .number_of_values(1)
-                        .help("Shell command(s) to execute on changes"),
-                )
-                .arg(
-                    Arg::with_name("delay")
-                        .short("d")
-                        .long("delay")
-                        .takes_value(true)
-                        .empty_values(false)
-                        .default_value("0.5")
-                        .help("File updates debounce delay in seconds"),
-                )
-                .arg(
-                    Arg::with_name("ignore")
-                        .short("i")
-                        .long("ignore")
-                        .takes_value(true)
-                        .value_name("pattern")
-                        .multiple(true)
-                        .empty_values(false)
-                        .min_values(1)
-                        .number_of_values(1)
-                        .help("Ignore a glob/gitignore-style pattern"),
-                )
-                .arg(
-                    Arg::with_name("packages:one")
-                        .short("p")
-                        .long("package")
-                        .takes_value(true)
-                        .value_name("spec")
-                        .multiple(true)
-                        .empty_values(false)
-                        .min_values(1)
-                        .hidden(true)
-                        .help("Reserved for workspace support"),
-                )
-                .arg(
-                    Arg::with_name("watch")
-                        .short("w")
-                        .long("watch")
-                        .takes_value(true)
-                        .multiple(true)
-                        .empty_values(false)
-                        .min_values(1)
-                        .number_of_values(1)
-                        .default_value(".")
-                        .help("Watch specific file(s) or folder(s)"),
-                )
-                .arg(
-                    Arg::with_name("use-shell")
-                        .long("use-shell")
-                        .takes_value(true)
-                        .help(if cfg!(windows) {
-                            "Use a different shell. Try --use-shell=powershell, which will become the default in 8.0."
-                        } else {
-                            "Use a different shell. E.g. --use-shell=bash"
-                        }),
-                )
-                .arg(
-                    Arg::with_name("workdir")
-                        .short("C")
-                        .long("workdir")
-                        .takes_value(true)
-                        .help("Change working directory before running command [default: crate root]"),
-                )
-                .arg(
-                    Arg::with_name("notif")
-                        .help("Send a desktop notification when watchexec notices a change (experimental, behaviour may change)")
-                        .short("N")
-                        .long("notify")
-                        .hidden(cfg!(target_os="freebsd"))
-                )
-                .arg(
-                    Arg::with_name("rust-backtrace")
-                        .help("Inject RUST_BACKTRACE=VALUE (generally you want to set it to 1) into the environment")
-                        .short("B")
-                        .takes_value(true)
-                )
-                .arg(
-                    Arg::with_name("cmd:trail")
-                        .raw(true)
-                        .help("Full command to run. -x and -s will be ignored!"),
-                )
-                .after_help(footnote.as_str()),
-        );
+impl Clap3Compat for Arg<'_, '_> {}
 
-	// Allow invocation of cargo-watch with both `cargo-watch watch ARGS`
-	// (as invoked by cargo) and `cargo-watch ARGS`.
-	let mut args: Vec<String> = env::args().collect();
-	args.insert(1, "watch".into());
+const OPTSET_FILTERING: &str = "Filtering options:";
+const OPTSET_COMMAND: &str = "Command options:";
+const OPTSET_CONFIG: &str = "Config file options:";
+const OPTSET_DEBUGGING: &str = "Debugging options:";
+const OPTSET_OUTPUT: &str = "Output options:";
+const OPTSET_BEHAVIOUR: &str = "Behaviour options:";
 
-	let matches = match app.get_matches_from_safe_borrow(args) {
-		Ok(matches) => matches,
-		Err(err) => {
-			match err.kind {
-				ErrorKind::HelpDisplayed => {
-					println!("{}", err);
-					process::exit(0);
-				}
+pub fn get_args() -> Result<ArgMatches<'static>> {
+	let app = App::new("watchexec")
+		.version(crate_version!())
+		.about("Execute commands when watched files change")
+		.after_help("Use @argfile as first argument to load arguments from the file `argfile` (one argument per line) which will be inserted in place of the @argfile (further arguments on the CLI will override or add onto those in the file).")
+		.arg(Arg::with_name("config-file")
+			.help_heading(Some(OPTSET_CONFIG))
+			.help("Config file(s) to use")
+			.multiple(true)
+			.short("C")
+			.long("config"))
+		.arg(Arg::with_name("command")
+			.help_heading(Some(OPTSET_COMMAND))
+			.help("Command to execute")
+			.multiple(true)
+			.required(true))
+		.arg(Arg::with_name("paths")
+			.help_heading(Some(OPTSET_FILTERING))
+			.help("Watch a specific file or directory")
+			.short("w")
+			.long("watch")
+			.value_name("path")
+			.number_of_values(1)
+			.multiple(true)
+			.takes_value(true))
+		.arg(Arg::with_name("clear")
+			.help_heading(Some(OPTSET_BEHAVIOUR))
+			.help("Clear screen before executing command")
+			.short("c")
+			.long("clear"))
+		.arg(Arg::with_name("on-busy-update")
+			.help_heading(Some(OPTSET_BEHAVIOUR))
+			.help("Select the behaviour to use when receiving events while the command is running. Current default is queue, will change to do-nothing in 2.0.")
+			.takes_value(true)
+			.possible_values(&["do-nothing", "queue", "restart", "signal"])
+			.long("on-busy-update"))
+		.arg(Arg::with_name("restart")
+			.help_heading(Some(OPTSET_BEHAVIOUR))
+			.help("Restart the process if it's still running. Shorthand for --on-busy-update=restart")
+			.short("r")
+			.long("restart"))
+		.arg(Arg::with_name("signal")
+			.help_heading(Some(OPTSET_BEHAVIOUR))
+			.help("Specify the signal to send when using --on-busy-update=signal")
+			.short("s")
+			.long("signal")
+			.takes_value(true)
+			.value_name("signal")
+			.default_value("SIGTERM")
+			.hidden(cfg!(windows)))
+		.arg(Arg::with_name("kill")
+			.help_heading(Some(OPTSET_BEHAVIOUR))
+			.hidden(true)
+			.short("k")
+			.long("kill"))
+		.arg(Arg::with_name("debounce")
+			.help_heading(Some(OPTSET_BEHAVIOUR))
+			.help("Set the timeout between detected change and command execution, defaults to 50ms")
+			.takes_value(true)
+			.value_name("milliseconds")
+			.short("d")
+			.long("debounce"))
+		.arg(Arg::with_name("verbose")
+			.help_heading(Some(OPTSET_DEBUGGING))
+			.help("Print debugging messages (-v, -vv, -vvv, -vvvv; use -vvv for bug reports)")
+			.multiple(true)
+			.short("v")
+			.long("verbose"))
+		.arg(Arg::with_name("print-events")
+			.help_heading(Some(OPTSET_DEBUGGING))
+			.help("Print events that trigger actions")
+			.long("print-events")
+			.alias("changes-only")) // --changes-only is deprecated (remove at v2)
+		.arg(Arg::with_name("no-vcs-ignore")
+			.help_heading(Some(OPTSET_FILTERING))
+			.help("Skip auto-loading of VCS (Git, etc) ignore files")
+			.long("no-vcs-ignore"))
+		.arg(Arg::with_name("no-project-ignore")
+			.help_heading(Some(OPTSET_FILTERING))
+			.help("Skip auto-loading of project ignore files (.gitignore, .ignore, etc)")
+			.long("no-project-ignore")
+			.alias("no-ignore")) // --no-ignore is deprecated (remove at v2)
+		.arg(Arg::with_name("no-default-ignore")
+			.help_heading(Some(OPTSET_FILTERING))
+			.help("Skip auto-ignoring of commonly ignored globs")
+			.long("no-default-ignore"))
+		.arg(Arg::with_name("no-global-ignore")
+			.help_heading(Some(OPTSET_FILTERING))
+			.help("Skip auto-loading of global or environment-wide ignore files")
+			.long("no-global-ignore"))
+		.arg(Arg::with_name("postpone")
+			.help_heading(Some(OPTSET_BEHAVIOUR))
+			.help("Wait until first change to execute command")
+			.short("p")
+			.long("postpone"))
+		.arg(Arg::with_name("poll")
+			.help_heading(Some(OPTSET_BEHAVIOUR))
+			.help("Force polling mode (interval in milliseconds)")
+			.long("force-poll")
+			.value_name("interval"))
+		.arg(Arg::with_name("shell")
+			.help_heading(Some(OPTSET_COMMAND))
+			.help(if cfg!(windows) {
+				"Use a different shell, or `none`. Try --shell=powershell, which will become the default in 2.0."
+			} else {
+			"Use a different shell, or `none`. Defaults to `sh` (until 2.0, where that will change to `$SHELL`). E.g. --shell=bash"
+			})
+			.takes_value(true)
+			.long("shell"))
+		// -n short form will not be removed, and instead become a shorthand for --shell=none
+		.arg(Arg::with_name("no-shell")
+			.help_heading(Some(OPTSET_COMMAND))
+			.help("Do not wrap command in a shell. Deprecated: use --shell=none instead.")
+			.short("n")
+			.long("no-shell"))
+		.arg(Arg::with_name("no-environment")
+			.help_heading(Some(OPTSET_OUTPUT))
+			.help("Do not set WATCHEXEC_*_PATH environment variables for the command")
+			.long("no-environment"))
+		.arg(Arg::with_name("no-process-group")
+			.help_heading(Some(OPTSET_COMMAND))
+			.help("Do not use a process group when running the command")
+			.long("no-process-group"))
+		.arg(Arg::with_name("once").short("1").hidden(true))
+		.arg(Arg::with_name("watch-when-idle")
+			.help_heading(Some(OPTSET_BEHAVIOUR))
+			.help("Deprecated alias for --on-busy-update=do-nothing, which will become the default in 2.0.")
+			.short("W")
+			.hidden(true)
+			.long("watch-when-idle"))
+		.arg(Arg::with_name("notif")
+			.help_heading(Some(OPTSET_OUTPUT))
+			.help("Send a desktop notification when the command ends")
+			.short("N")
+			.long("notify"))
+		.arg(
+			Arg::with_name("extensions")
+				.help_heading(Some(OPTSET_FILTERING))
+				.help("Comma-separated list of file extensions to watch (e.g. js,css,html)")
+				.short("e")
+				.long("exts")
+				.takes_value(true),
+		)
+		.arg(
+			Arg::with_name("filter")
+				.help_heading(Some(OPTSET_FILTERING))
+				.help("Ignore all modifications except those matching the pattern")
+				.short("f")
+				.long("filter")
+				.number_of_values(1)
+				.multiple(true)
+				.takes_value(true)
+				.value_name("pattern"),
+		)
+		.arg(
+			Arg::with_name("ignore")
+				.help_heading(Some(OPTSET_FILTERING))
+				.help("Ignore modifications to paths matching the pattern")
+				.short("i")
+				.long("ignore")
+				.number_of_values(1)
+				.multiple(true)
+				.takes_value(true)
+				.value_name("pattern"),
+		)
+		.arg(
+			Arg::with_name("no-meta")
+				.help_heading(Some(OPTSET_FILTERING))
+				.help("Ignore metadata changes")
+				.long("no-meta"),
+		);
 
-				ErrorKind::VersionDisplayed => {
-					// Unlike HelpDisplayed, VersionDisplayed emits the output
-					// by itself (clap-rs/clap#1390). It also does so without a
-					// trailing newline, so we print one ourselves.
-					println!();
-					process::exit(0);
-				}
+	let mut raw_args: Vec<OsString> = env::args_os().collect();
 
-				_ => app.get_matches(),
-			}
+	if let Some(first) = raw_args.get(1).and_then(|s| s.to_str()) {
+		if let Some(arg_path) = first.strip_prefix('@').map(Path::new) {
+			let arg_file = BufReader::new(
+				File::open(arg_path)
+					.into_diagnostic()
+					.wrap_err_with(|| format!("Failed to open argument file {:?}", arg_path))?,
+			);
+
+			let mut more_args: Vec<OsString> = arg_file
+				.lines()
+				.map(|l| l.map(OsString::from).into_diagnostic())
+				.collect::<Result<_>>()?;
+
+			more_args.insert(0, raw_args.remove(0));
+			more_args.extend(raw_args.into_iter().skip(1));
+			raw_args = more_args;
 		}
-	};
+	}
 
-	matches.subcommand.unwrap().matches
+	Ok(app.get_matches_from(raw_args))
 }

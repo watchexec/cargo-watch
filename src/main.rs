@@ -1,50 +1,59 @@
-use camino::Utf8PathBuf;
-use stderrlog::Timestamp;
-use watchexec::{error::Result, run::watch};
+use std::env::var;
+
+use miette::{IntoDiagnostic, Result};
+use watchexec::{event::Event, Watchexec};
 
 mod args;
-mod options;
-mod root;
-mod watch;
+mod config;
+// mod filterer;
 
-fn main() -> Result<()> {
-	let matches = args::parse();
+#[cfg(target_env = "musl")]
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
-	let debug = matches.is_present("log:debug");
-	let info = matches.is_present("log:info");
-	let quiet = matches.is_present("log:quiet");
-	let testing = matches.is_present("once");
+#[tokio::main]
+async fn main() -> Result<()> {
+	#[cfg(feature = "dev-console")]
+	console_subscriber::init();
 
-	stderrlog::new()
-		.quiet(quiet)
-		.show_module_names(debug)
-		.verbosity(if debug {
-			3
-		} else if info {
-			2
-		} else {
-			1
-		})
-		.timestamp(if testing {
-			Timestamp::Off
-		} else {
-			Timestamp::Millisecond
-		})
-		.init()
-		.unwrap();
-
-	root::change_dir(
-		matches
-			.value_of("workdir")
-			.map(Utf8PathBuf::from)
-			.unwrap_or_else(root::project_root),
-	);
-
-	if let Some(b) = matches.value_of("rust-backtrace") {
-		std::env::set_var("RUST_BACKTRACE", b);
+	if var("RUST_LOG").is_ok() && cfg!(not(feature = "dev-console")) {
+		tracing_subscriber::fmt::init();
 	}
 
-	let opts = options::get_options(&matches);
-	let handler = watch::CwHandler::new(opts, quiet, matches.is_present("notif"))?;
-	watch(&handler)
+	let args = args::get_args()?;
+
+	{
+		let verbosity = args.occurrences_of("verbose");
+		let mut builder = tracing_subscriber::fmt().with_env_filter(match verbosity {
+			0 => "cargo-watch=warn",
+			1 => "watchexec=debug,cargo-watch=debug",
+			2 => "watchexec=trace,cargo-watch=trace",
+			_ => "trace",
+		});
+
+		if verbosity > 2 {
+			use tracing_subscriber::fmt::format::FmtSpan;
+			builder = builder.with_span_events(FmtSpan::NEW | FmtSpan::CLOSE);
+		}
+
+		if verbosity > 3 {
+			builder.pretty().try_init().ok();
+		} else {
+			builder.try_init().ok();
+		}
+	}
+
+	let init = config::init(&args)?;
+	let runtime = config::runtime(&args)?;
+	// runtime.filterer(filterer::new(&args).await?);
+
+	let wx = Watchexec::new(init, runtime)?;
+
+	if !args.is_present("postpone") {
+		wx.send_event(Event::default()).await?;
+	}
+
+	wx.main().await.into_diagnostic()??;
+
+	Ok(())
 }

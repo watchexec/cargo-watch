@@ -13,23 +13,58 @@ homepage = "https://watchexec.github.io/#cargo-watch"
 repository = "https://github.com/watchexec/cargo-watch"
 readme = "README.md"
 
-edition = "2018"
-rust-version = "1.51.1"
+edition = "2021"
+resolver = "2"
+rust-version = "1.58.0"
+
 exclude = ["/.github"]
 
 [[bin]]
 name = "cargo-watch"
 
 [dependencies]
-camino = "1.0.4"
-clap = "2.33.1"
-log = "0.4.14"
-shell-escape = "0.1.5"
-stderrlog = "0.5.1"
-watchexec = "1.16.1"
+# camino = "1.0.4"
+console-subscriber = { version = "0.1.0", optional = true }
+dunce = "1.0.2"
+futures = "0.3.17"
+miette = { version = "3.2.0", features = ["fancy"] }
+# shell-escape = "0.1.5"
+tracing = "0.1.26"
+watchexec = "2.0.0-pre.6"
+
+[dependencies.clap]
+version = "2.33.3"
+default-features = false
+features = ["wrap_help"]
+
+[dependencies.tokio]
+version = "1.15.0"
+features = [
+	"fs",
+	"io-std",
+	"parking_lot",
+	"process",
+	"rt",
+	"rt-multi-thread",
+	"signal",
+	"sync",
+]
+
+[dependencies.tracing-subscriber]
+version = "0.3.6"
+features = [
+	"env-filter",
+	"fmt",
+]
+
+[target.'cfg(target_env = "musl")'.dependencies]
+mimalloc = "0.1.26"
 
 [target.'cfg(not(target_os="freebsd"))'.dependencies]
 notify-rust = "4.5.2"
+
+[build-dependencies]
+embed-resource = "1.6.1"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"
@@ -37,9 +72,12 @@ insta = "1.7.1"
 predicates = "2.0.0"
 wait-timeout = "0.2.0"
 
+[features]
+dev-console = ["console-subscriber"]
+
 [profile.release]
-lto = true
-panic = "abort"
+debug = 1 # for stack traces
+lto = "fat"
 codegen-units = 1
 
 [package.metadata.binstall]
