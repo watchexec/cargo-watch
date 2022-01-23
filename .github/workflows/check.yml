@@ -83,6 +83,9 @@ jobs:
       - name: Add aarch-gnu tools
         run: sudo apt install -y gcc-aarch64-linux-gnu
         if: startsWith(matrix.target, 'aarch64-unknown-linux')
+      - name: Add arm7hf-gnu tools
+        run: sudo apt install -y gcc-arm-linux-gnueabihf
+        if: startsWith(matrix.target, 'armv7-unknown-linux-gnueabihf')
 
       - uses: actions-rs/toolchain@v1
         with:
