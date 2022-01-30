@@ -33,6 +33,8 @@ tracing = "0.1.26"
 watchexec = "2.0.0-pre.6"
 wild = "2.0.4"
 argfile = "0.1.3"
+guppy = "0.12.6"
+home = "0.5.3"
 
 [dependencies.clap]
 version = "3.0.10"

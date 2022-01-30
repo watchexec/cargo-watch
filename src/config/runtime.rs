@@ -25,6 +25,27 @@ pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
 
 	config.pathset(&args.watch);
 
+	if args.watch.is_empty() && !args.no_metadata {
+		// This is a round-about way of saying:
+		// $ cargo metadata --format-version=1 \
+		//   | jq .packages[].manifest_path \
+		//   | grep -v -F $HOME/.cargo/registry/src
+		let cargo_home = home::cargo_home()
+			.expect("TODO: the trait `Diagnostic` is not implemented for `std::io::Error`");
+		let graph = guppy::MetadataCommand::new()
+			.build_graph()
+			.expect("TODO: the trait `Diagnostic` is not implemented for `guppy::Error`");
+
+		config.pathset(
+			graph
+				.resolve_all()
+				.packages(guppy::graph::DependencyDirection::Forward)
+				.map(|package| package.manifest_path())
+				.filter(|path| !path.starts_with(&cargo_home))
+				.filter_map(|path| path.parent()),
+		);
+	}
+
 	if let Some(delay) = &args.delay {
 		let delay = if delay.ends_with("ms") {
 			let d: u64 = delay.trim_end_matches("ms").parse().into_diagnostic()?;

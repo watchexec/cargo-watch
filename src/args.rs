@@ -165,6 +165,17 @@ pub struct Args {
 	)]
 	pub packages_specs: Vec<String>,
 
+	/// Don't ask `cargo metadata` which paths to watch for the current workspace
+	///
+	/// Implied by `-w`. Use `--no-metadata` or `-w .` if you have dependencies that are
+	/// not part of a cargo package, or if your cargo workspace is too big, and you don't
+	/// want to watch the whole thing.
+	#[clap(
+		long = "no-metadata",
+		help_heading = OPTSET_WORKSPACES
+	)]
+	pub no_metadata: bool,
+
 	/// Watch specific file(s) or folder(s)
 	///
 	/// By default, the entire crate/workspace is watched.
