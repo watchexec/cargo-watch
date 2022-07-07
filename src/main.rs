@@ -1,7 +1,10 @@
 use std::env::var;
 
 use miette::{IntoDiagnostic, Result};
-use watchexec::{event::{Event, Priority}, Watchexec};
+use watchexec::{
+	event::{Event, Priority},
+	Watchexec,
+};
 
 mod args;
 mod config;
@@ -20,7 +23,7 @@ async fn main() -> Result<()> {
 		tracing_subscriber::fmt::init();
 	}
 
-	let args = config::get_args();
+	let (args, command_order) = config::get_args();
 
 	{
 		// TODO
@@ -45,7 +48,7 @@ async fn main() -> Result<()> {
 	}
 
 	let init = config::init(&args)?;
-	let runtime = config::runtime(&args)?;
+	let runtime = config::runtime(&args, command_order)?;
 	// runtime.filterer(filterer::new(&args).await?);
 
 	let wx = Watchexec::new(init, runtime)?;

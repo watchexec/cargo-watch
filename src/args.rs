@@ -179,17 +179,43 @@ pub struct Args {
 	)]
 	pub watch: Vec<PathBuf>,
 
-	/// Shell to use for the command, or `none` for direct execution
-	#[cfg_attr(
-		windows,
-		doc = "\n\nDefaults to Powershell. Examples: --use-shell=cmd, --use-shell=gitbash.exe"
-	)]
-	#[cfg_attr(
-		unix,
-		doc = "\n\nDefaults to $SHELL. Examples: --use-shell=sh, --use-shell=fish"
-	)]
-	#[clap(long = "use-shell", value_name = "shell", help_heading = OPTSET_ENVIRONMENT)]
-	pub shell: Option<String>,
+	/// Shell to use for --shell commands, or `none` for direct execution.
+	///
+	/// This applies only to `--shell` / `-s` commands, `--exec` / `-x` cargo commands are
+	/// executed directly, without a shell. The option applies to all subsequent shell
+	/// commands:
+	///
+	///     cargo watch --use-shell=zsh -s one -s two
+	///
+	/// will use zsh for commands one and two, but:
+	///
+	///     cargo watch -s one --use-shell=zsh -s two
+	///
+	/// will only use zsh for the second one.
+	///
+	/// As a convenience, if only one --use-shell is provided and it is used after all command
+	/// arguments, it is interpreted as if it was given first:
+	///
+	///     cargo watch -s one -s two --use-shell=zsh
+	///
+	/// will run both one and two with zsh. (Otherwise the option would do nothing.)
+	///
+	/// The first word must be the shell program, but it can be followed by options to pass to
+	/// the shell program:
+	///
+	///     cargo watch --use-shell='bash -s globext' -- 'ls **'
+	///
+	/// On Windows, defaults to Powershell. Elsewhere, defaults to $SHELL, falling back to `sh`
+	/// if not available.
+	// TODO: check that the bash shopt makes any sense
+	// TODO: check that clap doesn't eat all this nice layouting
+	#[clap(long = "use-shell", value_name = "shell", help_heading = OPTSET_ENVIRONMENT,
+		multiple_occurrences = true,
+		forbid_empty_values = true,
+		min_values = 1,
+		number_of_values = 1,
+            )]
+	pub use_shell: Vec<String>,
 
 	/// Change working directory of the command
 	///

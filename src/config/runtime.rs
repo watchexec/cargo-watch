@@ -1,9 +1,9 @@
-use std::{convert::Infallible, time::Duration, env};
+use std::{convert::Infallible, env, time::Duration};
 
-use miette::{IntoDiagnostic, Report, Result};
+use miette::{miette, IntoDiagnostic, Report, Result};
 use watchexec::{
 	action::{Action, Outcome, PostSpawn, PreSpawn},
-	command::Shell,
+	command::{Command, Shell},
 	config::RuntimeConfig,
 	event::ProcessEnd,
 	fs::Watcher,
@@ -17,11 +17,59 @@ use notify_rust::Notification;
 
 use crate::args::Args;
 
-pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
+pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeConfig> {
 	let mut config = RuntimeConfig::default();
 
-	// TODO: command jiggery
-	// config.command(args...);
+	let features = if args.features.is_empty() {
+		None
+	} else {
+		Some(args.features.join(","))
+	};
+
+	let mut used_shell = if args.use_shell.len() == 1 && command_order.last() == Some(&"use-shell")
+	{
+		args.use_shell.first().cloned()
+	} else {
+		None
+	};
+
+	let mut commands = Vec::with_capacity(args.cmd_cargo.len() + args.cmd_shell.len());
+
+	let mut cargos = args.cmd_cargo.iter();
+	let mut shells = args.cmd_shell.iter();
+	let mut use_shells = args.use_shell.iter();
+
+	for c in command_order {
+		match c {
+			"cargo" => {
+				commands.push(cargo_command(
+					cargos
+						.next()
+						.ok_or_else(|| miette!("Argument-order mismatch, this is a bug"))?,
+					&features,
+				)?);
+			}
+			"shell" => {
+				commands.push(shell_command(
+					shells
+						.next()
+						.ok_or_else(|| miette!("Argument-order mismatch, this is a bug"))?,
+					&used_shell,
+				)?);
+			}
+			"use-shell" => {
+				used_shell.replace(
+					use_shells
+						.next()
+						.ok_or_else(|| miette!("Argument-order mismatch, this is a bug"))?
+						.clone(),
+				);
+			}
+			_ => {}
+		}
+	}
+
+	config.commands(commands);
 
 	config.pathset(&args.watch);
 
@@ -51,20 +99,6 @@ pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
 	}
 
 	// config.command_grouped(args.process_group);
-
-	// config.command_shell(if let Some(s) = &args.shell {
-	// 	if s.eq_ignore_ascii_case("powershell") {
-	// 		Shell::Powershell
-	// 	} else if s.eq_ignore_ascii_case("none") {
-	// 		Shell::None
-	// 	} else if s.eq_ignore_ascii_case("cmd") {
-	// 		cmd_shell(s.into())
-	// 	} else {
-	// 		Shell::Unix(s.into())
-	// 	}
-	// } else {
-	// 	default_shell()
-	// });
 
 	let clear = args.clear;
 	let notif = args.notif;
@@ -209,10 +243,10 @@ pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
 	config.on_post_spawn(SyncFnHandler::from(move |postspawn: PostSpawn| {
 		#[cfg(not(target_os = "freebsd"))]
 		if notif {
-			 Notification::new()
-			 	.summary("Cargo Watch: change detected")
-			 	.body(&format!("Running `{}`", postspawn.command))
-			 	.show()?;
+			Notification::new()
+				.summary("Cargo Watch: change detected")
+				.body(&format!("Running `{}`", postspawn.command))
+				.show()?;
 		}
 
 		Ok::<(), notify_rust::error::Error>(())
@@ -240,4 +274,63 @@ fn cmd_shell(_: String) -> Shell {
 #[cfg(not(windows))]
 fn cmd_shell(s: String) -> Shell {
 	Shell::Unix(s)
+}
+
+fn cargo_command(arg: &String, features: &Option<String>) -> Result<Command> {
+	let mut lexed = shlex::split(arg).ok_or_else(|| miette!("Command is not valid: {:?}", arg))?;
+	let subc = lexed
+		.get(0)
+		.ok_or_else(|| miette!("Cargo command needs at least one word"))?
+		.clone();
+
+	if let Some(features) = features.as_ref() {
+		if subc.starts_with('b')
+			|| subc == "check"
+			|| subc == "doc"
+			|| subc.starts_with('r')
+			|| subc == "test"
+			|| subc == "install"
+		{
+			lexed.insert(1, "--features".into());
+			lexed.insert(2, features.into());
+		}
+	}
+
+	Ok(Command::Exec {
+		prog: "cargo".into(),
+		args: lexed,
+	})
+}
+
+fn shell_command(arg: &String, use_shell: &Option<String>) -> Result<Command> {
+	let (shell, shell_args) = if let Some(sh) = use_shell {
+		let mut lexed_shell = shlex::split(&sh)
+			.ok_or_else(|| miette!("Shell invocation syntax is invalid: {:?}", sh))?;
+		let shell_prog = lexed_shell.remove(0);
+
+		(
+			if shell_prog.eq_ignore_ascii_case("powershell") {
+				Shell::Powershell
+			} else if shell_prog.eq_ignore_ascii_case("none") {
+				// for now, silently discard any shell arguments provided
+				let mut lexed =
+					shlex::split(arg).ok_or_else(|| miette!("Command is not valid: {:?}", arg))?;
+				let prog = lexed.remove(0);
+				return Ok(Command::Exec { prog, args: lexed });
+			} else if shell_prog.eq_ignore_ascii_case("cmd") {
+				cmd_shell(shell_prog.into())
+			} else {
+				Shell::Unix(shell_prog.into())
+			},
+			lexed_shell,
+		)
+	} else {
+		(default_shell(), Vec::new())
+	};
+
+	Ok(Command::Shell {
+		shell,
+		args: shell_args,
+		command: arg.clone(),
+	})
 }
