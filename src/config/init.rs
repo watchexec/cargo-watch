@@ -9,12 +9,7 @@ pub fn init(_args: &Args) -> Result<InitConfig> {
 	let mut config = InitConfig::default();
 	config.on_error(SyncFnHandler::from(
 		|data| -> std::result::Result<(), Infallible> {
-			if cfg!(debug_assertions) {
-				eprintln!("[[{:?}]]", data);
-			} else {
-				eprintln!("[[{}]]", data);
-			}
-
+			eprintln!("[[{:?}]]", data);
 			Ok(())
 		},
 	));

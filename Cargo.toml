@@ -27,7 +27,7 @@ name = "cargo-watch"
 console-subscriber = { version = "0.1.0", optional = true }
 dunce = "1.0.2"
 futures = "0.3.17"
-miette = { version = "3.2.0", features = ["fancy"] }
+miette = { version = "4.7.1", features = ["fancy-no-backtrace"] }
 # shell-escape = "0.1.5"
 tracing = "0.1.26"
 watchexec = "2.0.0-pre.6"

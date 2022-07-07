@@ -340,7 +340,7 @@ dependencies = [
  "embed-resource",
  "futures",
  "insta",
- "miette 3.3.0",
+ "miette",
  "mimalloc",
  "notify-rust",
  "predicates",
@@ -384,7 +384,7 @@ dependencies = [
  "once_cell",
  "strsim",
  "termcolor",
- "textwrap 0.15.0",
+ "textwrap",
 ]
 
 [[package]]
@@ -1120,7 +1120,7 @@ dependencies = [
  "futures",
  "git-config",
  "ignore",
- "miette 4.7.1",
+ "miette",
  "project-origins",
  "thiserror",
  "tokio",
@@ -1321,44 +1321,21 @@ dependencies = [
 
 [[package]]
 name = "miette"
-version = "3.3.0"
+version = "4.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd2adcfcced5d625bf90a958a82ae5b93231f57f3df1383fee28c9b5096d35ed"
+checksum = "1c90329e44f9208b55f45711f9558cec15d7ef8295cc65ecd6d4188ae8edc58c"
 dependencies = [
  "atty",
- "backtrace",
- "miette-derive 3.3.0",
+ "miette-derive",
  "once_cell",
  "owo-colors",
  "supports-color",
  "supports-hyperlinks",
  "supports-unicode",
  "terminal_size",
- "textwrap 0.14.2",
- "thiserror",
-]
-
-[[package]]
-name = "miette"
-version = "4.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c90329e44f9208b55f45711f9558cec15d7ef8295cc65ecd6d4188ae8edc58c"
-dependencies = [
- "miette-derive 4.7.1",
- "once_cell",
+ "textwrap",
  "thiserror",
  "unicode-width",
-]
-
-[[package]]
-name = "miette-derive"
-version = "3.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c01a8b61312d367ce87956bb686731f87e4c6dd5dbc550e8f06e3c24fb1f67f"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -2346,20 +2323,14 @@ checksum = "507e9898683b6c43a9aa55b64259b721b52ba226e0f3779137e50ad114a4c90b"
 
 [[package]]
 name = "textwrap"
-version = "0.14.2"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0066c8d12af8b5acd21e00547c3797fde4e8677254a7ee429176ccebbe93dd80"
+checksum = "b1141d4d61095b28419e22cb0bbf02755f5e54e0526f97f1e3d1d160e60885fb"
 dependencies = [
  "smawk",
  "unicode-linebreak",
  "unicode-width",
 ]
-
-[[package]]
-name = "textwrap"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1141d4d61095b28419e22cb0bbf02755f5e54e0526f97f1e3d1d160e60885fb"
 
 [[package]]
 name = "thiserror"
@@ -2782,7 +2753,7 @@ dependencies = [
  "futures",
  "ignore-files",
  "libc",
- "miette 4.7.1",
+ "miette",
  "notify",
  "once_cell",
  "project-origins",

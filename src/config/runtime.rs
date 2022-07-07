@@ -1,4 +1,4 @@
-use std::{convert::Infallible, time::Duration};
+use std::{convert::Infallible, time::Duration, env};
 
 use miette::{IntoDiagnostic, Report, Result};
 use watchexec::{
@@ -52,19 +52,19 @@ pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
 
 	// config.command_grouped(args.process_group);
 
-	config.command_shell(if let Some(s) = &args.shell {
-		if s.eq_ignore_ascii_case("powershell") {
-			Shell::Powershell
-		} else if s.eq_ignore_ascii_case("none") {
-			Shell::None
-		} else if s.eq_ignore_ascii_case("cmd") {
-			cmd_shell(s.into())
-		} else {
-			Shell::Unix(s.into())
-		}
-	} else {
-		default_shell()
-	});
+	// config.command_shell(if let Some(s) = &args.shell {
+	// 	if s.eq_ignore_ascii_case("powershell") {
+	// 		Shell::Powershell
+	// 	} else if s.eq_ignore_ascii_case("none") {
+	// 		Shell::None
+	// 	} else if s.eq_ignore_ascii_case("cmd") {
+	// 		cmd_shell(s.into())
+	// 	} else {
+	// 		Shell::Unix(s.into())
+	// 	}
+	// } else {
+	// 	default_shell()
+	// });
 
 	let clear = args.clear;
 	let notif = args.notif;
@@ -209,17 +209,13 @@ pub fn runtime(args: &Args) -> Result<RuntimeConfig> {
 	config.on_post_spawn(SyncFnHandler::from(move |postspawn: PostSpawn| {
 		#[cfg(not(target_os = "freebsd"))]
 		if notif {
-			Notification::new()
-				.summary("Cargo Watch: change detected")
-				.body(&format!("Running `{}`", postspawn.command.join(" ")))
-				.show()
-				.map(drop)
-				.unwrap_or_else(|err| {
-					eprintln!("[[Failed to send desktop notification: {}]]", err);
-				});
+			 Notification::new()
+			 	.summary("Cargo Watch: change detected")
+			 	.body(&format!("Running `{}`", postspawn.command))
+			 	.show()?;
 		}
 
-		Ok::<(), Infallible>(())
+		Ok::<(), notify_rust::error::Error>(())
 	}));
 
 	Ok(config)
@@ -232,7 +228,7 @@ fn default_shell() -> Shell {
 
 #[cfg(not(windows))]
 fn default_shell() -> Shell {
-	Shell::default()
+	Shell::Unix(env::var("SHELL").unwrap_or_else(|_| String::from("sh")))
 }
 
 // because Shell::Cmd is only on windows

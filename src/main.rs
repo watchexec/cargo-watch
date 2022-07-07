@@ -1,7 +1,7 @@
 use std::env::var;
 
 use miette::{IntoDiagnostic, Result};
-use watchexec::{event::Event, Watchexec};
+use watchexec::{event::{Event, Priority}, Watchexec};
 
 mod args;
 mod config;
@@ -51,7 +51,7 @@ async fn main() -> Result<()> {
 	let wx = Watchexec::new(init, runtime)?;
 
 	if !args.postpone {
-		wx.send_event(Event::default()).await?;
+		wx.send_event(Event::default(), Priority::Urgent).await?;
 	}
 
 	wx.main().await.into_diagnostic()??;
