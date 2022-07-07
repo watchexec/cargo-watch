@@ -1,6 +1,6 @@
 complete -c cargo-watch -n "__fish_use_subcommand" -s h -l help -d 'Print help information'
 complete -c cargo-watch -n "__fish_use_subcommand" -s V -l version -d 'Print version information'
-complete -c cargo-watch -n "__fish_use_subcommand" -f -a "watch" -d 'Watches over your Cargo project’s source'
+complete -c cargo-watch -n "__fish_use_subcommand" -f -a "watch" -d 'Watch your Cargo-based project and run commands when files change'
 complete -c cargo-watch -n "__fish_use_subcommand" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
 complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -l features -d 'Feature(s) passed to cargo invocations' -r
 complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -s x -l exec -d 'Cargo command(s) to execute on changes' -r
@@ -9,7 +9,7 @@ complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -s d -l delay -d 
 complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -s i -l ignore -d 'Ignore a path pattern' -r
 complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -s p -l package -d 'Reserved for workspace support' -r
 complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -s w -l watch -d 'Watch specific file(s) or folder(s)' -r
-complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -l use-shell -d 'Shell to use for the command, or `none` for direct execution' -r
+complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -l use-shell -d 'Shell to use for --shell commands, or `none` for direct execution' -r
 complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -s C -l workdir -d 'Change working directory of the command' -r
 complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -l testing-only--once
 complete -c cargo-watch -n "__fish_seen_subcommand_from watch" -s c -l clear -d 'Clear the screen before each run'

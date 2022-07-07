@@ -4,11 +4,12 @@ const completion: Fig.Spec = {
   subcommands: [
     {
       name: "watch",
-      description: "Watches over your Cargo project’s source",
+      description: "Watch your Cargo-based project and run commands when files change",
       options: [
         {
           name: "--features",
           description: "Feature(s) passed to cargo invocations",
+          isRepeatable: true,
           args: {
             name: "features",
             isOptional: true,
@@ -17,6 +18,7 @@ const completion: Fig.Spec = {
         {
           name: ["-x", "--exec"],
           description: "Cargo command(s) to execute on changes",
+          isRepeatable: true,
           args: {
             name: "cmd-cargo",
             isVariadic: true,
@@ -26,6 +28,7 @@ const completion: Fig.Spec = {
         {
           name: ["-s", "--shell"],
           description: "Shell command(s) to execute on changes",
+          isRepeatable: true,
           args: {
             name: "cmd-shell",
             isVariadic: true,
@@ -43,6 +46,7 @@ const completion: Fig.Spec = {
         {
           name: ["-i", "--ignore"],
           description: "Ignore a path pattern",
+          isRepeatable: true,
           args: {
             name: "ignores",
             isVariadic: true,
@@ -52,6 +56,8 @@ const completion: Fig.Spec = {
         {
           name: ["-p", "--package"],
           description: "Reserved for workspace support",
+          hidden: true,
+          isRepeatable: true,
           args: {
             name: "packages-specs",
             isVariadic: true,
@@ -61,6 +67,7 @@ const completion: Fig.Spec = {
         {
           name: ["-w", "--watch"],
           description: "Watch specific file(s) or folder(s)",
+          isRepeatable: true,
           args: {
             name: "watch",
             isVariadic: true,
@@ -69,9 +76,11 @@ const completion: Fig.Spec = {
         },
         {
           name: "--use-shell",
-          description: "Shell to use for the command, or `none` for direct execution",
+          description: "Shell to use for --shell commands, or `none` for direct execution",
+          isRepeatable: true,
           args: {
-            name: "shell",
+            name: "use-shell",
+            isVariadic: true,
             isOptional: true,
           },
         },
@@ -160,8 +169,6 @@ const completion: Fig.Spec = {
     {
       name: "help",
       description: "Print this message or the help of the given subcommand(s)",
-      options: [
-      ],
       args: {
         name: "subcommand",
         isOptional: true,

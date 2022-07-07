@@ -43,7 +43,7 @@ _arguments "${_arguments_options[@]}" \
 '*--package=[Reserved for workspace support]:spec: ' \
 '*-w+[Watch specific file(s) or folder(s)]:path: ' \
 '*--watch=[Watch specific file(s) or folder(s)]:path: ' \
-'--use-shell=[Shell to use for the command, or `none` for direct execution]:shell: ' \
+'*--use-shell=[Shell to use for --shell commands, or `none` for direct execution]:shell: ' \
 '-C+[Change working directory of the command]:path: ' \
 '--workdir=[Change working directory of the command]:path: ' \
 '--testing-only--once[]' \
@@ -84,7 +84,7 @@ esac
 (( $+functions[_cargo-watch_commands] )) ||
 _cargo-watch_commands() {
     local commands; commands=(
-'watch:Watches over your Cargo project’s source' \
+'watch:Watch your Cargo-based project and run commands when files change' \
 'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'cargo-watch commands' commands "$@"

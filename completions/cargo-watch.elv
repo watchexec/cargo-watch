@@ -22,7 +22,7 @@ set edit:completion:arg-completer[cargo-watch] = {|@words|
             cand --help 'Print help information'
             cand -V 'Print version information'
             cand --version 'Print version information'
-            cand watch 'Watches over your Cargo project’s source'
+            cand watch 'Watch your Cargo-based project and run commands when files change'
             cand help 'Print this message or the help of the given subcommand(s)'
         }
         &'cargo-watch;watch'= {
@@ -39,7 +39,7 @@ set edit:completion:arg-completer[cargo-watch] = {|@words|
             cand --package 'Reserved for workspace support'
             cand -w 'Watch specific file(s) or folder(s)'
             cand --watch 'Watch specific file(s) or folder(s)'
-            cand --use-shell 'Shell to use for the command, or `none` for direct execution'
+            cand --use-shell 'Shell to use for --shell commands, or `none` for direct execution'
             cand -C 'Change working directory of the command'
             cand --workdir 'Change working directory of the command'
             cand --testing-only--once 'testing-only--once'

@@ -12,7 +12,8 @@ Register-ArgumentCompleter -Native -CommandName 'cargo-watch' -ScriptBlock {
             $element = $commandElements[$i]
             if ($element -isnot [StringConstantExpressionAst] -or
                 $element.StringConstantType -ne [StringConstantType]::BareWord -or
-                $element.Value.StartsWith('-')) {
+                $element.Value.StartsWith('-') -or
+                $element.Value -eq $wordToComplete) {
                 break
         }
         $element.Value
@@ -24,7 +25,7 @@ Register-ArgumentCompleter -Native -CommandName 'cargo-watch' -ScriptBlock {
             [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help information')
             [CompletionResult]::new('-V', 'V', [CompletionResultType]::ParameterName, 'Print version information')
             [CompletionResult]::new('--version', 'version', [CompletionResultType]::ParameterName, 'Print version information')
-            [CompletionResult]::new('watch', 'watch', [CompletionResultType]::ParameterValue, 'Watches over your Cargo project’s source')
+            [CompletionResult]::new('watch', 'watch', [CompletionResultType]::ParameterValue, 'Watch your Cargo-based project and run commands when files change')
             [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
             break
         }
@@ -42,7 +43,7 @@ Register-ArgumentCompleter -Native -CommandName 'cargo-watch' -ScriptBlock {
             [CompletionResult]::new('--package', 'package', [CompletionResultType]::ParameterName, 'Reserved for workspace support')
             [CompletionResult]::new('-w', 'w', [CompletionResultType]::ParameterName, 'Watch specific file(s) or folder(s)')
             [CompletionResult]::new('--watch', 'watch', [CompletionResultType]::ParameterName, 'Watch specific file(s) or folder(s)')
-            [CompletionResult]::new('--use-shell', 'use-shell', [CompletionResultType]::ParameterName, 'Shell to use for the command, or `none` for direct execution')
+            [CompletionResult]::new('--use-shell', 'use-shell', [CompletionResultType]::ParameterName, 'Shell to use for --shell commands, or `none` for direct execution')
             [CompletionResult]::new('-C', 'C', [CompletionResultType]::ParameterName, 'Change working directory of the command')
             [CompletionResult]::new('--workdir', 'workdir', [CompletionResultType]::ParameterName, 'Change working directory of the command')
             [CompletionResult]::new('--testing-only--once', 'testing-only--once', [CompletionResultType]::ParameterName, 'testing-only--once')
