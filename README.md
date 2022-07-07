@@ -1,9 +1,6 @@
-# $ cargo watch
-
-[![Crate release version](https://flat.badgen.net/crates/v/cargo-watch)](https://crates.io/crates/cargo-watch)
-[![Crate license: Apache 2.0](https://flat.badgen.net/github/license/watchexec/cargo-watch)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![Crate download count](https://flat.badgen.net/crates/d/cargo-watch)](https://crates.io/crates/cargo-watch)
 [![CI status](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml/badge.svg)](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml)
+
+# Cargo Watch
 
 Cargo Watch is a tool to watch your Cargo-based project and run commands when files change. It
 focuses on the Rust development experience and aims to be flexible enough to suit most without
