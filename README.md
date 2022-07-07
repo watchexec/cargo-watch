@@ -36,7 +36,7 @@ Or unpack directly from the [latest pre-built release](https://github.com/watche
 This repository contains a [manual page](./cargo-watch.1) and [shell completions](./completions)
 that you may want to install; the pre-built packages also include these.
 
-## Usage
+## Use
 
 By default, it runs `check`. You can easily override this, though:
 
@@ -69,9 +69,19 @@ There's a lot more you can do! Check out:
 - [Manual page](./cargo-watch.1.ronn)
 - [Troubleshooting](./TROUBLESHOOT.md)
 
-## About
+## Augment
 
-Created by [Félix Saparelli][passcod] and [awesome contributors][contributors].
+Cargo Watch pairs well with:
 
-[contributors]: https://github.com/watchexec/cargo-watch/network/members
-[passcod]: https://passcod.name
+- [just](https://github.com/casey/just): a modern alternative to `make`
+- [systemfd](https://github.com/mitsuhiko/systemfd): socket-passing in development
+
+## Extend
+
+- [watchexec library](https://github.com/watchexec/watchexec/tree/main/crates/lib): the engine behind this tool.
+- [clearscreen](https://github.com/watchexec/clearscreen): to clear the (terminal) screen on every platform.
+- [command group](https://github.com/watchexec/command-group): to run commands in process groups.
+- [ignore files](https://github.com/watchexec/watchexec/tree/main/crates/ignore-files): to find, parse, and interpret ignore files.
+- [project origins](https://github.com/watchexec/watchexec/tree/main/crates/project-origins): to find the origin(s) directory of a project.
+- [notify](https://github.com/notify-rs/notify): to respond to file modifications (third-party).
+- [globset](https://crates.io/crates/globset): to match globs (third-party).
