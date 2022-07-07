@@ -1,13 +1,13 @@
 # $ cargo watch
 
 [![Crate release version](https://flat.badgen.net/crates/v/cargo-watch)](https://crates.io/crates/cargo-watch)
-[![Crate license: Apache 2.0](https://flat.badgen.net/github/license/watchexec/cargo-watch)][license]
+[![Crate license: Apache 2.0](https://flat.badgen.net/github/license/watchexec/cargo-watch)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Crate download count](https://flat.badgen.net/crates/d/cargo-watch)](https://crates.io/crates/cargo-watch)
 [![CI status](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml/badge.svg)](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml)
-[![MSRV: 1.58.0](https://flat.badgen.net/badge/MSRV/1.58.0/purple)](https://blog.rust-lang.org/2022/01/13/Rust-1.58.0.html)
 
-Cargo Watch watches over your project's source for changes, and runs Cargo
-commands when they occur.
+Cargo Watch is a tool to watch your Cargo-based project and run commands when files change. It
+focuses on the Rust development experience and aims to be flexible enough to suit most without
+becoming complicated to use.
 
 If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 
@@ -15,53 +15,29 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 [entr]: https://github.com/eradman/entr
 [guard]: http://guardgem.org/
 
-- License: [Apache 2.0][license].
-- Website: **[watchexec.github.io](https://watchexec.github.io)**.
-- Minimum Supported Rust Version: 1.58.0.
-
-[license]: https://www.apache.org/licenses/LICENSE-2.0.html
+Looking for a similar tool that you can use for other kinds of projects?
+Try [Watchexec](https://github.com/watchexec/watchexec), this project's bigger sibling.
 
 ## Install
 
 <a href="https://repology.org/project/cargo-watch/versions"><img align="right" src="https://repology.org/badge/vertical-allrepos/cargo-watch.svg" alt="Packaging status"></a>
 
-Pre-built binaries are available **[from the website][cw-downloads]** or
-alternatively [on the Github Releases tab][releases].
-
-[cw-downloads]: https://watchexec.github.io/downloads/cargo-watch
-[releases]: https://github.com/watchexec/cargo-watch/releases
-
-With [cargo-binstall](https://github.com/ryankurte/cargo-binstall):
+Install or upgrade today with [Binstall](https://github.com/ryankurte/cargo-binstall):
 
 ```bash
 $ cargo binstall cargo-watch
 ```
 
-With cargo:
+Or with cargo (rustc >= 1.58.0) if you don't have Binstall yet:
 
 ```bash
 $ cargo install cargo-watch
 ```
 
-From source:
+Or unpack directly from the [latest pre-built release](https://github.com/watchexec/cargo-watch/releases/latest).
 
-```bash
-# clone:
-$ git clone https://github.com/watchexec/cargo-watch
-$ cd cargo-watch
-
-# build:
-$ cargo build --release
-$ target/release/cargo-watch -h
-
-# or install:
-$ cargo install --path .
-$ cargo watch -h
-```
-
-This repository contains a [manual page](./cargo-watch.1) and
-[shell completions](./completions) that you may want to install; the
-pre-built packages also include these.
+This repository contains a [manual page](./cargo-watch.1) and [shell completions](./completions)
+that you may want to install; the pre-built packages also include these.
 
 ## Usage
 
