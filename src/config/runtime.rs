@@ -249,7 +249,10 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 				.show()?;
 		}
 
-		Ok::<(), notify_rust::error::Error>(())
+		#[cfg(target_os = "freebsd")]
+		return Ok::<(), Infallible>(());
+		#[cfg(not(target_os = "freebsd"))]
+		return Ok::<(), notify_rust::error::Error>(());
 	}));
 
 	Ok(config)
