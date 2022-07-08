@@ -351,5 +351,5 @@ pub struct Args {
 		value_name = "trailing command",
 		help_heading = OPTSET_COMMAND,
 	)]
-	pub cmd_trail: Option<String>,
+	pub cmd_trail: Vec<String>,
 }

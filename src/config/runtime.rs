@@ -51,9 +51,13 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 	};
 	debug!(?used_shell, "initial used shell");
 
-	if let Some(trailing) = &args.cmd_trail {
-		info!("use the trailing command");
-		config.command(shell_command(&trailing, args.use_shell.first())?);
+	if !args.cmd_trail.is_empty() {
+		info!(trailing=?args.cmd_trail, "use the trailing command");
+		let mut args = args.cmd_trail.clone();
+		config.command(Command::Exec {
+			prog: args.remove(0),
+			args,
+		});
 	} else if args.cmd_cargo.is_empty() && args.cmd_shell.is_empty() {
 		info!("use the default command");
 		config.command(cargo_command("check", &features)?);

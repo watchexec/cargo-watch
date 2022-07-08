@@ -1,15 +1,36 @@
-use std::env::set_current_dir;
+use std::env::{current_dir, set_current_dir};
 
 use duct::cmd;
+use miette::{IntoDiagnostic, Result};
 use tempfile::TempDir;
+use trycmd::{cargo::cargo_bin, TestCases};
 
 #[test]
-fn cli_tests() -> Box<dyn std::error::Error + Send> {
-	let tmp_dir = TempDir::new()?;
-	set_current_dir(tmp_dir.path())?;
-	cmd!("cargo", "init", "--vcs", "git", "--bin").run()?;
+fn cli_tests() -> Result<()> {
+	let tests_dir = current_dir()
+		.into_diagnostic()?
+		.join("tests")
+		.join("trycmd");
 
-	trycmd::TestCases::new().case("tests/cmd/*.trycmd");
+	let tmp_dir = TempDir::new().into_diagnostic()?;
+	set_current_dir(tmp_dir.path()).into_diagnostic()?;
+	cmd!(
+		"cargo",
+		"init",
+		"--vcs",
+		"git",
+		"--bin",
+		"--name",
+		"cw-test",
+		"--offline"
+	)
+	.run()
+	.into_diagnostic()?;
 
-	tmp_dir.close()?;
+	TestCases::new()
+		.default_bin_path(cargo_bin!("cargo-watch"))
+		.case(tests_dir.join("*.trycmd"));
+
+	tmp_dir.close().into_diagnostic()?;
+	Ok(())
 }
