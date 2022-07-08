@@ -87,6 +87,7 @@ pkg-fmt = "txz"
 maintainer = "Félix Saparelli <felix@passcod.name>"
 license-file = ["LICENSE", "0"]
 section = "devel"
+depends = "libc6, libgcc-s1"
 # conf-files = [] # look me up when config file lands
 assets = [
 	["target/release/cargo-watch", "usr/bin/cargo-watch", "755"],
@@ -115,3 +116,10 @@ assets = [
 	{ source = "completions/_cargo-watch.zsh", dest = "/usr/share/zsh/site-functions/_cargo-watch", mode = "644" },
 	# set conf = true for config file when that lands
 ]
+auto-req = "disabled"
+# technically incorrect when using musl, but these are probably
+# present on every rpm-using system, so let's worry about it if
+# someone asks.
+[package.metadata.generate-rpm.requires]
+glibc = "*"
+libgcc = "*"
