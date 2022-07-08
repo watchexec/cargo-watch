@@ -72,7 +72,7 @@ jobs:
 
     name: Binaries for ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: "${{ !!matrix.experimental }}"
 
     steps:
       - uses: actions/checkout@v2
@@ -107,7 +107,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         name: Build
         with:
-          use-cross: ${{ matrix.cross }}
+          use-cross: "${{ !!matrix.cross }}"
           command: build
           args: "--release --locked --target ${{ matrix.target }} --features '${{ matrix.features }}'"
 

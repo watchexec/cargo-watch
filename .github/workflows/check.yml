@@ -82,7 +82,7 @@ jobs:
 
     name: Check on ${{ matrix.target }}
     runs-on: ${{ matrix.platform }}
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: "${{ !!matrix.experimental }}"
 
     steps:
       - uses: actions/checkout@v2
