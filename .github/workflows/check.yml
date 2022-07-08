@@ -46,8 +46,10 @@ jobs:
             platform: ubuntu-latest
           - target: x86_64-unknown-netbsd
             platform: ubuntu-latest
+            experimental: true
           - target: x86_64-unknown-redox
             platform: ubuntu-latest
+            experimental: true
           - target: x86_64-unknown-linux-gnu
             platform: ubuntu-latest
           - target: x86_64-unknown-linux-musl
@@ -70,9 +72,12 @@ jobs:
             platform: windows-latest
           - target: riscv64gc-unknown-linux-gnu
             platform: ubuntu-latest
+            experimental: true
 
     name: Check on ${{ matrix.target }}
     runs-on: ${{ matrix.platform }}
+    continue-on-error: ${{ matrix.experimental }}
+
     steps:
       - uses: actions/checkout@v2
 
