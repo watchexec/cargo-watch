@@ -150,7 +150,7 @@ jobs:
           set -euxo pipefail
           version=$(cat VERSION)
           dst="cargo-watch-v${version}-${{ matrix.target }}"
-          tar cavf "$dst.tar.xz" "$dst"
+          tar cavf "$dst.tzst" "$dst"
       - name: Archive (deb)
         if: startsWith(matrix.name, 'linux-')
         shell: bash
@@ -184,7 +184,7 @@ jobs:
           retention-days: 1
           path: |
             cargo-watch-v*.tar.xz
-            cargo-watch-v*.tar.zst
+            cargo-watch-v*.tzst
             cargo-watch-v*.deb
             cargo-watch-v*.rpm
             cargo-watch-v*.zip
