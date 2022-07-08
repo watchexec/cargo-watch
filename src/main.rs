@@ -10,7 +10,7 @@ mod args;
 mod config;
 // mod filterer;
 
-#[cfg(target_env = "musl")]
+#[cfg(feature = "mimalloc")]
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 

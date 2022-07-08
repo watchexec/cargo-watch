@@ -29,6 +29,7 @@ console-subscriber = { version = "0.1.6", optional = true }
 dunce = "1.0.2"
 futures = "0.3.21"
 miette = { version = "4.7.1", features = ["fancy-no-backtrace"] }
+mimalloc = { version = "0.1.29", optional = true }
 shlex = "1.1.0"
 tracing = "0.1.35"
 watchexec = "2.0.0"
@@ -54,9 +55,6 @@ features = [
 	"fmt",
 ]
 
-[target.'cfg(any(windows, target_env = "musl"))'.dependencies]
-mimalloc = "0.1.29"
-
 [target.'cfg(not(target_os="freebsd"))'.dependencies]
 notify-rust = "4.5.8"
 
@@ -72,6 +70,7 @@ trycmd = "0.13.4"
 
 [features]
 dev-console = ["console-subscriber"]
+mimalloc = ["dep:mimalloc"]
 
 [profile.release]
 debug = 1 # for stack traces
