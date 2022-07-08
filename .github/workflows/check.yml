@@ -19,7 +19,7 @@ jobs:
           - macos
         version:
           - stable
-          - 1.58.0
+          - 1.60.0
 
     name: Test on ${{ matrix.platform }} with ${{ matrix.version }}
     runs-on: "${{ matrix.platform }}-latest"

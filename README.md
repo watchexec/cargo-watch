@@ -25,7 +25,7 @@ Install or upgrade today with [Binstall](https://github.com/ryankurte/cargo-bins
 $ cargo binstall cargo-watch
 ```
 
-Or with cargo (rustc >= 1.58.0) if you don't have Binstall yet:
+Or with cargo (rustc >= 1.60.0) if you don't have Binstall yet:
 
 ```bash
 $ cargo install cargo-watch

@@ -15,7 +15,7 @@ readme = "README.md"
 
 edition = "2021"
 resolver = "2"
-rust-version = "1.58.0"
+rust-version = "1.60.0"
 
 include = ["src", "examples", "tests", "build.rs", "/*manifest*", "README.md"]
 
@@ -70,7 +70,7 @@ trycmd = "0.13.4"
 
 [features]
 dev-console = ["console-subscriber"]
-mimalloc = []
+mimalloc = ["dep:mimalloc"]
 
 [profile.release]
 debug = 1 # for stack traces
