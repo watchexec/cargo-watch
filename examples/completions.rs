@@ -18,7 +18,7 @@ fn main() -> Result<(), Error> {
 }
 
 fn gen_help(gen: impl Generator) -> Result<(), Error> {
-	let mut app = args::App::into_app();
+	let mut app = args::Args::into_app();
 	let path = generate_to(gen, &mut app, "cargo-watch", "./completions/")?;
 	println!("completion file is generated: {:?}", path);
 	Ok(())

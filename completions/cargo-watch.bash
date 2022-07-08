@@ -12,12 +12,6 @@ _cargo-watch() {
             "$1")
                 cmd="cargo__watch"
                 ;;
-            help)
-                cmd+="__help"
-                ;;
-            watch)
-                cmd+="__watch"
-                ;;
             *)
                 ;;
         esac
@@ -25,40 +19,20 @@ _cargo-watch() {
 
     case "${cmd}" in
         cargo__watch)
-            opts="-h -V --help --version watch help"
+            opts="-h -V -c -q -x -s -d -i -p -w -S -C -N -E -B -L --help --version --clear --debug --why --ignore-nothing --no-gitignore --no-ignore --no-restart --all --poll --postpone --delay-run --quit-after-n --features --quiet --exec --shell --delay --ignore --package --watch --use-shell --workdir --notify --env --no-auto-env <trailing command>..."
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
-                *)
-                    COMPREPLY=()
+                --delay-run)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
                     ;;
-            esac
-            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-            return 0
-            ;;
-        cargo__watch__help)
-            opts="<SUBCOMMAND>..."
-            if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
-                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-                return 0
-            fi
-            case "${prev}" in
-                *)
-                    COMPREPLY=()
+                --quit-after-n)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
                     ;;
-            esac
-            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-            return 0
-            ;;
-        cargo__watch__watch)
-            opts="-c -q -x -s -d -i -p -w -C -N -B -L -h -V --testing-only--once --clear --debug --why --ignore-nothing --no-gitignore --no-ignore --no-restart --all --poll --postpone --features --quiet --exec --shell --delay --ignore --package --watch --use-shell --workdir --notify --help --version <trailing command>..."
-            if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
-                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-                return 0
-            fi
-            case "${prev}" in
                 --features)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
@@ -115,11 +89,31 @@ _cargo-watch() {
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
+                -S)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
                 --workdir)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
                 -C)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                --env)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -E)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -B)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -L)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;

@@ -21,15 +21,8 @@ Register-ArgumentCompleter -Native -CommandName 'cargo-watch' -ScriptBlock {
 
     $completions = @(switch ($command) {
         'cargo-watch' {
-            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help information')
-            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help information')
-            [CompletionResult]::new('-V', 'V', [CompletionResultType]::ParameterName, 'Print version information')
-            [CompletionResult]::new('--version', 'version', [CompletionResultType]::ParameterName, 'Print version information')
-            [CompletionResult]::new('watch', 'watch', [CompletionResultType]::ParameterValue, 'Watch your Cargo-based project and run commands when files change')
-            [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
-            break
-        }
-        'cargo-watch;watch' {
+            [CompletionResult]::new('--delay-run', 'delay-run', [CompletionResultType]::ParameterName, 'Sleep some time before running commands')
+            [CompletionResult]::new('--quit-after-n', 'quit-after-n', [CompletionResultType]::ParameterName, 'Quit after a set amount of triggers')
             [CompletionResult]::new('--features', 'features', [CompletionResultType]::ParameterName, 'Feature(s) passed to cargo invocations')
             [CompletionResult]::new('-x', 'x', [CompletionResultType]::ParameterName, 'Cargo command(s) to execute on changes')
             [CompletionResult]::new('--exec', 'exec', [CompletionResultType]::ParameterName, 'Cargo command(s) to execute on changes')
@@ -43,10 +36,18 @@ Register-ArgumentCompleter -Native -CommandName 'cargo-watch' -ScriptBlock {
             [CompletionResult]::new('--package', 'package', [CompletionResultType]::ParameterName, 'Reserved for workspace support')
             [CompletionResult]::new('-w', 'w', [CompletionResultType]::ParameterName, 'Watch specific file(s) or folder(s)')
             [CompletionResult]::new('--watch', 'watch', [CompletionResultType]::ParameterName, 'Watch specific file(s) or folder(s)')
+            [CompletionResult]::new('-S', 'S', [CompletionResultType]::ParameterName, 'Shell to use for --shell commands, or `none` for direct execution')
             [CompletionResult]::new('--use-shell', 'use-shell', [CompletionResultType]::ParameterName, 'Shell to use for --shell commands, or `none` for direct execution')
             [CompletionResult]::new('-C', 'C', [CompletionResultType]::ParameterName, 'Change working directory of the command')
             [CompletionResult]::new('--workdir', 'workdir', [CompletionResultType]::ParameterName, 'Change working directory of the command')
-            [CompletionResult]::new('--testing-only--once', 'testing-only--once', [CompletionResultType]::ParameterName, 'testing-only--once')
+            [CompletionResult]::new('-E', 'E', [CompletionResultType]::ParameterName, 'Inject environment variables into the commands'' environments')
+            [CompletionResult]::new('--env', 'env', [CompletionResultType]::ParameterName, 'Inject environment variables into the commands'' environments')
+            [CompletionResult]::new('-B', 'B', [CompletionResultType]::ParameterName, 'Inject RUST_BACKTRACE=value into the commands'' environments')
+            [CompletionResult]::new('-L', 'L', [CompletionResultType]::ParameterName, 'Inject RUST_LOG=value into the commands'' environments')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Show the help')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Show the help')
+            [CompletionResult]::new('-V', 'V', [CompletionResultType]::ParameterName, 'Show the version')
+            [CompletionResult]::new('--version', 'version', [CompletionResultType]::ParameterName, 'Show the version')
             [CompletionResult]::new('-c', 'c', [CompletionResultType]::ParameterName, 'Clear the screen before each run')
             [CompletionResult]::new('--clear', 'clear', [CompletionResultType]::ParameterName, 'Clear the screen before each run')
             [CompletionResult]::new('--debug', 'debug', [CompletionResultType]::ParameterName, 'Show debug output')
@@ -62,15 +63,7 @@ Register-ArgumentCompleter -Native -CommandName 'cargo-watch' -ScriptBlock {
             [CompletionResult]::new('--quiet', 'quiet', [CompletionResultType]::ParameterName, 'Suppress output from cargo watch itself')
             [CompletionResult]::new('-N', 'N', [CompletionResultType]::ParameterName, 'Send a desktop notification on command start and end')
             [CompletionResult]::new('--notify', 'notify', [CompletionResultType]::ParameterName, 'Send a desktop notification on command start and end')
-            [CompletionResult]::new('-B', 'B', [CompletionResultType]::ParameterName, 'Inject RUST_BACKTRACE=value into the command''s environment')
-            [CompletionResult]::new('-L', 'L', [CompletionResultType]::ParameterName, 'Inject RUST_LOG=value into the command''s environment')
-            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help information')
-            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help information')
-            [CompletionResult]::new('-V', 'V', [CompletionResultType]::ParameterName, 'Print version information')
-            [CompletionResult]::new('--version', 'version', [CompletionResultType]::ParameterName, 'Print version information')
-            break
-        }
-        'cargo-watch;help' {
+            [CompletionResult]::new('--no-auto-env', 'no-auto-env', [CompletionResultType]::ParameterName, 'Don’t inject CARGO_WATCH_* variables in the environment')
             break
         }
     })

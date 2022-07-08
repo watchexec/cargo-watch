@@ -15,21 +15,8 @@ _cargo-watch() {
 
     local context curcontext="$curcontext" state line
     _arguments "${_arguments_options[@]}" \
-'-h[Print help information]' \
-'--help[Print help information]' \
-'-V[Print version information]' \
-'--version[Print version information]' \
-":: :_cargo-watch_commands" \
-"*::: :->cargo-watch" \
-&& ret=0
-    case $state in
-    (cargo-watch)
-        words=($line[1] "${words[@]}")
-        (( CURRENT += 1 ))
-        curcontext="${curcontext%:*:*}:cargo-watch-command-$line[1]:"
-        case $line[1] in
-            (watch)
-_arguments "${_arguments_options[@]}" \
+'--delay-run=[Sleep some time before running commands]:seconds: ' \
+'--quit-after-n=[Quit after a set amount of triggers]:number: ' \
 '*--features=[Feature(s) passed to cargo invocations]:FEATURES: ' \
 '*-x+[Cargo command(s) to execute on changes]:cmd: ' \
 '*--exec=[Cargo command(s) to execute on changes]:cmd: ' \
@@ -43,10 +30,18 @@ _arguments "${_arguments_options[@]}" \
 '*--package=[Reserved for workspace support]:spec: ' \
 '*-w+[Watch specific file(s) or folder(s)]:path: ' \
 '*--watch=[Watch specific file(s) or folder(s)]:path: ' \
+'*-S+[Shell to use for --shell commands, or `none` for direct execution]:shell: ' \
 '*--use-shell=[Shell to use for --shell commands, or `none` for direct execution]:shell: ' \
 '-C+[Change working directory of the command]:path: ' \
 '--workdir=[Change working directory of the command]:path: ' \
-'--testing-only--once[]' \
+'*-E+[Inject environment variables into the commands'\'' environments]:key=value: ' \
+'*--env=[Inject environment variables into the commands'\'' environments]:key=value: ' \
+'-B+[Inject RUST_BACKTRACE=value into the commands'\'' environments]:RUST_BACKTRACE value: ' \
+'-L+[Inject RUST_LOG=value into the commands'\'' environments]:RUST_LOG value: ' \
+'-h[Show the help]' \
+'--help[Show the help]' \
+'-V[Show the version]' \
+'--version[Show the version]' \
 '-c[Clear the screen before each run]' \
 '--clear[Clear the screen before each run]' \
 '--debug[Show debug output]' \
@@ -62,42 +57,15 @@ _arguments "${_arguments_options[@]}" \
 '--quiet[Suppress output from cargo watch itself]' \
 '-N[Send a desktop notification on command start and end]' \
 '--notify[Send a desktop notification on command start and end]' \
-'-B[Inject RUST_BACKTRACE=value into the command'\''s environment]' \
-'-L[Inject RUST_LOG=value into the command'\''s environment]' \
-'-h[Print help information]' \
-'--help[Print help information]' \
-'-V[Print version information]' \
-'--version[Print version information]' \
+'--no-auto-env[Don’t inject CARGO_WATCH_* variables in the environment]' \
 '*::cmd-trail -- Full command to run. -x and -s will be ignored!:' \
 && ret=0
-;;
-(help)
-_arguments "${_arguments_options[@]}" \
-'*::subcommand -- The subcommand whose help message to display:' \
-&& ret=0
-;;
-        esac
-    ;;
-esac
 }
 
 (( $+functions[_cargo-watch_commands] )) ||
 _cargo-watch_commands() {
-    local commands; commands=(
-'watch:Watch your Cargo-based project and run commands when files change' \
-'help:Print this message or the help of the given subcommand(s)' \
-    )
+    local commands; commands=()
     _describe -t commands 'cargo-watch commands' commands "$@"
-}
-(( $+functions[_cargo-watch__help_commands] )) ||
-_cargo-watch__help_commands() {
-    local commands; commands=()
-    _describe -t commands 'cargo-watch help commands' commands "$@"
-}
-(( $+functions[_cargo-watch__watch_commands] )) ||
-_cargo-watch__watch_commands() {
-    local commands; commands=()
-    _describe -t commands 'cargo-watch watch commands' commands "$@"
 }
 
 _cargo-watch "$@"

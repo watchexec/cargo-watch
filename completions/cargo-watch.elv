@@ -18,14 +18,8 @@ set edit:completion:arg-completer[cargo-watch] = {|@words|
     }
     var completions = [
         &'cargo-watch'= {
-            cand -h 'Print help information'
-            cand --help 'Print help information'
-            cand -V 'Print version information'
-            cand --version 'Print version information'
-            cand watch 'Watch your Cargo-based project and run commands when files change'
-            cand help 'Print this message or the help of the given subcommand(s)'
-        }
-        &'cargo-watch;watch'= {
+            cand --delay-run 'Sleep some time before running commands'
+            cand --quit-after-n 'Quit after a set amount of triggers'
             cand --features 'Feature(s) passed to cargo invocations'
             cand -x 'Cargo command(s) to execute on changes'
             cand --exec 'Cargo command(s) to execute on changes'
@@ -39,10 +33,18 @@ set edit:completion:arg-completer[cargo-watch] = {|@words|
             cand --package 'Reserved for workspace support'
             cand -w 'Watch specific file(s) or folder(s)'
             cand --watch 'Watch specific file(s) or folder(s)'
+            cand -S 'Shell to use for --shell commands, or `none` for direct execution'
             cand --use-shell 'Shell to use for --shell commands, or `none` for direct execution'
             cand -C 'Change working directory of the command'
             cand --workdir 'Change working directory of the command'
-            cand --testing-only--once 'testing-only--once'
+            cand -E 'Inject environment variables into the commands'' environments'
+            cand --env 'Inject environment variables into the commands'' environments'
+            cand -B 'Inject RUST_BACKTRACE=value into the commands'' environments'
+            cand -L 'Inject RUST_LOG=value into the commands'' environments'
+            cand -h 'Show the help'
+            cand --help 'Show the help'
+            cand -V 'Show the version'
+            cand --version 'Show the version'
             cand -c 'Clear the screen before each run'
             cand --clear 'Clear the screen before each run'
             cand --debug 'Show debug output'
@@ -58,14 +60,7 @@ set edit:completion:arg-completer[cargo-watch] = {|@words|
             cand --quiet 'Suppress output from cargo watch itself'
             cand -N 'Send a desktop notification on command start and end'
             cand --notify 'Send a desktop notification on command start and end'
-            cand -B 'Inject RUST_BACKTRACE=value into the command''s environment'
-            cand -L 'Inject RUST_LOG=value into the command''s environment'
-            cand -h 'Print help information'
-            cand --help 'Print help information'
-            cand -V 'Print version information'
-            cand --version 'Print version information'
-        }
-        &'cargo-watch;help'= {
+            cand --no-auto-env 'Don’t inject CARGO_WATCH_* variables in the environment'
         }
     ]
     $completions[$command]
