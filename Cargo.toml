@@ -64,18 +64,11 @@ notify-rust = "4.5.8"
 embed-resource = "1.7.3"
 
 [dev-dependencies]
-assert_cmd = "1.0.1"
-clap_complete = "3.0.4"
-clap_complete_fig = "3.0.2"
-insta = "1.7.1"
-predicates = "2.0.0"
-wait-timeout = "0.2.0"
-
-[dev-dependencies.clap]
-version = "3.0.10"
-features = [
-	"derive",
-]
+clap_complete = "3.2.3"
+clap_complete_fig = "3.2.4"
+duct = "0.13.5"
+tempfile = "3.3.0"
+trycmd = "0.13.4"
 
 [features]
 dev-console = ["console-subscriber"]

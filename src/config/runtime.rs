@@ -1,6 +1,16 @@
-use std::{convert::Infallible, env, time::Duration};
+use std::{
+	convert::Infallible,
+	env,
+	path::PathBuf,
+	sync::{
+		atomic::{AtomicU8, Ordering},
+		Arc,
+	},
+	time::Duration,
+};
 
 use miette::{miette, IntoDiagnostic, Report, Result};
+use tracing::{debug, info};
 use watchexec::{
 	action::{Action, Outcome, PostSpawn, PreSpawn},
 	command::{Command, Shell},
@@ -20,11 +30,18 @@ use crate::args::Args;
 pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeConfig> {
 	let mut config = RuntimeConfig::default();
 
+	let mut pathset = args.watch.clone();
+	if pathset.is_empty() {
+		pathset = vec![PathBuf::from(".")];
+	}
+	config.pathset(&pathset);
+
 	let features = if args.features.is_empty() {
 		None
 	} else {
 		Some(args.features.join(","))
 	};
+	info!(?features, "features");
 
 	let mut used_shell = if args.use_shell.len() == 1 && command_order.last() == Some(&"use-shell")
 	{
@@ -32,46 +49,54 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 	} else {
 		None
 	};
+	debug!(?used_shell, "initial used shell");
 
-	let mut commands = Vec::with_capacity(args.cmd_cargo.len() + args.cmd_shell.len());
+	if let Some(trailing) = &args.cmd_trail {
+		info!("use the trailing command");
+		config.command(shell_command(&trailing, args.use_shell.first())?);
+	} else if args.cmd_cargo.is_empty() && args.cmd_shell.is_empty() {
+		info!("use the default command");
+		config.command(cargo_command("check", &features)?);
+	} else {
+		info!("use the optioned commands");
+		let mut commands = Vec::with_capacity(args.cmd_cargo.len() + args.cmd_shell.len());
 
-	let mut cargos = args.cmd_cargo.iter();
-	let mut shells = args.cmd_shell.iter();
-	let mut use_shells = args.use_shell.iter();
+		let mut cargos = args.cmd_cargo.iter();
+		let mut shells = args.cmd_shell.iter();
+		let mut use_shells = args.use_shell.iter();
 
-	for c in command_order {
-		match c {
-			"cargo" => {
-				commands.push(cargo_command(
-					cargos
-						.next()
-						.ok_or_else(|| miette!("Argument-order mismatch, this is a bug"))?,
-					&features,
-				)?);
+		for c in command_order {
+			match c {
+				"cargo" => {
+					commands.push(cargo_command(
+						cargos
+							.next()
+							.ok_or_else(|| miette!("Argument-order mismatch, this is a bug"))?,
+						&features,
+					)?);
+				}
+				"shell" => {
+					commands.push(shell_command(
+						shells
+							.next()
+							.ok_or_else(|| miette!("Argument-order mismatch, this is a bug"))?,
+						used_shell.as_ref(),
+					)?);
+				}
+				"use-shell" => {
+					used_shell.replace(
+						use_shells
+							.next()
+							.ok_or_else(|| miette!("Argument-order mismatch, this is a bug"))?
+							.clone(),
+					);
+				}
+				_ => {}
 			}
-			"shell" => {
-				commands.push(shell_command(
-					shells
-						.next()
-						.ok_or_else(|| miette!("Argument-order mismatch, this is a bug"))?,
-					&used_shell,
-				)?);
-			}
-			"use-shell" => {
-				used_shell.replace(
-					use_shells
-						.next()
-						.ok_or_else(|| miette!("Argument-order mismatch, this is a bug"))?
-						.clone(),
-				);
-			}
-			_ => {}
 		}
+
+		config.commands(commands);
 	}
-
-	config.commands(commands);
-
-	config.pathset(&args.watch);
 
 	if let Some(delay) = &args.delay {
 		let delay = if delay.ends_with("ms") {
@@ -100,6 +125,7 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 
 	// config.command_grouped(args.process_group);
 
+	let quiet = args.quiet;
 	let clear = args.clear;
 	let notif = args.notif;
 	let on_busy = if args.no_restart {
@@ -117,7 +143,8 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 	// 	.unwrap_or(SubSignal::Terminate);
 
 	let print_events = args.why;
-	let once = args.once;
+	let quit_after_n = args.quit_after_n.map(|n| Arc::new(AtomicU8::new(n)));
+	let delay_run = args.delay_run.map(Duration::from_secs);
 
 	config.on_action(move |action: Action| {
 		let fut = async { Ok::<(), Infallible>(()) };
@@ -126,11 +153,6 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 			for (n, event) in action.events.iter().enumerate() {
 				eprintln!("[EVENT {}] {}", n, event);
 			}
-		}
-
-		if once {
-			action.outcome(Outcome::both(Outcome::Start, Outcome::wait(Outcome::Exit)));
-			return fut;
 		}
 
 		let signals: Vec<MainSignal> = action.events.iter().flat_map(|e| e.signals()).collect();
@@ -178,7 +200,7 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 					Some(ProcessEnd::Exception(ex)) => {
 						(format!("Command ended by exception {:#x}", ex), true)
 					}
-					Some(ProcessEnd::Success) => ("Command was successful".to_string(), false),
+					Some(ProcessEnd::Success) => ("Command was successful".to_string(), !quiet),
 					None => ("Command completed".to_string(), false),
 				};
 
@@ -198,35 +220,61 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 						});
 				}
 
+				if let Some(runs) = quit_after_n.clone() {
+					if runs.load(Ordering::SeqCst) == 0 {
+						debug!("quitting after n triggers");
+						action.outcome(Outcome::Exit);
+						return fut;
+					}
+				}
+
 				action.outcome(Outcome::DoNothing);
 				return fut;
 			}
 		}
 
-		let when_running = match (clear, on_busy) {
-			(_, "do-nothing") => Outcome::DoNothing,
-			(true, "restart") => {
-				Outcome::both(Outcome::Stop, Outcome::both(Outcome::Clear, Outcome::Start))
+		if let Some(runs) = quit_after_n.clone() {
+			if runs.load(Ordering::SeqCst) == 0 {
+				debug!("quitting after n triggers");
+				action.outcome(Outcome::Exit);
+				return fut;
 			}
-			(false, "restart") => Outcome::both(Outcome::Stop, Outcome::Start),
-			// (_, "signal") => Outcome::Signal(signal),
-			// (true, "queue") => Outcome::wait(Outcome::both(Outcome::Clear, Outcome::Start)),
-			// (false, "queue") => Outcome::wait(Outcome::Start),
-			_ => Outcome::DoNothing,
-		};
+		}
 
-		let when_idle = if clear {
+		let start = if clear {
 			Outcome::both(Outcome::Clear, Outcome::Start)
 		} else {
 			Outcome::Start
 		};
+
+		let start = if let Some(delay) = &delay_run {
+			Outcome::both(Outcome::Sleep(*delay), start)
+		} else {
+			start
+		};
+
+		let when_idle = start.clone();
+		let when_running = match on_busy {
+			"do-nothing" => Outcome::DoNothing,
+			"restart" => Outcome::both(Outcome::Stop, start),
+			// "signal" => Outcome::Signal(signal),
+			// "queue" => Outcome::wait(start),
+			_ => Outcome::DoNothing,
+		};
+
+		if let Some(runs) = quit_after_n.clone() {
+			let remaining = runs.fetch_sub(1, Ordering::SeqCst);
+			if remaining > 0 {
+				debug!(?remaining, "getting closer to quitting");
+			}
+		}
 
 		action.outcome(Outcome::if_running(when_running, when_idle));
 
 		fut
 	});
 
-	let no_env = false; // args.is_present("no-environment");
+	let no_env = args.no_auto_env;
 	config.on_pre_spawn(move |prespawn: PreSpawn| async move {
 		if !no_env {
 			let envs = summarise_events_to_env(prespawn.events.iter());
@@ -235,6 +283,10 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 					command.env(format!("CARGO_WATCH_{}_PATH", k), v);
 				}
 			}
+		}
+
+		if !quiet {
+			eprintln!("[[Running `{}`]]", prespawn.command);
 		}
 
 		Ok::<(), Infallible>(())
@@ -279,7 +331,9 @@ fn cmd_shell(s: String) -> Shell {
 	Shell::Unix(s)
 }
 
-fn cargo_command(arg: &String, features: &Option<String>) -> Result<Command> {
+fn cargo_command(arg: &str, features: &Option<String>) -> Result<Command> {
+	debug!(command=?arg, ?features, "building a cargo command");
+
 	let mut lexed = shlex::split(arg).ok_or_else(|| miette!("Command is not valid: {:?}", arg))?;
 	let subc = lexed
 		.get(0)
@@ -305,7 +359,9 @@ fn cargo_command(arg: &String, features: &Option<String>) -> Result<Command> {
 	})
 }
 
-fn shell_command(arg: &String, use_shell: &Option<String>) -> Result<Command> {
+fn shell_command(arg: &str, use_shell: Option<&String>) -> Result<Command> {
+	debug!(command=?arg, ?use_shell, "building a shelled command");
+
 	let (shell, shell_args) = if let Some(sh) = use_shell {
 		let mut lexed_shell = shlex::split(&sh)
 			.ok_or_else(|| miette!("Shell invocation syntax is invalid: {:?}", sh))?;
@@ -334,6 +390,6 @@ fn shell_command(arg: &String, use_shell: &Option<String>) -> Result<Command> {
 	Ok(Command::Shell {
 		shell,
 		args: shell_args,
-		command: arg.clone(),
+		command: arg.into(),
 	})
 }
