@@ -155,11 +155,11 @@ const completion: Fig.Spec = {
       description: "Ignore nothing, not even target/ and .git/",
     },
     {
-      name: "--no-gitignore",
-      description: "Don’t use .gitignore files",
+      name: "--no-vcs-ignores",
+      description: "Don’t use VCS ignore files",
     },
     {
-      name: "--no-ignore",
+      name: "--no-dot-ignores",
       description: "Don’t use .ignore files",
     },
     {
@@ -168,7 +168,7 @@ const completion: Fig.Spec = {
     },
     {
       name: "--all",
-      description: "Reserves for workspace support",
+      description: "Reserved for workspace support",
     },
     {
       name: "--poll",

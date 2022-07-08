@@ -58,28 +58,28 @@ pub struct Args {
 	)]
 	pub ignore_nothing: bool,
 
-	/// Don’t use .gitignore files
+	/// Don’t use VCS ignore files
 	#[clap(
-		long = "no-gitignore",
+		long,
 		help_heading = OPTSET_FILTERING,
 	)]
-	pub no_gitignore: bool,
+	pub no_vcs_ignores: bool,
 
 	/// Don’t use .ignore files
 	#[clap(
-		long = "no-ignore",
+		long,
 		help_heading = OPTSET_FILTERING,
 	)]
-	pub no_ignore: bool,
+	pub no_dot_ignores: bool,
 
 	/// Don’t restart command while it’s still running
 	#[clap(
-		long = "no-restart",
+		long,
 		help_heading = OPTSET_BEHAVIOUR,
 	)]
 	pub no_restart: bool,
 
-	/// Reserves for workspace support
+	/// Reserved for workspace support
 	#[clap(
 		long = "all",
 		hide = true,
@@ -89,14 +89,14 @@ pub struct Args {
 
 	/// Force use of polling for file changes
 	#[clap(
-		long = "poll",
+		long,
 		help_heading = OPTSET_BEHAVIOUR,
 	)]
 	pub poll: bool,
 
 	/// Postpone first run until a file changes
 	#[clap(
-		long = "postpone",
+		long,
 		help_heading = OPTSET_BEHAVIOUR,
 	)]
 	pub postpone: bool,

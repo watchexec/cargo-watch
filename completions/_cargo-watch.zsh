@@ -47,10 +47,10 @@ _cargo-watch() {
 '--debug[Show debug output]' \
 '--why[Show paths that changed]' \
 '--ignore-nothing[Ignore nothing, not even target/ and .git/]' \
-'--no-gitignore[Don’t use .gitignore files]' \
-'--no-ignore[Don’t use .ignore files]' \
+'--no-vcs-ignores[Don’t use VCS ignore files]' \
+'--no-dot-ignores[Don’t use .ignore files]' \
 '--no-restart[Don’t restart command while it’s still running]' \
-'--all[Reserves for workspace support]' \
+'--all[Reserved for workspace support]' \
 '--poll[Force use of polling for file changes]' \
 '--postpone[Postpone first run until a file changes]' \
 '-q[Suppress output from cargo watch itself]' \

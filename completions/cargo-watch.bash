@@ -19,7 +19,7 @@ _cargo-watch() {
 
     case "${cmd}" in
         cargo__watch)
-            opts="-h -V -c -q -x -s -d -i -p -w -S -C -N -E -B -L --help --version --clear --debug --why --ignore-nothing --no-gitignore --no-ignore --no-restart --all --poll --postpone --delay-run --quit-after-n --features --quiet --exec --shell --delay --ignore --package --watch --use-shell --workdir --notify --env --no-auto-env <trailing command>..."
+            opts="-h -V -c -q -x -s -d -i -p -w -S -C -N -E -B -L --help --version --clear --debug --why --ignore-nothing --no-vcs-ignores --no-dot-ignores --no-restart --all --poll --postpone --delay-run --quit-after-n --features --quiet --exec --shell --delay --ignore --package --watch --use-shell --workdir --notify --env --no-auto-env <trailing command>..."
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
