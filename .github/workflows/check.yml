@@ -24,7 +24,7 @@ jobs:
           - ""
           - mimalloc
 
-    name: Test on ${{ matrix.platform }} with ${{ matrix.version }}
+    name: Test on ${{ matrix.platform }} with ${{ matrix.version }} (${{ matrix.features }})
     runs-on: "${{ matrix.platform }}-latest"
 
     steps:
