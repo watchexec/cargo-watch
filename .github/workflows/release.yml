@@ -10,51 +10,36 @@ jobs:
   build:
     strategy:
       matrix:
-        name:
-          - linux-x86-64-gnu
-          - linux-x86-64-musl
-          - linux-armhf-gnu
-          - linux-arm64-gnu
-          - mac-x86-64
-          - mac-arm64
-          - windows-x86-64
-          - windows-arm64
         include:
           - name: linux-x86-64-gnu
             os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            cross: false
-            experimental: false
 
           - name: linux-x86-64-musl
             os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             cross: true
-            experimental: false
+            features: mimalloc
 
           - name: linux-arm7hf-gnu
             os: ubuntu-latest
             target: armv7-unknown-linux-gnueabihf
             cross: true
-            experimental: false
 
           - name: linux-arm7hf-musl
             os: ubuntu-latest
             target: armv7-unknown-linux-musleabihf
             cross: true
-            experimental: false
 
           - name: linux-arm64-gnu
             os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
             cross: true
-            experimental: false
 
           - name: linux-arm64-musl
             os: ubuntu-latest
             target: aarch64-unknown-linux-musl
             cross: true
-            experimental: false
 
           - name: linux-riscv64-gnu
             os: ubuntu-latest
@@ -66,7 +51,6 @@ jobs:
             os: macos-latest
             target: x86_64-apple-darwin
             cross: false
-            experimental: false
 
           - name: mac-arm64
             os: macos-11.0
@@ -77,13 +61,13 @@ jobs:
           - name: windows-x86-64
             os: windows-latest
             target: x86_64-pc-windows-msvc
-            cross: false
-            experimental: false
+            features: mimalloc
 
           - name: windows-arm64
             os: windows-latest
             target: aarch64-pc-windows-msvc
             cross: true
+            features: mimalloc
             experimental: true
 
     name: Binaries for ${{ matrix.name }}
@@ -126,7 +110,7 @@ jobs:
         with:
           use-cross: ${{ matrix.cross }}
           command: build
-          args: --release --locked --target ${{ matrix.target }}
+          args: --release --locked --target ${{ matrix.target }} --features '${{ matrix.features }}'
 
       - name: Extract version
         shell: bash
