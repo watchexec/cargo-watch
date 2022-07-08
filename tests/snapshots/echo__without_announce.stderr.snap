@@ -1,5 +1,0 @@
----
-source: tests/echo.rs
-expression: std_to_string(&mut main.stderr)
----
-

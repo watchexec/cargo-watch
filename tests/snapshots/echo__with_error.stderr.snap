@@ -1,7 +1,0 @@
----
-source: tests/echo.rs
-expression: std_to_string(&mut main.stderr)
-
----
-WARN - Polling for changes every 500ms
-

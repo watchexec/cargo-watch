@@ -1,8 +1,0 @@
----
-source: tests/echo.rs
-expression: std_to_string(&mut main.stdout)
----
-[Running 'echo with announce']
-with announce
-[Finished running. Exit status: 0]
-
