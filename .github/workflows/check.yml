@@ -20,6 +20,9 @@ jobs:
         version:
           - stable
           - 1.60.0
+        features:
+          - ""
+          - mimalloc
 
     name: Test on ${{ matrix.platform }} with ${{ matrix.version }}
     runs-on: "${{ matrix.platform }}-latest"
@@ -37,6 +40,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
+          args: "--features '${{ matrix.features }}'"
 
   clippy:
     strategy:
@@ -62,10 +66,12 @@ jobs:
             platform: ubuntu-latest
           - target: armv7-unknown-linux-musleabihf
             platform: ubuntu-latest
+            experimental: true
           - target: aarch64-unknown-linux-gnu
             platform: ubuntu-latest
           - target: aarch64-unknown-linux-musl
             platform: ubuntu-latest
+            experimental: true
           - target: aarch64-apple-darwin
             platform: macos-latest
           - target: aarch64-pc-windows-msvc
@@ -81,15 +87,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Add musl tools
-        run: sudo apt install -y musl musl-dev musl-tools
-        if: endsWith(matrix.target, '-musl')
-      - name: Add aarch-gnu tools
-        run: sudo apt install -y gcc-aarch64-linux-gnu
-        if: startsWith(matrix.target, 'aarch64-unknown-linux')
-      - name: Add arm7hf-gnu tools
-        run: sudo apt install -y gcc-arm-linux-gnueabihf
-        if: startsWith(matrix.target, 'armv7-unknown-linux-gnueabihf')
+      - name: Add cross platform tools
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt install -y \
+            musl musl-dev musl-tools \
+            gcc-aarch64-linux-gnu \
+            gcc-riscv64-linux-gnu \
+            gcc-arm-linux-gnueabihf
 
       - uses: actions-rs/toolchain@v1
         with:

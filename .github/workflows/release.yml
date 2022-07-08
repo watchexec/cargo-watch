@@ -88,15 +88,14 @@ jobs:
         if: startsWith(matrix.name, 'linux-')
         run: cargo install cargo-generate-rpm --version 0.6.0 --force
 
-      - name: Add musl tools
-        run: sudo apt install -y musl musl-dev musl-tools
-        if: endsWith(matrix.target, '-musl')
-      - name: Add aarch-gnu tools
-        run: sudo apt install -y gcc-aarch64-linux-gnu
-        if: startsWith(matrix.target, 'aarch64-unknown-linux')
-      - name: Add arm7hf-gnu tools
-        run: sudo apt install -y gcc-arm-linux-gnueabihf
-        if: startsWith(matrix.target, 'armv7-unknown-linux-gnueabihf')
+      - name: Add cross platform tools
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt install -y \
+            musl musl-dev musl-tools \
+            gcc-aarch64-linux-gnu \
+            gcc-riscv64-linux-gnu \
+            gcc-arm-linux-gnueabihf
 
       - uses: actions-rs/toolchain@v1
         with:
@@ -110,7 +109,7 @@ jobs:
         with:
           use-cross: ${{ matrix.cross }}
           command: build
-          args: --release --locked --target ${{ matrix.target }} --features '${{ matrix.features }}'
+          args: "--release --locked --target ${{ matrix.target }} --features '${{ matrix.features }}'"
 
       - name: Extract version
         shell: bash
