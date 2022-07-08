@@ -51,9 +51,9 @@ jobs:
           - target: x86_64-unknown-netbsd
             platform: ubuntu-latest
             experimental: true
-          - target: x86_64-unknown-redox
-            platform: ubuntu-latest
-            experimental: true
+          #- target: x86_64-unknown-redox
+          #  platform: ubuntu-latest
+          #  experimental: true
           - target: x86_64-unknown-linux-gnu
             platform: ubuntu-latest
           - target: x86_64-unknown-linux-musl
