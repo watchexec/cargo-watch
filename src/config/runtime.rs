@@ -288,6 +288,16 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 			}
 		}
 
+		// with --clear, printing the events right before clearing is useless.
+		// this way is a bit incorrect as we'll print before every command, but
+		// it will be actually useful. Perhaps this warrants a new Watchexec hook
+		// for post- or on- outcomes...
+		if print_events && clear {
+			for (n, event) in prespawn.events.iter().enumerate() {
+				eprintln!("[EVENT {}] {}", n, event);
+			}
+		}
+
 		if !quiet {
 			eprintln!("[[Running `{}`]]", prespawn.command);
 		}
@@ -302,16 +312,6 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 				.summary("Cargo Watch: change detected")
 				.body(&format!("Running `{}`", postspawn.command))
 				.show()?;
-		}
-
-		// with --clear, printing the events right before clearing is useless.
-		// this way is a bit incorrect as we'll print before every command, but
-		// it will be actually useful. Perhaps this warrants a new Watchexec hook
-		// for post-outcome or mid-outcome...
-		if print_events && clear {
-			for (n, event) in postspawn.events.iter().enumerate() {
-				eprintln!("[EVENT {}] {}", n, event);
-			}
 		}
 
 		#[cfg(target_os = "freebsd")]
