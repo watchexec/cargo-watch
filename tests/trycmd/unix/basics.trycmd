@@ -1,0 +1,33 @@
+```
+$ test-cw --
+> --quit-after-n 1 -- echo foo
+[[Running `echo foo`]]
+foo
+[[Command was successful]]
+[[--quit after n--]]
+
+```
+
+```
+$ test-cw --touch File --
+> --quit-after-n 1 --postpone -- echo foo
+[[Running `echo foo`]]
+foo
+[[Command was successful]]
+[[--quit after n--]]
+
+```
+
+```
+$ test-cw --touch File --touch Other --
+> --quit-after-n 2 --postpone -- echo foo
+[[Running `echo foo`]]
+foo
+[[Command was successful]]
+[[Running `echo foo`]]
+foo
+[[Command was successful]]
+[[--quit after n--]]
+
+```
+

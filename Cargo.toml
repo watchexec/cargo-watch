@@ -64,6 +64,7 @@ embed-resource = "1.7.3"
 [dev-dependencies]
 clap_complete = "3.2.3"
 clap_complete_fig = "3.2.4"
+dircpy = "0.3.10"
 duct = "0.13.5"
 tempfile = "3.3.0"
 trycmd = "0.13.4"

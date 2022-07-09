@@ -1,7 +1,0 @@
-```
-$ cargo-watch --quit-after-n 1 -- echo foo
-[[Running `echo foo`]]
-foo
-[[Command was successful]]
-
-```

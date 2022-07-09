@@ -1,12 +1,11 @@
-/target
 ~*
 *~
 .*.sw*
+.tmp*
+
+/target
+
 *.tar.xz
+*.tzst
 *.zip
-/tests/touchdata
-/tests/snapshots/*.new
-
 CHECKSUMS*
-
-/oldsrc

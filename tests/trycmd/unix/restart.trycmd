@@ -1,0 +1,22 @@
+```
+$ test-cw --
+> --quit-after-n 1 -S sh -s 'echo in; sleep 1; echo out'
+[[Running `echo in; sleep 1; echo out`]]
+in
+out
+[[Command was successful]]
+[[--quit after n--]]
+
+```
+
+```
+$ test-cw --touch File --touch Other --between 500 --
+> --quit-after-n 2 --postpone -S sh -s 'echo in; sleep 1; echo out'
+[[Running `echo in; sleep 1; echo out`]]
+in
+[[Running `echo in; sleep 1; echo out`]]
+...
+[[--quit after n--]]
+
+```
+
