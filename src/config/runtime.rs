@@ -226,7 +226,7 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 
 				if let Some(runs) = quit_after_n.clone() {
 					if runs.load(Ordering::SeqCst) == 0 {
-						debug!("quitting after n triggers");
+						eprintln!("[[--quit after n--]]");
 						action.outcome(Outcome::Exit);
 						return fut;
 					}
