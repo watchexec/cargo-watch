@@ -31,6 +31,9 @@ struct Args {
 	#[clap(long, default_value = "5000")]
 	timeout: u64,
 
+	#[clap(long)]
+	expect_timeout: bool,
+
 	#[clap(raw = true)]
 	cmd: Vec<String>,
 }
@@ -74,20 +77,26 @@ fn main() -> Result<()> {
 	}
 
 	let start = Instant::now();
-	let mut good = false;
+	let mut timed_out = true;
+	let mut output = None;
 	while start.elapsed() < timeout {
-		if cw.try_wait().into_diagnostic()?.is_some() {
-			good = true;
+		if let Some(out) = cw.try_wait().into_diagnostic()? {
+			timed_out = false;
+			output.replace(out);
 			break;
 		} else {
 			sleep(Duration::from_millis(10));
 		}
 	}
 
+	cw.kill().into_diagnostic()?;
 	tmp_dir.close().into_diagnostic()?;
 
-	if !good {
-		bail!("Timed out");
+	match (timed_out, args.expect_timeout) {
+		(true, false) => bail!("Timed out"),
+		(false, false) => {}
+		(true, true) => eprintln!("{{~expected timeout~}}"),
+		(false, true) => bail!("Expected timeout, but got quit: {:?}", output),
 	}
 
 	Ok(())
