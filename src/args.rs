@@ -8,8 +8,6 @@ const OPTSET_OUTPUT: &str = "OUTPUT";
 const OPTSET_BEHAVIOUR: &str = "BEHAVIOUR";
 const OPTSET_WORKSPACES: &str = "WORKSPACES";
 
-// --watch-when-idle is now default
-
 #[derive(Debug, Clone, clap::Parser)]
 #[clap(name = "cargo-watch", about, version)]
 pub struct Args {
@@ -72,12 +70,15 @@ pub struct Args {
 	)]
 	pub no_dot_ignores: bool,
 
-	/// Don’t restart command while it’s still running
+	/// Restart the command set when events come in while it’s still running
+	///
+	/// Note that this can lead to loops when the command set causes a watched file to change. In
+	/// that case, you should restrict what is watched with --watch and/or --ignore.
 	#[clap(
 		long,
 		help_heading = OPTSET_BEHAVIOUR,
 	)]
-	pub no_restart: bool,
+	pub restart: bool,
 
 	/// Reserved for workspace support
 	#[clap(

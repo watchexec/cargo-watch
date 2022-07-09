@@ -1,4 +1,4 @@
-This first one tests that test-cw behaves correctly:
+This first one tests that test-cw behaves correctly on a single run:
 
 ```
 $ test-cw --
@@ -13,15 +13,16 @@ out
 ```
 
 
-This one uses `--quit-after-n`. As the default is to restart the command on
-event, we're looking for the second command to start in the middle of the
-first. We ignore the output after the second start because the order of the
-`ForceStop` message and the `in` message can vary. But we're looking for the
-`quit-after-n` signalling message afterwards to check that Cargo Watch stopped.
+This one uses `--quit-after-n`. With `--restart`, we restart the command on
+event without waiting for it to stop, so we're looking for the second command
+to start in the middle of the first. We ignore the output after the second
+start because the order of the `ForceStop` message and the `in` message can
+vary. But we're looking for the `quit-after-n` signalling message afterwards to
+check that Cargo Watch stopped.
 
 ```
 $ test-cw --touch File --touch Other --between 500 --
-> --quit-after-n 2 --postpone -S sh -s 'echo in; sleep 1; echo out'
+> --restart --quit-after-n 2 --postpone -S sh -s 'echo in; sleep 1; echo out'
 ? 0
 [[Running `echo in; sleep 1; echo out`]]
 in
@@ -39,7 +40,7 @@ signalling from the tester.
 
 ```
 $ test-cw --touch File --touch Other --between 500 --expect-timeout --
-> --postpone -S sh -s 'echo in; sleep 1; echo out'
+> --restart --postpone -S sh -s 'echo in; sleep 1; echo out'
 ? 0
 [[Running `echo in; sleep 1; echo out`]]
 in

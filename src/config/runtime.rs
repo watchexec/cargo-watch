@@ -132,10 +132,10 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 	let quiet = args.quiet;
 	let clear = args.clear;
 	let notif = args.notif;
-	let on_busy = if args.no_restart {
-		"do-nothing"
-	} else {
+	let on_busy = if args.restart {
 		"restart"
+	} else {
+		"do-nothing"
 	};
 
 	// TODO: add using SubSignal in Args directly
@@ -262,7 +262,6 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 			"do-nothing" => Outcome::DoNothing,
 			"restart" => Outcome::both(Outcome::Stop, start),
 			// "signal" => Outcome::Signal(signal),
-			// "queue" => Outcome::wait(start),
 			_ => Outcome::DoNothing,
 		};
 
