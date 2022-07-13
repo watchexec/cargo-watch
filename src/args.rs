@@ -132,7 +132,7 @@ pub struct Args {
 	)]
 	pub vcs_origin: Option<PathBuf>,
 
-	/// Don’t use .ignore files
+	/// Don’t use .ignore files.
 	#[clap(
 		long,
 		help_heading = OPTSET_FILTERING,
@@ -291,72 +291,6 @@ pub struct Args {
 	)]
 	pub ignore_files: Vec<PathBuf>,
 
-	/// Watch a package in a Cargo workspace.
-	///
-	/// This is almost equivalent to --watch, but with Cargo-aware metadata resolution instead of simple
-	/// pathnames.
-	///
-	/// The `spec` argument uses cargo-pkgid syntax, but implements an extension on that format to
-	/// disambiguate in the case of “super workspaces” (see the --super flag). The syntax is also
-	/// available in normal crates or workspaces but not very useful.
-	///
-	/// `bar::foo` matches the `foo` crate under the `bar` workspace. The workspace name is either
-	/// the name of the top-level crate (when the [workspace] Cargo.toml also contains a [package]
-	/// definition), or the name of the folder containing the [workspace] Cargo.toml (for “virtual”
-	/// workspaces). `bar::` matches the `bar` workspace itself.
-	///
-	/// The argument to --package supports glob patterns, like for cargo-pkgid and other built-in
-	/// commands. You'll likely have to quote glob patterns to prevent your shell from eagerly
-	/// expanding them.
-	///
-	/// The syntax does not support the URL version of the pkgid spec format, as that makes no
-	/// sense for Cargo Watch's purposes.
-	#[clap(
-		short = 'p',
-		long = "package",
-		value_name = "spec pattern",
-		forbid_empty_values = true,
-		min_values = 1,
-		number_of_values = 1,
-		help_heading = OPTSET_FILTERING,
-	)]
-	pub package_specs: Vec<String>,
-
-	/// Watch the entire Cargo workspace.
-	///
-	/// When called from the top level of a workspace, this effectively does nothing.
-	#[clap(
-		long = "workspace",
-		help_heading = OPTSET_FILTERING,
-	)]
-	pub entire_workspace: bool,
-
-	/// Consider super-workspaces when resolving crates.
-	///
-	/// “Super workspaces” is an xtask pattern where the top level of the project contains only a
-	/// .cargo directory containing a config.toml. This setup means that component workspaces are
-	/// isolated while sharing an xtask setup, without need for workspace-hack packages.
-	///
-	/// When this flag is set, Cargo Watch alters its crate resolution mechanisms to look for this
-	/// top level super workspace. Nested super workspaces are not supported.
-	///
-	/// --package resolves specs across all component workspaces.
-	///
-	/// --workspace watches the entire super workspace.
-	///
-	/// --workspace-origin's default is set to the super workspace’s root.
-	///
-	/// The default ignore patterns also change to include the target/ directory under each
-	/// component workspace, instead of at the top level.
-	///
-	/// When run from the root of a super workspace, Cargo Watch will infer the --super flag, and
-	/// will watch the entire super workspace unless --package is given.
-	#[clap(
-		long = "super",
-		help_heading = OPTSET_FILTERING,
-	)]
-	pub super_workspaces: bool,
-
 	/// Watch specific files or folders.
 	///
 	/// By default, the entire crate is watched. This is resolved from the current directory, and
@@ -381,6 +315,65 @@ pub struct Args {
 		help_heading = OPTSET_FILTERING
 	)]
 	pub watch: Vec<PathBuf>,
+
+	/// Watch the entire Cargo workspace.
+	///
+	/// When called from the top level of a workspace, this effectively does nothing.
+	#[clap(
+		long = "workspace",
+		help_heading = OPTSET_FILTERING,
+	)]
+	pub entire_workspace: bool,
+
+	/// Consider super-workspaces when resolving crates.
+	///
+	/// “Super workspaces” is an xtask pattern where the top level of the project contains only a
+	/// .cargo directory containing a config.toml, the workspaces, but no Cargo.toml file. This
+	/// setup means that component workspaces are isolated while sharing an xtask setup, without
+	/// need for workspace-hack packages.
+	///
+	/// When this flag is set, Cargo Watch looks for this pattern. If it finds it, it alters its
+	/// crate resolution mechanisms as below. If it doesn't, it errors. Nested super workspaces are
+	/// not supported.
+	///
+	/// --package resolves specs across all component workspaces.
+	///
+	/// --workspace watches the entire super workspace.
+	///
+	/// --workspace-origin's default is set to the super workspace’s root.
+	#[clap(
+		long = "super",
+		help_heading = OPTSET_FILTERING,
+	)]
+	pub super_workspaces: bool,
+
+	/// Watch a package in a Cargo workspace.
+	///
+	/// This is almost equivalent to --watch, but with Cargo-aware metadata resolution instead of
+	/// simple pathnames.
+	///
+	/// The `spec` argument uses cargo-pkgid syntax, including support for glob patterns. You'll
+	/// likely have to quote glob patterns to prevent your shell from eagerly expanding them.
+	///
+	/// When the --super flag is set, the syntax is extended to be able to disambiguate when more
+	/// than one package shares the same name across workspaces:
+	///
+	/// `happy::crab` matches the `crab` crate under the `happy` workspace; `happy::` matches the
+	/// `happy` workspace itself. `happy::crate@version`, `happy::URL#crate`, etc also work.
+	///
+	/// The workspace name is either the name of the top-level crate (when the [workspace]
+	/// Cargo.toml also contains a [package] definition), or the basename of the folder containing
+	/// the [workspace] Cargo.toml (for “virtual” workspaces).
+	#[clap(
+		short = 'p',
+		long = "package",
+		value_name = "spec pattern",
+		forbid_empty_values = true,
+		min_values = 1,
+		number_of_values = 1,
+		help_heading = OPTSET_FILTERING,
+	)]
+	pub watch_package: Vec<String>,
 
 	/// Add watches for local dependencies of watched crates.
 	///
@@ -493,7 +486,7 @@ pub struct Args {
 	/// Examples: -B=1, -B=full
 	#[clap(
 		short = 'B',
-		value_name = "RUST_BACKTRACE value",
+		value_name = "value",
 		forbid_empty_values = true,
 		help_heading = OPTSET_ENVIRONMENT,
 	)]
@@ -504,7 +497,7 @@ pub struct Args {
 	/// Examples: -L=debug, -L=info,cratename::module=debug
 	#[clap(
 		short = 'L',
-		value_name = "RUST_LOG value",
+		value_name = "value",
 		forbid_empty_values = true,
 		help_heading = OPTSET_ENVIRONMENT,
 	)]
