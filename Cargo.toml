@@ -22,6 +22,7 @@ name = "cargo-watch"
 
 [dependencies]
 camino = "1.0.4"
+cargo_metadata = "0.15.1"
 clap = "2.33.1"
 log = "0.4.14"
 shell-escape = "0.1.5"

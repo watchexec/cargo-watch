@@ -1,5 +1,11 @@
-use std::{path::MAIN_SEPARATOR, time::Duration};
+use std::{
+    collections::{HashMap, HashSet},
+    iter::FromIterator,
+    path::{PathBuf, MAIN_SEPARATOR},
+    time::Duration,
+};
 
+use cargo_metadata::{MetadataCommand, Node, Package, PackageId};
 use clap::{value_t, values_t, ArgMatches};
 use log::{debug, warn};
 use watchexec::{
@@ -148,11 +154,85 @@ pub fn set_debounce(builder: &mut ConfigBuilder, matches: &ArgMatches) {
     }
 }
 
+fn find_local_deps() -> Result<Vec<PathBuf>, String> {
+    let metadata = MetadataCommand::new()
+        .exec()
+        .map_err(|e| format!("Failed to execute `cargo metadata`: {}", e))?;
+
+    let resolve = match metadata.resolve {
+        None => return Ok(Vec::new()),
+        Some(resolve) => resolve,
+    };
+    let id_to_node =
+        HashMap::<PackageId, &Node>::from_iter(resolve.nodes.iter().map(|n| (n.id.clone(), n)));
+    let id_to_package = HashMap::<PackageId, &Package>::from_iter(
+        metadata.packages.iter().map(|p| (p.id.clone(), p)),
+    );
+
+    let mut pkgids_seen = HashSet::new();
+    let mut pkgids_to_check = Vec::new();
+    match resolve.root {
+        Some(root) => pkgids_to_check.push(root),
+        None => pkgids_to_check.extend_from_slice(&metadata.workspace_members),
+    };
+
+    // The set of directories of all packages we are interested in.
+    let mut local_deps = HashSet::new();
+
+    while !pkgids_to_check.is_empty() {
+        let current_pkgid = pkgids_to_check.pop().unwrap();
+        if !pkgids_seen.insert(current_pkgid.clone()) {
+            continue;
+        }
+        let pkg = match id_to_package.get(&current_pkgid) {
+            None => continue,
+            Some(&pkg) => pkg,
+        };
+        // This means this is a remote package. Skip!
+        if pkg.source.is_some() {
+            continue;
+        }
+        // This is a path to Cargo.toml.
+        let mut path = pkg.manifest_path.clone();
+        // We want the parent directory.
+        path.pop();
+        local_deps.insert(path.into_std_path_buf());
+
+        // And find dependencies.
+        match id_to_node.get(&current_pkgid) {
+            Some(node) => {
+                for dep in &node.deps {
+                    pkgids_to_check.push(dep.pkg.clone());
+                }
+            }
+            None => {}
+        }
+    }
+
+    Ok(local_deps.into_iter().collect::<Vec<PathBuf>>())
+}
+
 pub fn set_watches(builder: &mut ConfigBuilder, matches: &ArgMatches) {
     let mut opts = Vec::new();
     if matches.is_present("watch") {
         for watch in values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit()) {
             opts.push(watch.into());
+        }
+    }
+
+    if opts.is_empty() && !matches.is_present("skip-local-deps") {
+        match find_local_deps() {
+            Ok(workspaces) => {
+                if workspaces.is_empty() {
+                    debug!("Found no local deps");
+                } else {
+                    opts = workspaces;
+                }
+            }
+            Err(err) => {
+                // If this fails just fall back to watching the current directory.
+                eprintln!("Finding local deps failed: {}", err);
+            }
         }
     }
 

@@ -57,11 +57,15 @@ Show paths that changed\.
 Suppress output from cargo\-watch itself\.
 .
 .TP
+\fB\-\-skip\-local\-deps\fR
+Don't try to find local dependencies of the current crate and watch their working directories\. Only watch the current directory\.
+.
+.TP
 \fB\-w\fR, \fB\-\-watch\fR \fIwatch\fR\.\.\.
-Watch specific file(s) or folder(s)\.
+Watch specific file(s) or folder(s)\. Disables finding and watching local dependencies\.
 .
 .P
-By default, your entire project is watched, except for the target/ and \.git/ folders, and your \.ignore and \.gitignore files are used to filter paths\.
+By default, the workspace directories of your project and all local dependencies are watched, except for the target/ and \.git/ folders\. Your \.ignore and \.gitignore files are used to filter paths\.
 .
 .TP
 \fB\-i\fR, \fB\-\-ignore\fR \fIpattern\fR\.\.\.

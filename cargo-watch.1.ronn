@@ -42,10 +42,13 @@ Show paths that changed.
 * `-q`, `--quiet`:
 Suppress output from cargo-watch itself.
 
-* `-w`, `--watch` <watch>...:
-Watch specific file(s) or folder(s).
+* `--skip-local-deps`:
+Don't try to find local dependencies of the current crate and watch their working directories. Only watch the current directory.
 
-By default, your entire project is watched, except for the target/ and .git/ folders, and your .ignore and .gitignore files are used to filter paths.
+* `-w`, `--watch` <watch>...:
+Watch specific file(s) or folder(s). Disables finding and watching local dependencies.
+
+By default, the workspace directories of your project and all local dependencies are watched, except for the target/ and .git/ folders. Your .ignore and .gitignore files are used to filter paths.
 
 * `-i`, `--ignore` <pattern>...:
 Ignore a glob/gitignore-style pattern.
