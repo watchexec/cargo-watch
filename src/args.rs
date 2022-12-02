@@ -127,6 +127,16 @@ pub struct Args {
 	)]
 	pub quit_after_n: Option<u8>,
 
+	/// Quit when stdin closes.
+	///
+	/// This is useful when running cargo-watch as a subprocess with the intention that it should
+	/// stop when the parent process ends.
+	#[clap(
+		long,
+		help_heading = OPTSET_BEHAVIOUR,
+	)]
+	pub stdin_quit: bool,
+
 	/// Feature(s) passed to cargo invocations
 	///
 	/// This is passed to cargo commands specified with `-x` only, and
