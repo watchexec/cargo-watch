@@ -3,7 +3,7 @@ cargo-watch(1) -- watches over your Cargo project's source
 
 ## SYNOPSIS
 
-cargo watch [`--exec` | `-x` <cargo subcommand>]... [`--shell` | `-s` <command>]... [`--ignore` | `-i` <pattern>]... [`--watch` | `-w` <path>]... [`--features` <list>] [`--no-restart`] [`--watch-when-idle`] [`--clear` | `-c`] [`--use-shell` <program>] [`--workdir` | `-C` <path>] [`--postpone`] [`--poll` <interval>] [`--delay` | `-d` <seconds>] [`--no-gitignore`] [`--no-ignore`] [`--ignore-nothing`] [`--debug` ] [`--why`] [`--quiet`] [`--version` | `-V`] [-- <command>...]
+cargo watch [`--exec` | `-x` <cargo subcommand>]... [`--shell` | `-s` <command>]... [`--ignore` | `-i` <pattern>]... [`--watch` | `-w` <path>]... [`--features` <list>] [`--no-restart`] [`--watch-when-idle`] [`--clear` | `-c`] [`--use-shell` <program>] [`--workdir` | `-C` <path>] [`--postpone`] [`--poll` <interval>] [`--delay` | `-d` <seconds>] [`--no-vcs-ignores`] [`--no-dot-ignores`] [`--ignore-nothing`] [`--debug` ] [`--why`] [`--quiet`] [`--version` | `-V`] [-- <command>...]
 
 ## DESCRIPTION
 
@@ -55,10 +55,10 @@ Ignore a glob/gitignore-style pattern.
 
 On Windows, patterns given to -i have forward slashes (/) automatically converted to backward ones (\) to ease command portability.
 
-* `--no-gitignore`:
+* `--no-vcs-ignores`:
 Don’t use .gitignore files.
 
-* `--no-ignore`:
+* `--no-dot-ignores`:
 Don’t use .ignore files.
 
 * `--ignore-nothing`:
@@ -134,9 +134,9 @@ Run with features passed to cargo:
 
 ### Ignore files
 
-`.gitignore` files are used by default to ignore paths to watch and trigger runs. To stop honouring them, pass `--no-gitignore`.
+`.gitignore` files are used by default to ignore paths to watch and trigger runs. To stop honouring them, pass `--no-vcs-ignores`.
 
-`.ignore` files in the same syntax are also used by default. This file can be used to specify files that should be ignored by cargo watch but checked into git, without constantly adding `--ignore abc` options on the command-line. Do note that `.ignore` files may also be used by other programs, like ripgrep(1). To stop honouring these, pass `--no-ignore`.
+`.ignore` files in the same syntax are also used by default. This file can be used to specify files that should be ignored by cargo watch but checked into git, without constantly adding `--ignore abc` options on the command-line. Do note that `.ignore` files may also be used by other programs, like ripgrep(1). To stop honouring these, pass `--no-dot-ignores`.
 
 Cargo watch also has an internal list of default ignores on top of those specified in files, like `target/` and `.git/` and various other common types (logs, editor swap files, lockfiles, etc).
 

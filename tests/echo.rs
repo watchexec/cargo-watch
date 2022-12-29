@@ -37,7 +37,7 @@ fn without_poll() {
         .stdout(Stdio::piped())
         .args(&[
             "--testing-only--once",
-            "--no-gitignore",
+            "--no-vcs-ignores",
             "-w",
             "./tests/touchdata/",
             "-s",
@@ -68,7 +68,7 @@ fn with_poll() {
         .stdout(Stdio::piped())
         .args(&[
             "--testing-only--once",
-            "--no-gitignore",
+            "--no-vcs-ignores",
             "--poll",
             "-w",
             "./tests/touchdata/",
@@ -101,7 +101,7 @@ fn with_announce() {
         .stdout(Stdio::piped())
         .args(&[
             "--testing-only--once",
-            "--no-gitignore",
+            "--no-vcs-ignores",
             "--poll",
             "-w",
             "./tests/touchdata/",
@@ -134,7 +134,7 @@ fn without_announce() {
         .stdout(Stdio::piped())
         .args(&[
             "--testing-only--once",
-            "--no-gitignore",
+            "--no-vcs-ignores",
             "--quiet",
             "--poll",
             "-w",
@@ -169,7 +169,7 @@ fn with_error() {
         .stdout(Stdio::piped())
         .args(&[
             "--testing-only--once",
-            "--no-gitignore",
+            "--no-vcs-ignores",
             "--poll",
             "-w",
             "./tests/touchdata/",

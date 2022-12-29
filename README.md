@@ -86,8 +86,8 @@ FLAGS:
         --debug              Show debug output
         --why                Show paths that changed
     -q, --quiet              Suppress output from cargo-watch itself
-        --no-gitignore       Don’t use .gitignore files
-        --no-ignore          Don’t use .ignore files
+        --no-vcs-ignores       Don’t use .gitignore files
+        --no-dot-ignores          Don’t use .ignore files
         --no-restart         Don’t restart command while it’s still running
     -N, --notify             Send a desktop notification when watchexec notices a change
                              (experimental, behaviour may change)
@@ -129,14 +129,14 @@ converted to backward ones (\) to ease command portability.
 ### Ignore files
 
 `.gitignore` files are used by default to ignore paths to watch and trigger
-runs. To stop honouring them, pass `--no-gitignore`.
+runs. To stop honouring them, pass `--no-vcs-ignores`.
 
 `.ignore` files in the same syntax are also used by default. This file can be
 used to specify files that should be ignored by cargo watch but checked into
 git, without constantly adding `--ignore abc` options on the command-line. Do
 note that `.ignore` files may also be used by other programs, like
 [ripgrep](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#automatic-filtering).
-To stop honouring these, pass `--no-ignore`.
+To stop honouring these, pass `--no-dot-ignores`.
 
 Cargo watch also has an internal list of default ignores on top of those
 specified in files, like `target/` and `.git/` and various other common types
@@ -207,10 +207,10 @@ $ cargo watch -x check -s 'touch .trigger'
 and
 
 ```
-$ cargo watch --no-gitignore -w .trigger -x run
+$ cargo watch --no-vcs-ignores -w .trigger -x run
 ```
 
-The `--no-gitignore` flag ensures that you can safely add `.trigger` to your
+The `--no-vcs-ignores` flag ensures that you can safely add `.trigger` to your
 `.gitignore` file to avoid mistakenly committing it.
 
 ## Troubleshooting

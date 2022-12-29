@@ -99,11 +99,11 @@ pub fn set_ignores(builder: &mut ConfigBuilder, matches: &ArgMatches) {
         return;
     }
 
-    let novcs = matches.is_present("no-gitignore");
+    let novcs = matches.is_present("no-vcs-ignores");
     builder.no_vcs_ignore(novcs);
     debug!("Load Git/VCS ignores: {:?}", !novcs);
 
-    let noignore = matches.is_present("no-ignore");
+    let noignore = matches.is_present("no-dot-ignores");
     builder.no_ignore(noignore);
     debug!("Load .ignore ignores: {:?}", !noignore);
 

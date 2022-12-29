@@ -52,13 +52,15 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("Ignore nothing, not even target/ and .git/"),
                 )
                 .arg(
-                    Arg::with_name("no-gitignore")
-                        .long("no-gitignore")
+                    Arg::with_name("no-vcs-ignores")
+                        .long("no-vcs-ignores")
+                        .alias("no-gitignore")
                         .help("Don’t use .gitignore files"),
                 )
                 .arg(
-                    Arg::with_name("no-ignore")
-                        .long("no-ignore")
+                    Arg::with_name("no-dot-ignores")
+                        .long("no-dot-ignores")
+                        .alias("no-ignore")
                         .help("Don’t use .ignore files"),
                 )
                 .arg(
