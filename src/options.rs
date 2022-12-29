@@ -135,7 +135,7 @@ pub fn set_ignores(builder: &mut ConfigBuilder, matches: &ArgMatches) {
     if matches.is_present("ignore") {
         for ignore in values_t!(matches, "ignore", String).unwrap_or_else(|e| e.exit()) {
             #[cfg(windows)]
-            let ignore = ignore.replace("/", &MAIN_SEPARATOR.to_string());
+            let ignore = ignore.replace('/', &MAIN_SEPARATOR.to_string());
             list.push(ignore);
         }
     }
