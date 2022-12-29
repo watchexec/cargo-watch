@@ -1,4 +1,5 @@
 use camino::Utf8PathBuf;
+use clap::values_t;
 use stderrlog::Timestamp;
 use watchexec::{error::Result, run::watch};
 
@@ -41,8 +42,21 @@ fn main() -> Result<()> {
     );
 
     if let Some(b) = matches.value_of("rust-backtrace") {
+        // Soundness: not great, it'll get better with watchexec 2
         std::env::set_var("RUST_BACKTRACE", b);
     }
+
+    if matches.is_present("env-vars") {
+        for pair in values_t!(matches, "env-vars", String).unwrap_or_else(|e| e.exit()) {
+            if let Some((key, var)) = pair.split_once('=') {
+                // Soundness: not great, it'll get better with watchexec 2
+                std::env::set_var(key, var);
+            } else {
+                eprintln!("Malformed environment variable '{pair}', ignoring");
+            }
+        }
+    }
+
 
     let opts = options::get_options(&matches);
     let handler = watch::CwHandler::new(opts, quiet, matches.is_present("notif"))?;
