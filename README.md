@@ -4,9 +4,6 @@
 [![Crate license: CC0 1.0](https://flat.badgen.net/github/license/watchexec/cargo-watch)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![Crate download count](https://flat.badgen.net/crates/d/cargo-watch)](https://crates.io/crates/cargo-watch)
 [![CI status](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml/badge.svg)](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml)
-[![MSRV: 1.51.0](https://flat.badgen.net/badge/MSRV/1.51.0/purple)](https://blog.rust-lang.org/2021/03/25/Rust-1.51.0.html)
-![MSRV policy: bump is non-breaking](https://flat.badgen.net/badge/MSRV%20policy/non-breaking/orange)
-[![Uses Caretaker Maintainership](https://flat.badgen.net/badge/Caretaker/Maintainership%20👥%20/purple)][caretaker]
 
 Cargo Watch watches over your project's source for changes, and runs Cargo
 commands when they occur.
@@ -18,11 +15,9 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 [guard]: http://guardgem.org/
 
 - In the public domain / licensed with CC0.
-- Uses [Caretaker Maintainership][caretaker].
-- Website and more documentation: **[watchexec.github.io](https://watchexec.github.io)**.
-- Minimum Supported Rust Version: 1.51.0.
-
-[caretaker]: ./CARETAKERS.md
+- Minimum Supported Rust Version: 1.60.0.
+  - Only the last five stable versions are supported.
+  - MSRV increases beyond that range at publish time will not incur major version bumps.
 
 ## Install
 
@@ -270,6 +265,45 @@ You may have hit the inotify watch limit. [Here's a summary of what this means
 and how to increase it.][inotify limit]
 
 [inotify limit]: https://watchexec.github.io/docs/inotify-limits.html
+
+### Docker: it's not responding correctly to signal or has trouble managing processes
+
+Cargo Watch (and Watchexec underlying) does not currently support running as PID 1.
+It will probably work for basic uses, but you should consider using a supervisor,
+init, or shell to handle PID 1 concerns. With Docker, the `--init` option may be useful.
+
+See [watchexec#140](https://github.com/watchexec/watchexec/issues/140) for more.
+
+### Docker: running cargo commands over a mount is very slow
+
+This isn't really a Cargo Watch issue, but when your host system is not Linux,
+running commands from inside the container on a volume or bind mount from the
+host will perform very badly due to filesystem indirection. Consider [building
+outside the mount if possible][i-219]:
+
+```dockerfile
+# ...
+RUN mkdir -p /build
+WORKDIR `/src`
+ENTRYPOINT cargo watch -C /build --manifest-path=/src/Cargo.toml -- cargo run
+```
+
+Or similarly with [`CARGO_TARGET_DIR`](https://doc.rust-lang.org/cargo/reference/config.html#buildtarget-dir).
+
+```dockerfile
+# ...
+RUN mkdir -p /build
+WORKDIR `/src`
+ENV CARGO_TARGET_DIR=/build
+ENTRYPOINT cargo watch -- cargo run
+```
+
+[i-219]: https://github.com/watchexec/cargo-watch/issues/219
+
+You may also have issues where it's the file updates that aren't triggering in
+a timely manner, not the compilation taking a long time. In that case, you
+should run Cargo Watch or [Watchexec] _outside_ of Docker, on the host, and
+signal the container for restart or reload.
 
 ### If you want to only recompile one Cargo workspace member crate
 
