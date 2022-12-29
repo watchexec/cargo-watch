@@ -94,49 +94,39 @@ FLAGS:
         --no-gitignore       Don’t use .gitignore files
         --no-ignore          Don’t use .ignore files
         --no-restart         Don’t restart command while it’s still running
+    -N, --notify             Send a desktop notification when watchexec notices a change
+                             (experimental, behaviour may change)
         --poll               Force use of polling for file changes
         --postpone           Postpone first run until a file changes
+        --skip-local-deps    Don't try to find local dependencies of the current crate and watch
+                             their working directories. Only watch the current directory.
     -V, --version            Display version information
-        --watch-when-idle    Ignore events emitted while the commands run.
-                             Will become default behaviour in 8.0.
+        --watch-when-idle    Ignore events emitted while the commands run. Will become default
+                             behaviour in 8.0.
 
 OPTIONS:
-    -x, --exec <cmd>...
-            Cargo command(s) to execute on changes [default: check]
-
+    -x, --exec <cmd>...            Cargo command(s) to execute on changes [default: check]
     -s, --shell <cmd>...           Shell command(s) to execute on changes
-
-    -d, --delay <delay>
-            File updates debounce delay in seconds [default: 0.5]
-
-        --features <features>
-            List of features passed to cargo invocations
-
+    -d, --delay <delay>            File updates debounce delay in seconds [default: 0.5]
+        --features <features>      List of features passed to cargo invocations
     -i, --ignore <pattern>...      Ignore a glob/gitignore-style pattern
-
-    -B <rust-backtrace>
-            Inject RUST_BACKTRACE=VALUE (generally you want to set it to 1)
-            into the environment
-
-        --use-shell <use-shell>
-            Use a different shell. E.g. --use-shell=bash. On Windows, try
-            --use-shell=powershell, which will become the default in 8.0.
-
-    -w, --watch <watch>...
-            Watch specific file(s) or folder(s) [default: .]
-
-    -C, --workdir <workdir>
-            Change working directory before running command [default: crate root]
+    -B <rust-backtrace>            Inject RUST_BACKTRACE=VALUE (generally you want to set it to 1)
+                                   into the environment
+        --use-shell <use-shell>    Use a different shell. E.g. --use-shell=bash
+    -w, --watch <watch>...         Watch specific file(s) or folder(s). Disables finding and
+                                   watching local dependencies.
+    -C, --workdir <workdir>        Change working directory before running command [default: crate
+                                   root]
 
 ARGS:
     <cmd:trail>...    Full command to run. -x and -s will be ignored!
 
-Cargo commands (-x) are always executed before shell commands (-s). You can use
-the `-- command` style instead, note you'll need to use full commands, it won't
-prefix `cargo` for you.
+Cargo commands (-x) are always executed before shell commands (-s). You can use the `-- command`
+style instead, note you'll need to use full commands, it won't prefix `cargo` for you.
 
-By default, your entire project is watched, except for the target/ and .git/
-folders, and your .ignore and .gitignore files are used to filter paths.
+By default, the workspace directories of your project and all local dependencies are watched,
+except for the target/ and .git/ folders. Your .ignore and .gitignore files are used to filter
+paths.
 
 On Windows, patterns given to -i have forward slashes (/) automatically
 converted to backward ones (\) to ease command portability.

@@ -2,7 +2,7 @@ use clap::{App, AppSettings, Arg, ArgMatches, ErrorKind, SubCommand};
 use std::{env, process};
 
 pub fn parse() -> ArgMatches<'static> {
-    let footnote = "Cargo commands (-x) are always executed before shell commands (-s). You can use the `-- command` style instead, note you'll need to use full commands, it won't prefix `cargo` for you.\n\nBy default, your entire project is watched, except for the target/ and .git/ folders, and your .ignore and .gitignore files are used to filter paths.".to_owned();
+    let footnote = "Cargo commands (-x) are always executed before shell commands (-s). You can use the `-- command` style instead, note you'll need to use full commands, it won't prefix `cargo` for you.\n\nBy default, the workspace directories of your project and all local dependencies are watched, except for the target/ and .git/ folders. Your .ignore and .gitignore files are used to filter paths.".to_owned();
 
     #[cfg(windows)] let footnote = format!("{}\n\nOn Windows, patterns given to -i have forward slashes (/) automatically converted to backward ones (\\) to ease command portability.", footnote);
 
@@ -166,8 +166,7 @@ pub fn parse() -> ArgMatches<'static> {
                         .empty_values(false)
                         .min_values(1)
                         .number_of_values(1)
-                        .default_value(".")
-                        .help("Watch specific file(s) or folder(s)"),
+                        .help("Watch specific file(s) or folder(s). Disables finding and watching local dependencies."),
                 )
                 .arg(
                     Arg::with_name("use-shell")
@@ -203,6 +202,11 @@ pub fn parse() -> ArgMatches<'static> {
                     Arg::with_name("cmd:trail")
                         .raw(true)
                         .help("Full command to run. -x and -s will be ignored!"),
+                )
+                .arg(
+                    Arg::with_name("skip-local-deps")
+                    .help("Don't try to find local dependencies of the current crate and watch their working directories. Only watch the current directory.")
+                    .long("skip-local-deps")
                 )
                 .after_help(footnote.as_str()),
         );
