@@ -202,7 +202,7 @@ jobs:
       - name: Install b3sum
         run: cargo install b3sum --version 0.3.7
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: builds
 
