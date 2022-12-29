@@ -2,12 +2,16 @@ on:
   pull_request:
   push:
     branches:
-      - main
+      - 8.x
       - try/**
     tags-ignore:
       - v*.*.*
 
 name: Checks & Tests
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_UNSTABLE_SPARSE_REGISTRY: "true"
 
 jobs:
   check-and-test:
@@ -17,36 +21,32 @@ jobs:
           - ubuntu
           - windows
           - macos
+        toolchain:
+          - stable
+          - 1.60.0
 
-    name: On ${{ matrix.platform }}
+    name: Test on ${{ matrix.platform }} with ${{ matrix.toolchain }}
     runs-on: "${{ matrix.platform }}-latest"
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Add clippy
-        run: rustup component add clippy
+      - uses: actions/checkout@v3
+      - name: Configure toolchain
+        run: |
+          rustup toolchain install --profile minimal --no-self-update ${{ matrix.toolchain }}
+          rustup default ${{ matrix.toolchain }}
+          rustup component add clippy
+
       - name: Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+        run: cargo check
+
       - name: Install
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: --debug --path .
+        run: cargo install --debug --path .
+
       - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test
+
       - name: Clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
+        if: matrix.toolchain == 'stable'
 
   check-only:
     strategy:
@@ -68,38 +68,18 @@ jobs:
           - target: aarch64-unknown-linux-gnu
             platform: ubuntu-latest
           - target: aarch64-apple-darwin
-            platform: macos-11.0
+            platform: macos-latest
           - target: aarch64-pc-windows-msvc
             platform: windows-latest
 
     name: Check only for ${{ matrix.target }}
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
+      - uses: actions/checkout@v3
+      - name: Configure toolchain
+        run: |
+          rustup toolchain install --profile minimal --no-self-update --target ${{ matrix.target }} stable
+          rustup default stable
       - name: Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --target ${{ matrix.target }}
-
-  msrv:
-    name: Check on MSRV
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: 1.51.0
-          override: true
-      - name: Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+        run: cargo check --target ${{ matrix.target }}
 
