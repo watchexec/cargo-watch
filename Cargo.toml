@@ -42,9 +42,7 @@ panic = "abort"
 codegen-units = 1
 
 [package.metadata.binstall]
-pkg-url = "{ repo }/releases/download/v{ version }/{ name }-v{ version }-{ target }.tar.xz"
 bin-dir = "{ name }-v{ version }-{ target }/{ bin }{ format }"
-pkg-fmt = "txz"
 
 [package.metadata.deb]
 maintainer = "Félix Saparelli <felix@passcod.name>"
