@@ -31,7 +31,7 @@ stderrlog = "0.5.4"
 watchexec = "1.17.1"
 
 [dev-dependencies]
-assert_cmd = "1.0.1"
+assert_cmd = "2.0.7"
 insta = "1.7.1"
 predicates = "2.0.0"
 wait-timeout = "0.2.0"
