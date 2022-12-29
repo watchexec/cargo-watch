@@ -74,12 +74,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('Cargo.lock') }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         if: startsWith(matrix.name, 'linux-')
         with:
           path: ~/.cargo/bin
@@ -192,7 +192,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.cargo/bin
           key: sign-tools-${{ hashFiles('.github/workflows/release.yml') }}
