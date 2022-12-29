@@ -21,16 +21,14 @@ exclude = ["/.github"]
 name = "cargo-watch"
 
 [dependencies]
-camino = "1.0.4"
-cargo_metadata = "0.15.1"
+camino = "1.1.1"
+cargo_metadata = "0.15.2"
 clap = "2.33.1"
-log = "0.4.14"
+log = "0.4.17"
+notify-rust = "4.6.0"
 shell-escape = "0.1.5"
-stderrlog = "0.5.1"
-watchexec = "1.16.1"
-
-[target.'cfg(not(target_os="freebsd"))'.dependencies]
-notify-rust = "4.5.2"
+stderrlog = "0.5.4"
+watchexec = "1.17.1"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"

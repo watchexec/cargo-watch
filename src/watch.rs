@@ -30,7 +30,6 @@ impl Handler for CwHandler {
     fn on_update(&self, ops: &[PathOp]) -> Result<bool> {
         self.start();
         self.inner.on_update(ops).map(|o| {
-            #[cfg(not(target_os = "freebsd"))]
             if self.notify {
                 notify_rust::Notification::new()
                     .summary("Cargo Watch observed a change")
