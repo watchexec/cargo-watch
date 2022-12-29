@@ -1,0 +1,4 @@
+Starting outside a cargo project isn't supported, but we want to make sure to error nicely:
+```
+$ test-cw --no-cargo
+```
