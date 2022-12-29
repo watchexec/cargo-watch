@@ -28,25 +28,25 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 
 <a href="https://repology.org/project/cargo-watch/versions"><img align="right" src="https://repology.org/badge/vertical-allrepos/cargo-watch.svg" alt="Packaging status"></a>
 
-Pre-built binaries are available **[from the website][cw-downloads]** or
-alternatively [on the Github Releases tab][releases]. Since 7.8.0, checksums and
-signatures are also provided; see [download documentation][downloads] for details.
-
-[cw-downloads]: https://watchexec.github.io/downloads/cargo-watch
-[downloads]: https://watchexec.github.io/downloads/
-[releases]: https://github.com/watchexec/cargo-watch/releases
-
-```
-$ cargo install cargo-watch
-```
-
 With [cargo-binstall](https://github.com/ryankurte/cargo-binstall):
 
-```
+```console
 $ cargo binstall cargo-watch
 ```
 
+From source:
+
+```console
+$ cargo install cargo-watch
+```
+
 Or clone and build with `$ cargo build` then place in your $PATH.
+
+You can also install from the pre-built binaries available **[on the release page][releases]**.
+
+[releases]: https://github.com/watchexec/cargo-watch/releases/latest
+
+### Auxiliary
 
 This repository contains a [manual page](./cargo-watch.1) and
 [Zsh completions](./completions) that you may want to install.
@@ -101,8 +101,7 @@ FLAGS:
         --skip-local-deps    Don't try to find local dependencies of the current crate and watch
                              their working directories. Only watch the current directory.
     -V, --version            Display version information
-        --watch-when-idle    Ignore events emitted while the commands run. Will become default
-                             behaviour in 8.0.
+        --watch-when-idle    Ignore events emitted while the commands run.
 
 OPTIONS:
     -x, --exec <cmd>...            Cargo command(s) to execute on changes [default: check]
@@ -222,7 +221,7 @@ The `--no-gitignore` flag ensures that you can safely add `.trigger` to your
 ## Troubleshooting
 
 In all cases, start by checking your version with `cargo watch --version` and,
-if necessary, upgrading to [the latest one][cw-downloads].
+if necessary, upgrading to [the latest one][releases].
 
 ### RLS is slow while using cargo watch, or vice versa, or it's waiting for the project lock a lot
 
@@ -296,7 +295,7 @@ the target/ folder) and you're using `-w`, you might be confusing the
 target-folder-ignorer. Check your options and paths.
 
 You can also use the `--watch-when-idle` flag to ignore any event that happens
-while the command is running. **This will become the default in 8.0.**
+while the command is running.
 
 ### If it runs repeatedly only touching ignored files
 

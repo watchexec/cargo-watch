@@ -90,7 +90,7 @@ File updates debounce delay in seconds (default: 0.5).
 Don’t restart command while it’s still running.
 
 * `--watch-when-idle`:
-Ignore events emitted while the commands run. Will become default behaviour in 8.0.
+Ignore events emitted while the commands run.
 
 * `--features` <features>:
 List of features passed to cargo invocations.
@@ -102,7 +102,7 @@ The features will be passed to every supported cargo subcommand. For example, wi
 Both `build` and `doc` will be run with the `foo` and `bar` features, but `clean` won't.
 
 * `--use-shell` <use-shell>:
-Use a different shell. E.g. `--use-shell=bash`. On Windows, try `--use-shell=powershell`, which will become the default in 8.0.
+Use a different shell. E.g. `--use-shell=bash`. On Windows, try `--use-shell=powershell`.
 
 ## EXAMPLES
 

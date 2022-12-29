@@ -252,7 +252,7 @@ pub fn get_options(matches: &ArgMatches) -> Config {
         .run_initially(!matches.is_present("postpone"))
         .no_environment(true);
 
-    // TODO in 8.0: remove --watch-when-idle and switch --no-restart behaviour to DoNothing
+    // TODO in next breaking: remove --watch-when-idle and switch --no-restart behaviour to DoNothing
     builder.on_busy_update(if matches.is_present("no-restart") {
         OnBusyUpdate::Queue
     } else if matches.is_present("watch-when-idle") {
@@ -273,7 +273,7 @@ pub fn get_options(matches: &ArgMatches) -> Config {
             Shell::Unix(s.into())
         }
     } else {
-        // in 8.0, just rely on default watchexec behaviour
+        // in next breaking, just rely on default watchexec behaviour
         default_shell()
     });
 
@@ -289,7 +289,7 @@ pub fn get_options(matches: &ArgMatches) -> Config {
     args
 }
 
-// until 8.0
+// until next breaking
 #[cfg(windows)]
 fn default_shell() -> Shell {
     Shell::Cmd

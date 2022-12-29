@@ -86,7 +86,7 @@ pub fn parse() -> ArgMatches<'static> {
                 .arg(
                     Arg::with_name("watch-when-idle")
                         .long("watch-when-idle")
-                        .help("Ignore events emitted while the commands run. Will become default behaviour in 8.0."),
+                        .help("Ignore events emitted while the commands run."),
                 )
                 .arg(
                     Arg::with_name("features")
@@ -173,7 +173,7 @@ pub fn parse() -> ArgMatches<'static> {
                         .long("use-shell")
                         .takes_value(true)
                         .help(if cfg!(windows) {
-                            "Use a different shell. Try --use-shell=powershell, which will become the default in 8.0."
+                            "Use a different shell. Try --use-shell=powershell."
                         } else {
                             "Use a different shell. E.g. --use-shell=bash"
                         }),
