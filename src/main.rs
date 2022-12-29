@@ -57,8 +57,12 @@ fn main() -> Result<()> {
         }
     }
 
-
     let opts = options::get_options(&matches);
-    let handler = watch::CwHandler::new(opts, quiet, matches.is_present("notif"))?;
+    let handler = watch::CwHandler::new(
+        opts,
+        quiet,
+        matches.is_present("notif"),
+        matches.is_present("cmd:trail"),
+    )?;
     watch(&handler)
 }

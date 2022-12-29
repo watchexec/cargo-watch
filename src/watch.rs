@@ -47,20 +47,25 @@ impl Handler for CwHandler {
 }
 
 impl CwHandler {
-    pub fn new(mut args: Config, quiet: bool, notify: bool) -> Result<Self> {
-        let cmd = args.cmd.join(" && ");
-        let mut final_cmd = cmd.clone();
-        if !quiet {
-            #[cfg(unix)]
-            final_cmd.push_str(r#"; echo "[Finished running. Exit status: $?]""#);
-            #[cfg(windows)]
-            final_cmd.push_str(r#" & echo "[Finished running. Exit status: %ERRORLEVEL%]""#);
-            #[cfg(not(any(unix, windows)))]
-            final_cmd.push_str(r#" ; echo "[Finished running]""#);
-            // ^ could be wrong depending on the platform, to be fixed on demand
-        }
+    pub fn new(mut args: Config, quiet: bool, notify: bool, trailing: bool) -> Result<Self> {
+        let cmd = if trailing {
+            args.cmd[0].clone()
+        } else {
+            let cmd = args.cmd.join(" && ");
+            let mut final_cmd = cmd.clone();
+            if !quiet {
+                #[cfg(unix)]
+                final_cmd.push_str(r#"; echo "[Finished running. Exit status: $?]""#);
+                #[cfg(windows)]
+                final_cmd.push_str(r#" & echo "[Finished running. Exit status: %ERRORLEVEL%]""#);
+                #[cfg(not(any(unix, windows)))]
+                final_cmd.push_str(r#" ; echo "[Finished running]""#);
+                // ^ could be wrong depending on the platform, to be fixed on demand
+            }
 
-        args.cmd = vec![final_cmd];
+            args.cmd = vec![final_cmd];
+            cmd
+        };
 
         Ok(Self {
             once: args.once,
