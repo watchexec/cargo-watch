@@ -220,23 +220,23 @@ pub fn set_watches(builder: &mut ConfigBuilder, matches: &ArgMatches) {
         }
     }
 
-    if watches.is_empty() && !matches.is_present("skip-local-deps") {
-        match find_local_deps() {
-            Ok(dirs) => {
-                if dirs.is_empty() {
-                    debug!("Found no local deps");
-                } else {
-                    watches = dirs;
+    if watches.is_empty() {
+        if !matches.is_present("skip-local-deps") {
+            match find_local_deps() {
+                Ok(dirs) => {
+                    if dirs.is_empty() {
+                        debug!("Found no local deps");
+                    } else {
+                        watches = dirs;
+                    }
+                }
+                Err(err) => {
+                    // If this fails just fall back to watching the current directory.
+                    eprintln!("Finding local deps failed: {}", err);
                 }
             }
-            Err(err) => {
-                // If this fails just fall back to watching the current directory.
-                eprintln!("Finding local deps failed: {}", err);
-            }
         }
-    }
 
-    if watches.is_empty() {
         watches.push(".".into());
     }
 
