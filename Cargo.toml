@@ -13,7 +13,7 @@ homepage = "https://watchexec.github.io/#cargo-watch"
 repository = "https://github.com/watchexec/cargo-watch"
 readme = "README.md"
 
-edition = "2018"
+edition = "2021"
 rust-version = "1.60.0"
 exclude = ["/.github"]
 
