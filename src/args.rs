@@ -195,6 +195,7 @@ pub fn parse() -> ArgMatches<'static> {
                     Arg::with_name("env-vars")
                         .help("Set environment variables for the command")
                         .short("E")
+                        .long("env")
                         .takes_value(true)
                         .multiple(true)
                         .empty_values(false)
@@ -205,6 +206,12 @@ pub fn parse() -> ArgMatches<'static> {
                     Arg::with_name("rust-backtrace")
                         .help("Inject RUST_BACKTRACE=VALUE (generally you want to set it to 1) into the environment")
                         .short("B")
+                        .takes_value(true)
+                )
+                .arg(
+                    Arg::with_name("rust-log")
+                        .help("Inject RUST_LOG=VALUE into the environment")
+                        .short("L")
                         .takes_value(true)
                 )
                 .arg(

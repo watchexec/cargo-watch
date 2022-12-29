@@ -46,6 +46,11 @@ fn main() -> Result<()> {
         std::env::set_var("RUST_BACKTRACE", b);
     }
 
+    if let Some(l) = matches.value_of("rust-log") {
+        // Soundness: not great, it'll get better with watchexec 2
+        std::env::set_var("RUST_LOG", l);
+    }
+
     if matches.is_present("env-vars") {
         for pair in values_t!(matches, "env-vars", String).unwrap_or_else(|e| e.exit()) {
             if let Some((key, var)) = pair.split_once('=') {
