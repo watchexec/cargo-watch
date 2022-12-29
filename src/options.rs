@@ -220,7 +220,7 @@ pub fn set_watches(builder: &mut ConfigBuilder, matches: &ArgMatches) {
         }
     }
 
-    if opts.is_empty() && !matches.is_present("skip-local-deps") {
+    if watches.is_empty() && !matches.is_present("skip-local-deps") {
         match find_local_deps() {
             Ok(dirs) => {
                 if dirs.is_empty() {
