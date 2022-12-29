@@ -47,6 +47,7 @@ jobs:
 
       - name: Clippy
         if: matrix.toolchain == 'stable'
+        run: cargo clippy
 
   check-only:
     strategy:
