@@ -39,7 +39,7 @@ pub fn set_commands(builder: &mut ConfigBuilder, matches: &ArgMatches) {
                     // Split command into first word and the arguments
                     let word_boundary = cargo
                         .find(|c: char| c.is_whitespace())
-                        .unwrap_or_else(|| cargo.len());
+                        .unwrap_or(cargo.len());
 
                     // Find returns the byte index, and split_at takes a byte offset.
                     // This means the splitting is unicode-safe.
@@ -184,28 +184,28 @@ fn find_local_deps() -> Result<Vec<PathBuf>, String> {
         if !pkgids_seen.insert(current_pkgid.clone()) {
             continue;
         }
+
         let pkg = match id_to_package.get(&current_pkgid) {
             None => continue,
             Some(&pkg) => pkg,
         };
+
         // This means this is a remote package. Skip!
         if pkg.source.is_some() {
             continue;
         }
+
         // This is a path to Cargo.toml.
         let mut path = pkg.manifest_path.clone();
-        // We want the parent directory.
+        // We want the directory it's in.
         path.pop();
         local_deps.insert(path.into_std_path_buf());
 
         // And find dependencies.
-        match id_to_node.get(&current_pkgid) {
-            Some(node) => {
-                for dep in &node.deps {
-                    pkgids_to_check.push(dep.pkg.clone());
-                }
+        if let Some(node) = id_to_node.get(&current_pkgid) {
+            for dep in &node.deps {
+                pkgids_to_check.push(dep.pkg.clone());
             }
-            None => {}
         }
     }
 
@@ -213,20 +213,20 @@ fn find_local_deps() -> Result<Vec<PathBuf>, String> {
 }
 
 pub fn set_watches(builder: &mut ConfigBuilder, matches: &ArgMatches) {
-    let mut opts = Vec::new();
+    let mut watches = Vec::new();
     if matches.is_present("watch") {
         for watch in values_t!(matches, "watch", String).unwrap_or_else(|e| e.exit()) {
-            opts.push(watch.into());
+            watches.push(watch.into());
         }
     }
 
     if opts.is_empty() && !matches.is_present("skip-local-deps") {
         match find_local_deps() {
-            Ok(workspaces) => {
-                if workspaces.is_empty() {
+            Ok(dirs) => {
+                if dirs.is_empty() {
                     debug!("Found no local deps");
                 } else {
-                    opts = workspaces;
+                    watches = dirs;
                 }
             }
             Err(err) => {
@@ -236,12 +236,12 @@ pub fn set_watches(builder: &mut ConfigBuilder, matches: &ArgMatches) {
         }
     }
 
-    if opts.is_empty() {
-        opts.push(".".into());
+    if watches.is_empty() {
+        watches.push(".".into());
     }
 
-    debug!("Watches: {:?}", opts);
-    builder.paths(opts);
+    debug!("Watches: {:?}", watches);
+    builder.paths(watches);
 }
 
 pub fn get_options(matches: &ArgMatches) -> Config {
