@@ -69,10 +69,16 @@ Ignore nothing, not even target/ and .git/.
 * `-c`, `--clear`:
 Clear the screen before each run.
 
+* `-E`, `--env-var` <key>=<value>:
+Inject an environment variable.
+
 * `-B` <value>:
 Inject `RUST_BACKTRACE=<value>` into the environment.
 
 This is useful when panics are handled and you want a backtrace to be printed: usually you’d have to add `RUST_BACKTRACE=1` yourself, this shortens it to `-B1`!
+
+* `-L` <value>:
+Inject `RUST_LOG=<value>` into the environment.
 
 * `-C`, `--workdir` <path>:
 Change the working directory to the <path> given.
