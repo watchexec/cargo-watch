@@ -176,7 +176,7 @@ If you want more verbose output, try running with the `--debug` flag. Note that 
 
 In 7.8.0, the `--workdir` option changes the directory before any other options are processed, so e.g. `--watch` paths may not work as expected. This is fixed upstream in Watchexec library 2.
 
-In 8.x, the `-B`, `-L`, `-E`, `--env-var` options inject environment variables into the main cargo-watch process, which may be unsound in some situations and may also affect cargo-watch itself. This is fixed upstream in Watchexec library 2.
+In 8.x, the `-B`, `-L`, `-E`, `--env-var`, `--env-file` options inject environment variables into the main cargo-watch process, which may be unsound in some situations and may also affect cargo-watch itself. This is fixed upstream in Watchexec library 2.
 
 ## TROUBLESHOOTING
 
