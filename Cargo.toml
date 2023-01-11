@@ -28,11 +28,11 @@ clap = { version = "3.2.8", features = ["derive"] }
 console-subscriber = { version = "0.1.6", optional = true }
 dunce = "1.0.2"
 futures = "0.3.21"
-miette = { version = "4.7.1", features = ["fancy-no-backtrace"] }
+miette = { version = "5.3.0", features = ["fancy-no-backtrace"] }
 mimalloc = { version = "0.1.29", optional = true }
 shlex = "1.1.0"
 tracing = "0.1.35"
-watchexec = "2.0.0"
+watchexec = "2.1.0"
 wild = "2.0.4"
 
 [dependencies.tokio]

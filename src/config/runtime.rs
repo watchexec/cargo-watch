@@ -15,9 +15,10 @@ use watchexec::{
 	action::{Action, Outcome, PostSpawn, PreSpawn},
 	command::{Command, Shell},
 	config::RuntimeConfig,
-	event::ProcessEnd,
+	event::{ProcessEnd, Tag},
 	fs::Watcher,
 	handler::SyncFnHandler,
+	keyboard::Keyboard,
 	paths::summarise_events_to_env,
 	signal::source::MainSignal,
 };
@@ -127,6 +128,8 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 		config.file_watcher(Watcher::Poll(config.action.throttle));
 	}
 
+	config.keyboard_emit_eof(args.stdin_quit);
+
 	// config.command_grouped(args.process_group);
 
 	let quiet = args.quiet;
@@ -173,6 +176,16 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 		}
 
 		if signals.contains(&MainSignal::Interrupt) {
+			action.outcome(Outcome::both(Outcome::Stop, Outcome::Exit));
+			return fut;
+		}
+
+		let is_keyboard_eof = action
+			.events
+			.iter()
+			.any(|e| e.tags.contains(&Tag::Keyboard(Keyboard::Eof)));
+
+		if is_keyboard_eof {
 			action.outcome(Outcome::both(Outcome::Stop, Outcome::Exit));
 			return fut;
 		}

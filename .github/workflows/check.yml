@@ -19,12 +19,9 @@ jobs:
           - macos
         version:
           - stable
-          - 1.60.0
-        features:
-          - ""
-          - mimalloc
+          - 1.64.0
 
-    name: Test on ${{ matrix.platform }} with ${{ matrix.version }} (${{ matrix.features }})
+    name: Test on ${{ matrix.platform }} with ${{ matrix.version }}
     runs-on: "${{ matrix.platform }}-latest"
 
     steps:
@@ -36,11 +33,17 @@ jobs:
           override: true
       - name: Add clippy
         run: rustup component add clippy
-      - name: Test
+      - name: Test (stable, latest deps)
+        if: matrix.version == 'stable'
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: "--features '${{ matrix.features }}'"
+      - name: Test (msrv, locked deps)
+        if: matrix.version != 'stable'
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: "--locked"
 
   clippy:
     strategy:
