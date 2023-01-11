@@ -32,7 +32,7 @@ miette = { version = "5.3.0", features = ["fancy-no-backtrace"] }
 mimalloc = { version = "0.1.29", optional = true }
 shlex = "1.1.0"
 tracing = "0.1.35"
-watchexec = { git = "https://github.com/watchexec/watchexec.git", rev = "f613ba1a79403eecdd1d9be327b4dc4812557f89" }
+watchexec = "2.1.0"
 wild = "2.0.4"
 
 [dependencies.tokio]
