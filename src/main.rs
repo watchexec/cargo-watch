@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use camino::Utf8PathBuf;
 use clap::values_t;
 use stderrlog::Timestamp;
@@ -49,6 +51,28 @@ fn main() -> Result<()> {
     if let Some(l) = matches.value_of("rust-log") {
         // Soundness: not great, it'll get better with watchexec 2
         std::env::set_var("RUST_LOG", l);
+    }
+
+    if matches.is_present("env-files") {
+        for file in values_t!(matches, "env-files", PathBuf).unwrap_or_else(|e| e.exit()) {
+            for item in dotenvy::from_path_iter(&file).unwrap_or_else(|e| {
+                clap::Error::with_description(
+                    &format!("Failed to read .env file {file:?}: {e}"),
+                    clap::ErrorKind::ValueValidation,
+                )
+                .exit()
+            }) {
+                let (key, var) = item.unwrap_or_else(|e| {
+                    clap::Error::with_description(
+                        &format!("Malformed pair in .env file {file:?}: {e}"),
+                        clap::ErrorKind::ValueValidation,
+                    )
+                    .exit()
+                });
+                // Soundness: not great, it'll get better with watchexec 2
+                std::env::set_var(key, var);
+            }
+        }
     }
 
     if matches.is_present("env-vars") {

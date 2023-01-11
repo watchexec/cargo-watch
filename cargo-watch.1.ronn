@@ -3,7 +3,9 @@ cargo-watch(1) -- watches over your Cargo project's source
 
 ## SYNOPSIS
 
-cargo watch [`--exec` | `-x` <cargo subcommand>]... [`--shell` | `-s` <command>]... [`--ignore` | `-i` <pattern>]... [`--watch` | `-w` <path>]... [`--features` <list>] [`--no-restart`] [`--watch-when-idle`] [`--clear` | `-c`] [`--use-shell` <program>] [`--workdir` | `-C` <path>] [`--postpone`] [`--poll` <interval>] [`--delay` | `-d` <seconds>] [`--no-vcs-ignores`] [`--no-dot-ignores`] [`--ignore-nothing`] [`--debug` ] [`--why`] [`--quiet`] [`--version` | `-V`] [-- <command>...]
+cargo watch [options] [`--exec` | `-x` <cargo subcommand>]... [`--shell` | `-s` <command>]... [-- <command>...]
+cargo watch [`--version` | `-V`]
+cargo watch [`--help` | `-h`]
 
 ## DESCRIPTION
 
@@ -67,10 +69,19 @@ Ignore nothing, not even target/ and .git/.
 * `-c`, `--clear`:
 Clear the screen before each run.
 
+* `-E`, `--env-var` <key>=<value>:
+Inject an environment variable.
+
+* `--env-file` <path>:
+Inject environment variables from a dotenv-style file.
+
 * `-B` <value>:
 Inject `RUST_BACKTRACE=<value>` into the environment.
 
 This is useful when panics are handled and you want a backtrace to be printed: usually you’d have to add `RUST_BACKTRACE=1` yourself, this shortens it to `-B1`!
+
+* `-L` <value>:
+Inject `RUST_LOG=<value>` into the environment.
 
 * `-C`, `--workdir` <path>:
 Change the working directory to the <path> given.
@@ -163,9 +174,9 @@ If you want more verbose output, try running with the `--debug` flag. Note that 
 
 ### KNOWN BUGS
 
-In 7.8.0, the `--workdir` option changes the directory before any other options are processed, so e.g. `--watch` paths may not work as expected. This has to be fixed upstream, see [watchexec#188].
+In 7.8.0, the `--workdir` option changes the directory before any other options are processed, so e.g. `--watch` paths may not work as expected. This is fixed upstream in Watchexec library 2.
 
-[watchexec#188]: https://github.com/watchexec/watchexec/issues/188#issuecomment-829138116
+In 8.x, the `-B`, `-L`, `-E`, `--env-var`, `--env-file` options inject environment variables into the main cargo-watch process, which may be unsound in some situations and may also affect cargo-watch itself. This is fixed upstream in Watchexec library 2.
 
 ## TROUBLESHOOTING
 

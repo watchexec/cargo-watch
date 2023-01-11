@@ -17,7 +17,9 @@ args=(
   '(-i --ignore)'{-i+,--ignore=}'[Ignore changes to paths matching the pattern]:pattern'
   '(-w --watch)'{-w+,--watch=}'[Watch a specific directory]:path:_path_files -/'
   '(-C --workdir)'{-C+,--workdir=}'[Change working directory of command]:path:_path_files -/'
+  '(-E --env-var)'{-E+,--env-var=}'[Add an environment variable to the command]:pattern'
   '-B=[Inject RUST_BACKTRACE=value into the environment]:value'
+  '-L=[Inject RUST_LOG=value into the environment]:value'
   '--no-dot-ignores[Skip .ignore files]'
   '--no-vcs-ignores[Skip .gitignore files]'
   '--ignore-nothing[Ignore nothing, not even target/ and .git/]'
@@ -31,6 +33,7 @@ args=(
   '--delay=[File updates debounce delay]:seconds'
   '--poll=[Forces polling mode]:interval'
   '--features=[List of features passed to cargo invocations]:features'
+  '--env-file=[Inject environment variables from a file]:path:_path_files -/'
   '(-)1:command: _command_names -e'
   '*::arguments:{ _comp_priv_prefix=( $cmd -n ${(kv)opt_args[-u]} ) ; _normal }'
 )

@@ -205,6 +205,16 @@ pub fn parse() -> ArgMatches<'static> {
                         .number_of_values(1)
                 )
                 .arg(
+                    Arg::with_name("env-files")
+                        .help("Set environment variables from a .env file")
+                        .long("env-file")
+                        .takes_value(true)
+                        .multiple(true)
+                        .empty_values(false)
+                        .min_values(1)
+                        .number_of_values(1)
+                )
+                .arg(
                     Arg::with_name("rust-backtrace")
                         .help("Inject RUST_BACKTRACE=VALUE (generally you want to set it to 1) into the environment")
                         .short("B")
