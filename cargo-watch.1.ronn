@@ -3,7 +3,9 @@ cargo-watch(1) -- watches over your Cargo project's source
 
 ## SYNOPSIS
 
-cargo watch [`--exec` | `-x` <cargo subcommand>]... [`--shell` | `-s` <command>]... [`--ignore` | `-i` <pattern>]... [`--watch` | `-w` <path>]... [`--features` <list>] [`--no-restart`] [`--watch-when-idle`] [`--clear` | `-c`] [`--use-shell` <program>] [`--workdir` | `-C` <path>] [`--postpone`] [`--poll` <interval>] [`--delay` | `-d` <seconds>] [`--no-vcs-ignores`] [`--no-dot-ignores`] [`--ignore-nothing`] [`--debug` ] [`--why`] [`--quiet`] [`--version` | `-V`] [-- <command>...]
+cargo watch [options] [`--exec` | `-x` <cargo subcommand>]... [`--shell` | `-s` <command>]... [-- <command>...]
+cargo watch [`--version` | `-V`]
+cargo watch [`--help` | `-h`]
 
 ## DESCRIPTION
 
