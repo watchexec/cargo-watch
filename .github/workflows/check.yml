@@ -108,3 +108,12 @@ jobs:
           command: clippy
           args: --target ${{ matrix.target }}
 
+  # Dummy job to have a stable name for the "all tests pass" requirement
+  tests-pass:
+    name: Tests pass
+    needs:
+    - test
+    - clippy
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "Tests pass"
