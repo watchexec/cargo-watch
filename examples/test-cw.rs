@@ -14,6 +14,9 @@ use tempfile::TempDir;
 #[derive(Debug, Parser)]
 struct Args {
 	#[clap(long)]
+	no_cargo: bool,
+
+	#[clap(long)]
 	vcs: Option<String>,
 
 	#[clap(long)]
@@ -43,18 +46,20 @@ fn main() -> Result<()> {
 
 	let tmp_dir = TempDir::new_in(".").into_diagnostic()?;
 
-	let mut init_args = vec!["init", "--quiet", "--name", "cw-test", "--offline"];
-	if args.bin {
-		init_args.push("--bin");
+	if !args.no_cargo {
+		let mut init_args = vec!["init", "--quiet", "--name", "cw-test", "--offline"];
+		if args.bin {
+			init_args.push("--bin");
+		}
+		if let Some(vcs) = &args.vcs {
+			init_args.push("--vcs");
+			init_args.push(vcs);
+		}
+		cmd("cargo", init_args)
+			.dir(tmp_dir.path())
+			.run()
+			.into_diagnostic()?;
 	}
-	if let Some(vcs) = &args.vcs {
-		init_args.push("--vcs");
-		init_args.push(vcs);
-	}
-	cmd("cargo", init_args)
-		.dir(tmp_dir.path())
-		.run()
-		.into_diagnostic()?;
 
 	let before = Duration::from_millis(args.before);
 	let between = Duration::from_millis(args.between);

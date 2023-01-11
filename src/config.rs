@@ -7,6 +7,7 @@ pub use init::init;
 pub use runtime::runtime;
 
 mod init;
+//mod origin;
 mod runtime;
 
 pub fn get_args() -> (Args, Vec<&'static str>) {

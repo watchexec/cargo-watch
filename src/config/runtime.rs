@@ -9,7 +9,7 @@ use std::{
 	time::Duration,
 };
 
-use miette::{miette, IntoDiagnostic, Report, Result};
+use miette::{miette, IntoDiagnostic, Report, Result, bail};
 use tracing::{debug, info};
 use watchexec::{
 	action::{Action, Outcome, PostSpawn, PreSpawn},
@@ -103,6 +103,7 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 	}
 
 	if let Some(delay) = &args.delay {
+		// TODO: implement with FromStr and hook directly into Clap
 		let delay = if delay.ends_with("ms") {
 			let d: u64 = delay.trim_end_matches("ms").parse().into_diagnostic()?;
 			Duration::from_millis(d)
@@ -110,10 +111,10 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 			let d: f64 = delay.parse().into_diagnostic()?;
 			let delay = (d * 1000.0).round();
 			if delay.is_infinite() || delay.is_nan() || delay.is_sign_negative() {
-				return Err(Report::msg("delay must be finite and non-negative"));
+				bail!("delay must be finite and non-negative");
 			}
 			if delay >= 1000.0 {
-				return Err(Report::msg("delay must be less than 1000 seconds"));
+				bail!("delay must be less than 1000 seconds");
 			}
 
 			// SAFETY: delay is finite, not nan, non-negative, and less than 1000
@@ -129,24 +130,7 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 
 	// config.command_grouped(args.process_group);
 
-	let quiet = args.quiet;
-	let clear = args.clear;
-	let notif = args.notif;
-	let on_busy = if args.restart {
-		"restart"
-	} else {
-		"do-nothing"
-	};
-
-	// TODO: add using SubSignal in Args directly
-	// let mut signal = args
-	// 	.signal
-	// 	.map(SubSignal::from_str)
-	// 	.transpose()
-	// 	.into_diagnostic()?
-	// 	.unwrap_or(SubSignal::Terminate);
-
-	let print_events = args.why;
+	let Args { quiet, clear, notif, restart, print_events, .. } = *args;
 	let quit_after_n = args.quit_after_n.map(|n| Arc::new(AtomicU8::new(n)));
 	let delay_run = args.delay_run.map(Duration::from_secs);
 
@@ -258,11 +242,10 @@ pub fn runtime(args: &Args, command_order: Vec<&'static str>) -> Result<RuntimeC
 		};
 
 		let when_idle = start.clone();
-		let when_running = match on_busy {
-			"do-nothing" => Outcome::DoNothing,
-			"restart" => Outcome::both(Outcome::Stop, start),
-			// "signal" => Outcome::Signal(signal),
-			_ => Outcome::DoNothing,
+		let when_running = if restart {
+			Outcome::both(Outcome::Stop, start)
+		} else {
+			Outcome::DoNothing
 		};
 
 		if let Some(runs) = quit_after_n.clone() {
@@ -354,12 +337,8 @@ fn cargo_command(arg: &str, features: &Option<String>) -> Result<Command> {
 		.clone();
 
 	if let Some(features) = features.as_ref() {
-		if subc.starts_with('b')
-			|| subc == "check"
-			|| subc == "doc"
-			|| subc.starts_with('r')
-			|| subc == "test"
-			|| subc == "install"
+		if let "build" | "b" | "check" | "c" | "doc" | "d" | "run" | "r" | "test" | "t"
+		| "install" | "publish" = subc.as_str()
 		{
 			lexed.insert(1, "--features".into());
 			lexed.insert(2, features.into());
