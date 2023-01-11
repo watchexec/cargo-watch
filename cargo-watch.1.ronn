@@ -72,6 +72,9 @@ Clear the screen before each run.
 * `-E`, `--env-var` <key>=<value>:
 Inject an environment variable.
 
+* `--env-file` <path>:
+Inject environment variables from a dotenv-style file.
+
 * `-B` <value>:
 Inject `RUST_BACKTRACE=<value>` into the environment.
 
@@ -171,9 +174,9 @@ If you want more verbose output, try running with the `--debug` flag. Note that 
 
 ### KNOWN BUGS
 
-In 7.8.0, the `--workdir` option changes the directory before any other options are processed, so e.g. `--watch` paths may not work as expected. This has to be fixed upstream, see [watchexec#188].
+In 7.8.0, the `--workdir` option changes the directory before any other options are processed, so e.g. `--watch` paths may not work as expected. This is fixed upstream in Watchexec library 2.
 
-[watchexec#188]: https://github.com/watchexec/watchexec/issues/188#issuecomment-829138116
+In 8.x, the `-B`, `-L`, `-E`, `--env-var` options inject environment variables into the main cargo-watch process, which may be unsound in some situations and may also affect cargo-watch itself. This is fixed upstream in Watchexec library 2.
 
 ## TROUBLESHOOTING
 
