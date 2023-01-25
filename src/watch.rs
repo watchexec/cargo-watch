@@ -57,7 +57,7 @@ impl CwHandler {
                 #[cfg(unix)]
                 final_cmd.push_str(r#"; echo "[Finished running. Exit status: $?]""#);
                 #[cfg(windows)]
-                final_cmd.push_str(r#" & echo "[Finished running. Exit status: %ERRORLEVEL%]""#);
+                final_cmd.push_str(r#" & echo [Finished running. Exit status: %ERRORLEVEL%]"#);
                 #[cfg(not(any(unix, windows)))]
                 final_cmd.push_str(r#" ; echo "[Finished running]""#);
                 // ^ could be wrong depending on the platform, to be fixed on demand
