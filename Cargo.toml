@@ -22,7 +22,7 @@ name = "cargo-watch"
 
 [dependencies]
 camino = "1.1.2"
-cargo_metadata = "0.15.2"
+cargo_metadata = "0.15.3"
 clap = "2.33.1"
 dotenvy = "0.15.6"
 log = "0.4.17"
