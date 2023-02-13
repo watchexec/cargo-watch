@@ -265,8 +265,12 @@ pub fn get_options(matches: &ArgMatches) -> Config {
         if s.eq_ignore_ascii_case("powershell") {
             Shell::Powershell
         } else if s.eq_ignore_ascii_case("none") {
-            warn!("--use-shell=none is non-sensical for cargo-watch, ignoring");
-            default_shell()
+            if matches.is_present("cmd:trail") {
+                Shell::None
+            } else {
+                warn!("--use-shell=none is non-sensical for cargo-watch with -x/-s, ignoring");
+                default_shell()
+            }
         } else if s.eq_ignore_ascii_case("cmd") {
             cmd_shell(s.into())
         } else {
