@@ -68,12 +68,19 @@ pub fn set_commands(builder: &mut ConfigBuilder, matches: &ArgMatches) {
 
     if matches.is_present("cmd:trail") {
         debug!("trailing command is present, ignore all other command options");
-        commands = vec![values_t!(matches, "cmd:trail", String)
-            .unwrap_or_else(|e| e.exit())
-            .into_iter()
-            .map(|arg| shell_escape::escape(arg.into()))
-            .collect::<Vec<_>>()
-            .join(" ")];
+        if matches
+            .value_of("use-shell")
+            .map_or(false, |shell| shell.eq_ignore_ascii_case("none"))
+        {
+            commands = values_t!(matches, "cmd:trail", String).unwrap_or_else(|e| e.exit());
+        } else {
+            commands = vec![values_t!(matches, "cmd:trail", String)
+                .unwrap_or_else(|e| e.exit())
+                .into_iter()
+                .map(|arg| shell_escape::escape(arg.into()))
+                .collect::<Vec<_>>()
+                .join(" ")];
+        }
     }
 
     // Default to `cargo check`
