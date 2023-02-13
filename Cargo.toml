@@ -29,7 +29,7 @@ log = "0.4.17"
 notify-rust = "4.7.0"
 shell-escape = "0.1.5"
 stderrlog = "0.5.4"
-watchexec = "1.17.1"
+watchexec = "1.17.2"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"

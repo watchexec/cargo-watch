@@ -2011,9 +2011,9 @@ checksum = "1c38c045535d93ec4f0b4defec448e4291638ee608530863b1e2ba115d4fff7f"
 
 [[package]]
 name = "watchexec"
-version = "1.17.1"
+version = "1.17.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c52e0868bc57765fa91593a173323f464855e53b27f779e1110ba0fb4cb6b406"
+checksum = "38928d7ff5274e31594da2d46453a2c741fa340d1bf0ef6f2cb3e43537361265"
 dependencies = [
  "clearscreen",
  "command-group",
