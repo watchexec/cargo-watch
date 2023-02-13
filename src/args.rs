@@ -86,6 +86,11 @@ pub fn parse() -> ArgMatches<'static> {
                         .help("Postpone first run until a file changes"),
                 )
                 .arg(
+                    Arg::with_name("no-process-group")
+                        .long("no-process-group")
+                        .help("Do not use a process group when running the command")
+                )
+                .arg(
                     Arg::with_name("watch-when-idle")
                         .long("watch-when-idle")
                         .help("Ignore events emitted while the commands run."),
@@ -175,7 +180,7 @@ pub fn parse() -> ArgMatches<'static> {
                         .long("use-shell")
                         .takes_value(true)
                         .help(if cfg!(windows) {
-                            "Use a different shell. Try --use-shell=powershell."
+                            "Use a different shell. Try --use-shell=powershell"
                         } else {
                             "Use a different shell. E.g. --use-shell=bash"
                         }),

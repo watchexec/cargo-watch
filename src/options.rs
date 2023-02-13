@@ -250,7 +250,8 @@ pub fn get_options(matches: &ArgMatches) -> Config {
         .poll(matches.is_present("poll"))
         .clear_screen(matches.is_present("clear"))
         .run_initially(!matches.is_present("postpone"))
-        .no_environment(!matches.is_present("env-changes"));
+        .no_environment(!matches.is_present("env-changes"))
+        .use_process_group(!matches.is_present("no-process-group"));
 
     // TODO in next breaking: remove --watch-when-idle and switch --no-restart behaviour to DoNothing
     builder.on_busy_update(if matches.is_present("no-restart") {
