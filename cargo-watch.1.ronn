@@ -83,6 +83,11 @@ This is useful when panics are handled and you want a backtrace to be printed: u
 * `-L` <value>:
 Inject `RUST_LOG=<value>` into the environment.
 
+* `--experimental--env-changes`:
+Unstable option which will set `WATCHEXEC_*` environment variables on the command to gather information on the files changes cargo watch saw. Do not rely on this, may disappear or change without notice.
+
+Note that the files listed are not guaranteed to be the full list of files changed, nor indeed to even have been changed at all, and that this may vary between platforms. In general, finding the list of files that changed is best done by other tools such as `find`, to list out all the files with a modification date greater than the last known execution.
+
 * `-C`, `--workdir` <path>:
 Change the working directory to the <path> given.
 
@@ -93,6 +98,9 @@ Postpone first run until a file changes.
 
 * `--poll`:
 Force use of polling for file changes.
+
+* `--no-process-group`:
+By default, Cargo Watch uses a process group to run the command(s). This disables that behaviour.
 
 * `-d`, `--delay` <delay>:
 File updates debounce delay in seconds (default: 0.5).
@@ -114,6 +122,8 @@ Both `build` and `doc` will be run with the `foo` and `bar` features, but `clean
 
 * `--use-shell` <use-shell>:
 Use a different shell. E.g. `--use-shell=bash`. On Windows, try `--use-shell=powershell`.
+
+The special value `none` will use no shell, but will only work with a trailing command, not `-x` or `-s`.
 
 ## EXAMPLES
 
