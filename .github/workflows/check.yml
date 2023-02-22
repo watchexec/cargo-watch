@@ -23,7 +23,7 @@ jobs:
           - macos
         toolchain:
           - stable
-          - 1.60.0
+          - 1.62.1
 
     name: Test on ${{ matrix.platform }} with ${{ matrix.toolchain }}
     runs-on: "${{ matrix.platform }}-latest"
