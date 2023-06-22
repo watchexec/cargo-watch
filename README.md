@@ -5,7 +5,7 @@
 [![Crate download count](https://flat.badgen.net/crates/d/cargo-watch)](https://crates.io/crates/cargo-watch)
 [![CI status](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml/badge.svg)](https://github.com/watchexec/cargo-watch/actions/workflows/check.yml)
 
-Cargo Watch watches over your project's source for changes, and runs Cargo
+Cargo Watch watches over your project's source for changes and runs Cargo
 commands when they occur.
 
 If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
@@ -26,7 +26,7 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 With [cargo-binstall](https://github.com/ryankurte/cargo-binstall):
 
 ```console
-$ cargo binstall cargo-watch
+$ cargo install cargo-watch
 ```
 
 From source:
@@ -35,7 +35,7 @@ From source:
 $ cargo install cargo-watch
 ```
 
-Or clone and build with `$ cargo build` then place in your $PATH.
+Or clone and build with `$ cargo build` then place it in your $PATH.
 
 You can also install from the pre-built binaries available **[on the release page][releases]**.
 
@@ -237,7 +237,7 @@ Windows <=7 will be closed. If it works, lucky you, but that is not intentional.
 ### I want to run cargo-watch directly, without going through cargo
 
 You can! But you'll have to specify the `watch` subcommand as the first
-argument, like so:
+the argument, like so:
 
 ```
 $ /path/to/cargo-watch watch -x build
@@ -247,9 +247,9 @@ $ /path/to/cargo-watch watch -x build
 
 That's not supported. If you have a good reason to use a Cargo-specific tool
 outside a Cargo project, please open an issue! Otherwise, you'll probably be
-best served with using [Watchexec].
+best served by using [Watchexec].
 
-### If file updates seems to never trigger
+### If file updates seem to never trigger
 
 Try using `--poll` to force the polling fallback.
 
@@ -257,7 +257,7 @@ If that still doesn't work, and you're using an editor that does "safe saving",
 like IntelliJ / PyCharm, you may have to disable "safe saving" as that may
 prevent file notifications from being generated properly.
 
-Also try using the `--why` option to see if the paths you expect are changing.
+Also, try using the `--why` option to see if the paths you expect are changing.
 
 ### Linux: If it fails to watch some deep directories but not others / "No space left on device"
 
@@ -266,7 +266,7 @@ and how to increase it.][inotify limit]
 
 [inotify limit]: https://watchexec.github.io/docs/inotify-limits.html
 
-### Docker: it's not responding correctly to signal or has trouble managing processes
+### Docker: it's not responding correctly to signals or has trouble managing processes
 
 Cargo Watch (and Watchexec underlying) does not currently support running as PID 1.
 It will probably work for basic uses, but you should consider using a supervisor,
