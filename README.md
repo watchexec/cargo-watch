@@ -15,7 +15,7 @@ If you've used [nodemon], [guard], or [entr], it will probably feel familiar.
 [guard]: http://guardgem.org/
 
 - In the public domain / licensed with CC0.
-- Minimum Supported Rust Version: 1.60.0.
+- Minimum Supported Rust Version: 1.67.1.
   - Only the last five stable versions are supported.
   - MSRV increases beyond that range at publish time will not incur major version bumps.
 
