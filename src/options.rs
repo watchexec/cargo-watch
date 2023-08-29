@@ -135,6 +135,7 @@ pub fn set_ignores(builder: &mut ConfigBuilder, matches: &ArgMatches) {
         format!("*{s}*.db-journal{s}**", s = MAIN_SEPARATOR),
         // Rust
         format!("*{s}target{s}**", s = MAIN_SEPARATOR),
+        "rustc-ice-*.txt".into(),
     ];
 
     debug!("Default ignores: {:?}", list);
