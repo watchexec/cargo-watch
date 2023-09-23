@@ -34,7 +34,7 @@ watchexec = "1.17.2"
 [dev-dependencies]
 assert_cmd = "1.0.1"
 insta = "1.32.0"
-predicates = "2.1.5"
+predicates = "3.0.4"
 wait-timeout = "0.2.0"
 
 [profile.release]
