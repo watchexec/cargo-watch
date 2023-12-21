@@ -12,7 +12,7 @@ args=(
   '(-c --clear)'{-c,--clear}'[Clear screen before executing command]'
   '(-h --help)'{-h,--help}'[Print help information]'
   '(-V --version)'{-V,--version}'[Print version information]'
-  '(-x --exec)'{-x+,--exec=}'[Cargo subcommand to execute on changes]:cargo-command'
+  '(-x --exec)'{-x+,--exec=}'[Cargo subcommand to execute on changes]:cargo-command:_cargo_cmds'
   '(-s --shell)'{-s+,--shell=}'[Shell command to execute on changes]:command'
   '(-i --ignore)'{-i+,--ignore=}'[Ignore changes to paths matching the pattern]:pattern'
   '(-w --watch)'{-w+,--watch=}'[Watch a specific directory]:path:_path_files -/'
