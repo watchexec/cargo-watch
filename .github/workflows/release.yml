@@ -198,7 +198,7 @@ jobs:
           key: sign-tools-${{ hashFiles('.github/workflows/release.yml') }}
 
       - name: Install rsign2
-        run: cargo install rsign2 --version 0.6.3
+        run: cargo install rsign2 --version 0.5.7
       - name: Install b3sum
         run: cargo install b3sum --version 1.5.0
 
