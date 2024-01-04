@@ -238,17 +238,33 @@ pub fn parse() -> ArgMatches<'static> {
                         .takes_value(true)
                 )
                 .arg(
-                    Arg::with_name("cmd:trail")
-                        .raw(true)
-                        .help("Full command to run. -x and -s will be ignored!"),
-                )
-                .arg(
                     Arg::with_name("skip-local-deps")
                     .help("Don't try to find local dependencies of the current crate and watch their working directories. Only watch the current directory.")
                     .long("skip-local-deps")
                 )
+                .subcommand(special_cargo_subc("bench"))
+                .subcommand(special_cargo_subc("build"))
+                .subcommand(special_cargo_subc("check"))
+                .subcommand(special_cargo_subc("clippy"))
+                .subcommand(special_cargo_subc("test"))
+                .arg(
+                    Arg::with_name("cmd:trail")
+                        .raw(true)
+                        .help("Full command to run. -x and -s will be ignored!"),
+                )
                 .after_help(footnote.as_str()),
         );
+
+    fn special_cargo_subc(name: &str) -> App {
+        SubCommand::with_name(name)
+            .setting(AppSettings::AllowLeadingHyphen)
+            .setting(AppSettings::DisableHelpFlags)
+            .setting(AppSettings::DisableHelpSubcommand)
+            .setting(AppSettings::DisableVersion)
+            .setting(AppSettings::Hidden)
+            .setting(AppSettings::TrailingVarArg)
+            .arg(Arg::with_name("args").multiple(true))
+    }
 
     // Allow invocation of cargo-watch with both `cargo-watch watch ARGS`
     // (as invoked by cargo) and `cargo-watch ARGS`.

@@ -6,7 +6,7 @@ use std::{
 };
 
 use cargo_metadata::{MetadataCommand, Node, Package, PackageId};
-use clap::{value_t, values_t, ArgMatches};
+use clap::{value_t, values_t, ArgMatches, ErrorKind};
 use log::{debug, warn};
 use watchexec::{
     config::{Config, ConfigBuilder},
@@ -21,9 +21,32 @@ pub fn set_commands(builder: &mut ConfigBuilder, matches: &ArgMatches) {
     // and before the remaining arguments
     let features = value_t!(matches, "features", String).ok();
 
+    let subcommand_cargo = {
+        let (name, args) = matches.subcommand();
+        if name == "" {
+            None
+        } else if let Some(args) = args {
+            let args = values_t!(args, "args", String).unwrap_or_else(|e| e.exit()).join(" ");
+            Some(format!("{name} {args}"))
+        } else {
+            // shouldn't happen per clap2, but just in case:
+            Some(name.to_string())
+        }
+    };
+
     // Cargo commands are in front of the rest
-    if matches.is_present("cmd:cargo") {
-        for cargo in values_t!(matches, "cmd:cargo", String).unwrap_or_else(|e| e.exit()) {
+    if matches.is_present("cmd:cargo") || subcommand_cargo.is_some() {
+        let normal_cargos = values_t!(matches, "cmd:cargo", String).unwrap_or_else(|e| {
+            if e.kind == ErrorKind::ArgumentNotFound {
+                Vec::new()
+            } else {
+                e.exit()
+            }
+        });
+        for cargo in normal_cargos
+            .into_iter()
+            .chain(subcommand_cargo.into_iter())
+        {
             let mut cmd: String = "cargo ".into();
             let cargo = cargo.trim_start();
             // features are supported for the following
