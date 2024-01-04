@@ -23,11 +23,18 @@ pub fn set_commands(builder: &mut ConfigBuilder, matches: &ArgMatches) {
 
     let subcommand_cargo = {
         let (name, args) = matches.subcommand();
-        if name == "" {
+        if name.is_empty() {
             None
         } else if let Some(args) = args {
-            let args = values_t!(args, "args", String).unwrap_or_else(|e| e.exit()).join(" ");
-            Some(format!("{name} {args}"))
+            let mut cargo_cmd = vec![name.to_string()];
+            cargo_cmd.extend(values_t!(args, "args", String).unwrap_or_else(|e| {
+                if e.kind == ErrorKind::ArgumentNotFound {
+                    Vec::new()
+                } else {
+                    e.exit()
+                }
+            }));
+            Some(cargo_cmd.join(" "))
         } else {
             // shouldn't happen per clap2, but just in case:
             Some(name.to_string())
