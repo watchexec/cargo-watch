@@ -3,8 +3,8 @@ message: |
   If you use this software, please cite it using these metadata.
 title: "Cargo Watch: a project-watching companion tool for Cargo"
 
-version: "8.4.1"
-date-released: 2023-08-30
+version: "8.5.0"
+date-released: 2024-01-04
 
 repository-code: https://github.com/watchexec/cargo-watch
 license: CC0-1.0

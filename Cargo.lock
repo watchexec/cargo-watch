@@ -344,7 +344,7 @@ dependencies = [
 
 [[package]]
 name = "cargo-watch"
-version = "8.4.1"
+version = "8.5.0"
 dependencies = [
  "assert_cmd",
  "camino",
