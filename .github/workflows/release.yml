@@ -86,10 +86,10 @@ jobs:
           key: ${{ runner.os }}-cargo-bin-${{ hashFiles('.github/workflows/release.yml') }}
       - name: Install cargo-deb
         if: startsWith(matrix.name, 'linux-')
-        run: which cargo-deb || cargo install cargo-deb --version 1.30.0 --locked
+        run: which cargo-deb || cargo install cargo-deb --version 1.44.1 --locked
       - name: Install cargo-generate-rpm
         if: startsWith(matrix.name, 'linux-')
-        run: which cargo-generate-rpm || cargo install cargo-generate-rpm --version 0.5.0 --locked
+        run: which cargo-generate-rpm || cargo install cargo-generate-rpm --version 0.13.0 --locked
 
       - uses: actions-rs/toolchain@v1
         with:
@@ -198,9 +198,9 @@ jobs:
           key: sign-tools-${{ hashFiles('.github/workflows/release.yml') }}
 
       - name: Install rsign2
-        run: cargo install rsign2 --version 0.5.7
+        run: cargo install rsign2 --version 0.6.3
       - name: Install b3sum
-        run: cargo install b3sum --version 0.3.7
+        run: cargo install b3sum --version 1.5.0
 
       - uses: actions/download-artifact@v3
         with:
