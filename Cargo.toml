@@ -21,7 +21,7 @@ exclude = ["/.github"]
 name = "cargo-watch"
 
 [dependencies]
-camino = "1.1.2"
+camino = "1.1.9"
 cargo_metadata = "0.18.1"
 clap = "2.34.0"
 dotenvy = "0.15.6"
