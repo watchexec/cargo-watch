@@ -233,7 +233,7 @@ jobs:
           rm release.key
           cat {B3,SHA512}SUMS.auto.minisig
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         with:
           files: |
             cargo-watch-v*.tar.xz
