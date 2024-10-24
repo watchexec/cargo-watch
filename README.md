@@ -55,7 +55,7 @@ Remember Cargo Watch.
 With [cargo-binstall](https://github.com/ryankurte/cargo-binstall):
 
 ```console
-$ cargo binstall cargo-watch
+$ cargo install cargo-watch
 ```
 
 From source:
